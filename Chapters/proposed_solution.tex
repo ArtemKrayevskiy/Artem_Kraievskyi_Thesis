@@ -1,0 +1,188 @@
+\chapter{Proposed Solution}
+
+\section{Problem Formulation}
+
+Let $\mathcal{I} = \{I_i\}_{i=1}^N$ be a set of calibrated multi-view images with known camera poses obtained from Structure-from-Motion.  
+The goal is to reconstruct a geometrically consistent scene representation using a set of Gaussian primitives:
+
+\begin{equation}
+\mathcal{G} = \{ g_k \}_{k=1}^K,
+\end{equation}
+
+where each Gaussian $g_k$ is parameterized by its center $\mathbf{x}_k \in \mathbb{R}^3$, covariance $\Sigma_k$, opacity $\alpha_k$, and color features.
+
+The standard 3D Gaussian Splatting formulation optimizes parameters by minimizing photometric reconstruction error:
+
+\begin{equation}
+\mathcal{L}_{photo} =
+\sum_{i=1}^{N}
+\left\|
+R(\mathcal{G}, \Pi_i) - I_i
+\right\|_2^2,
+\end{equation}
+
+where $R(\cdot)$ denotes the differentiable renderer and $\Pi_i$ is the projection associated with camera $i$.
+
+However, purely photometric supervision is insufficient in:
+
+\begin{itemize}
+    \item textureless planar regions,
+    \item areas with weak gradients,
+    \item geometrically ambiguous boundaries.
+\end{itemize}
+
+This often leads to over-densification, floating artifacts, and inconsistent surface normals.
+
+To address these limitations, we introduce geometry-aware regularization and adaptive primitive allocation into the optimization process.
+
+The final objective becomes:
+
+\begin{equation}
+\mathcal{L} =
+\mathcal{L}_{photo}
++
+\lambda_d \mathcal{L}_{depth}
++
+\lambda_n \mathcal{L}_{normal}
++
+\lambda_{dn} \mathcal{L}_{dn}
++
+\lambda_p \mathcal{L}_{planar}
++
+\lambda_e \mathcal{L}_{edge}.
+\end{equation}
+
+\section{Solution Architecture}
+\label{sec:solution_architecture}
+
+Figure~\ref{fig:unified_pipeline} illustrates the overall framework.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{unified_pipeline.png}
+    \caption{Geometry-aware Gaussian Splatting framework.
+    Solid arrows denote the core rendering pipeline.
+    Dashed arrows represent geometric priors and adaptive densification modules.}
+    \label{fig:unified_pipeline}
+\end{figure}
+
+The architecture extends the standard Gaussian Splatting pipeline with two complementary components:
+
+\begin{enumerate}
+    \item Geometry-aware priors operating in rendering space.
+    \item Edge-aware adaptive densification for compact representation.
+\end{enumerate}
+
+\subsection{Geometry-Aware Regularization}
+
+All geometric constraints are applied in rendering space rather than directly constraining primitive parameters. This preserves the flexibility of Gaussian primitives while enforcing global geometric consistency.
+
+\subsubsection{Depth Prior}
+
+Rendered depth $D_r$ is aligned with a prior depth map $D_p$:
+
+\begin{equation}
+\mathcal{L}_{depth}
+=
+\left\|
+D_r - D_p
+\right\|_1.
+\end{equation}
+
+This term stabilizes optimization in textureless regions and reduces floating artifacts.
+
+\subsubsection{Normal Prior}
+
+Rendered normals $N_r$ are regularized using prior normals $N_p$:
+
+\begin{equation}
+\mathcal{L}_{normal}
+=
+\left\|
+N_r - N_p
+\right\|_1
++
+\left(1 - N_r \cdot N_p \right).
+\end{equation}
+
+This promotes locally coherent surface orientation.
+
+\subsubsection{Depth--Normal Consistency}
+
+Internal consistency is enforced by aligning rendered normals with normals computed from rendered depth:
+
+\begin{equation}
+\mathcal{L}_{dn}
+=
+\left\|
+N_r - N_{depth}
+\right\|_1.
+\end{equation}
+
+\subsubsection{Planar Regularization}
+
+For segmented planar regions, a plane is estimated from the rendered depth map.  
+Let $D_{plane}$ denote the depth induced by the fitted plane.  
+The planar consistency loss is:
+
+\begin{equation}
+\mathcal{L}_{planar}
+=
+\left\|
+D_r - D_{plane}
+\right\|_1.
+\end{equation}
+
+Importantly, Gaussian centers are not explicitly projected onto planes.  
+The constraint operates purely at the rendering level, allowing primitives to reorganize naturally during optimization.
+
+\subsection{Edge-Aware Adaptive Representation}
+
+In addition to geometric priors, we introduce a spatially adaptive densification mechanism.
+
+Instead of uniformly refining the scene, the method distinguishes between:
+
+\begin{itemize}
+    \item Structural boundary regions (edges),
+    \item Homogeneous planar interiors.
+\end{itemize}
+
+During training:
+
+\begin{itemize}
+    \item Regions near structural edges are encouraged to maintain smaller, more localized Gaussians and higher refinement activity.
+    \item Planar interiors favor larger primitives and reduced splitting frequency.
+\end{itemize}
+
+This adaptive allocation concentrates representational capacity where geometric detail is required while preventing unnecessary primitive growth in flat regions.
+
+\subsubsection{Edge-Specific Normal Reinforcement}
+
+Optionally, an additional edge-restricted normal alignment term can be activated:
+
+\begin{equation}
+\mathcal{L}_{edge}
+=
+\left\|
+N_r - N_{depth}
+\right\|_1
++
+\left(1 - N_r \cdot N_{depth} \right).
+\end{equation}
+
+This term is applied only at detected edge pixels and introduced after initial geometric stabilization to reinforce sharp transitions.
+
+\section{Solution Summary}
+
+The proposed framework augments standard Gaussian Splatting with:
+
+\begin{itemize}
+    \item Rendering-space geometric regularization,
+    \item Planar consistency enforcement,
+    \item Edge-aware adaptive densification,
+    \item Optional primitive substitution (2D surfel representation).
+\end{itemize}
+
+The design preserves the efficiency and differentiability of the original pipeline while improving geometric consistency, structural sharpness, and representation compactness.
+
+All components are integrated into a unified training framework, enabling systematic evaluation of geometric priors and adaptive primitive allocation within a single optimization process.

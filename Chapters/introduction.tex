@@ -1,0 +1,30 @@
+\chapter{Introduction}
+
+
+\section{Motivation}
+
+Modern computer vision and graphics applications -- from AR/VR systems to robotics and real-time rendering -- depend critically on 3D scene representations that are both compact and geometrically accurate. In AR/VR, for instance, convincing user experiences require precise geometry: objects must stay anchored in place, occlusions need to look correct, and the overall spatial structure must remain stable under user movement. At the same time, these systems operate under strict real-time and memory constraints, so representations cannot be arbitrarily large or slow to process. Similar demands arise in robotics, where reliable 3D understanding directly impacts localization, path planning, and safe interaction with the environment -- errors in geometry can have tangible consequences. Likewise, in graphics pipelines tasked with rendering complex scenes, the representation must scale efficiently without sacrificing visual quality.
+
+Recent neural rendering methods have made impressive strides in synthesizing novel views from sparse image sets. Techniques such as Neural Radiance Fields (NeRFs)~\cite{mildenhall2020nerf} and, more recently, 3D Gaussian Splatting (3DGS)~\cite{kerbl20233dgs}, can produce highly photorealistic images by learning scene representations directly from photographs. 3DGS, in particular, stands out for its real-time rendering performance and memory efficiency, making it attractive for interactive and large-scale applications. However, these methods are primarily optimized for appearance fidelity rather than explicit geometric correctness.
+
+A key challenge is that depth and surface structure emerge implicitly in these models rather than being explicitly enforced. Without strong geometric supervision, reconstructed scenes often suffer from depth inconsistencies across viewpoints, incorrect scale, and poorly defined surfaces, especially in challenging regions such as textureless walls or repetitive patterns. Individual primitives are optimized largely independently, which can result in fragmented or noisy surface reconstructions that appear acceptable in rendered images but degrade when evaluated geometrically. As a result, while neural rendering techniques excel at visual synthesis, the underlying 3D structure is frequently unreliable for applications that require accurate surface reconstruction or metrically consistent representations.
+
+
+
+
+\section{Contributions}
+
+The contributions of this thesis are summarized as follows:
+
+\begin{itemize}
+    \item \textbf{Modular geometry-aware framework:} We propose a modular geometry-aware 3D Gaussian Splatting framework that integrates complementary ideas from recent advances in the field. The framework combines geometry-aware initialization and surface alignment strategies inspired by GeoGaussian~\cite{geogaussian}, adaptive depth and normal regularization mechanisms derived from DN-Splatter~\cite{dn_splatter}, and mesh-based geometric constraints similar to those introduced in SuGaR~\cite{sugar} and MILO~\cite{milo2024}. This modular design enables flexible activation and combination of different geometric modalities within a unified optimization pipeline.
+
+    \item \textbf{Systematic study of geometric modalities:} We conduct a systematic study of explicit geometric modalities, including surface normals, depth supervision, and mesh-based constraints, and analyze their individual and combined impact on 3D reconstruction quality. By enabling and disabling specific regularization components, the framework allows controlled comparisons that isolate the contribution of each modality to surface smoothness, normal consistency, depth accuracy, and global geometric coherence.
+
+    \item \textbf{Experimental evaluation on indoor scenes:} We present an experimental evaluation on indoor scenes from the Mip-NeRF360 and Deep Blending datasets, following evaluation protocols commonly used in prior neural rendering work~\cite{mildenhall2020nerf,kerbl20233dgs}. The evaluation focuses on both visual quality and representation efficiency, using standard image-based metrics including PSNR, SSIM, and LPIPS. In addition, representation compactness is analyzed by measuring the number of Gaussians required to achieve a given reconstruction quality, offering practical insights into how different geometric regularization modalities influence visual quality and compactness in 3D Gaussian Splatting.
+\end{itemize}
+
+
+\section{Structure Of The Thesis}
+
+This thesis is organized as follows. Chapter 2 reviews related work on recent advances in 3D Gaussian Splatting, with a particular focus on geometry-aware extensions that incorporate depth, normal, and surface-based constraints. Chapter 3 introduces the theoretical background necessary for understanding the proposed approach, including camera geometry, structure-from-motion, and the fundamentals of 3D Gaussian Splatting and evaluation metrics. Chapter 4 presents the proposed modular framework, detailing the integration of geometry-aware initialization, depth and normal regularization, and mesh-based constraints. Chapter 5 describes the experimental setup and results, with an emphasis on controlled indoor evaluations and a modality-wise analysis of visual quality and compactness of representation. Finally, Chapter 6 summarizes the main findings, discusses the limitations of the proposed approach, and outlines directions for future work.

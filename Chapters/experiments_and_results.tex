@@ -1,0 +1,83 @@
+\chapter{Experiments and Results}
+
+\section{Datasets}
+
+\subsection{Deep Blending Dataset}
+
+We evaluate the proposed method on the Deep Blending dataset, which is widely used in neural rendering research for benchmarking view synthesis and reconstruction quality. The dataset consists of multi-view image sequences with accurately estimated camera poses obtained through Structure-from-Motion pipelines.
+
+The selected scenes are characterized by challenging indoor environments, including large planar regions, reflective surfaces, and areas with limited texture. These conditions are particularly difficult for neural rendering methods, as they often lead to unstable geometry and inconsistent depth estimation. In this work, we focus on two representative indoor scenes that emphasize planar structures such as walls and floors, making them suitable for evaluating geometry-aware priors.
+
+\subsection{UCU Indoor Dataset}
+
+In addition to standard benchmarks, during my bachelor's research work we collected a new dataset for 3D GS experiments,that is why in collaboration with the UCU Machine Learning Lab, referred to as \textit{UCU Indoor Scenes}. The dataset contains several indoor environments captured using a handheld camera, with camera poses reconstructed using COLMAP.
+
+The primary goal of this dataset is to provide a more realistic evaluation setting for geometry-aware reconstruction methods. In particular, the scenes include large uniform surfaces, low-texture regions, and complex spatial layouts that are often underrepresented in existing benchmarks. These characteristics make the dataset especially suitable for analyzing the effect of structural and planar constraints.
+
+\section{Experimental Setup}
+
+All experiments are conducted within a unified training framework to ensure fair comparison between different configurations. The optimization process runs for 30,000 iterations using the Adam optimizer, with identical hyperparameters across all experiments. Training is performed on a single GPU.
+
+The proposed framework is modular, allowing each geometric prior to be independently enabled or disabled. This design makes it possible to systematically study the contribution of each component as well as their interactions.
+
+\section{Evaluation Metrics}
+
+We evaluate reconstruction quality using standard image-based metrics, including PSNR, SSIM, and LPIPS. These metrics provide complementary perspectives, capturing pixel-wise accuracy, structural similarity, and perceptual quality, respectively.
+
+In addition to visual quality, we analyze representation efficiency. This includes the number of Gaussians used to represent the scene, the total model size in memory, and the training time. These metrics are particularly important in practical applications where both accuracy and efficiency must be balanced.
+
+\section{Research Hypotheses}
+
+The experiments are designed to test several hypotheses derived from the identified research gap. First, we assume that combining multiple geometric priors leads to improved reconstruction quality compared to using any single prior in isolation. At the same time, we investigate whether certain priors become redundant when stronger geometric supervision is available. 
+
+Another important question concerns the role of structural information. In indoor scenes, where planar surfaces dominate, we expect that edge and planarity constraints have a stronger impact than purely local cues such as normals. Finally, we evaluate whether the use of geometric priors improves representation compactness, and whether edge-aware constraints help reduce artifacts near planar boundaries.
+
+\section{Ablation Study}
+
+To analyze the contribution of different geometric priors, we perform an ablation study over all combinations of the following components: normals (N), depth (D), edges (E), mesh constraints (M), and planarity (P). This results in a total of 32 configurations.
+
+Table~\ref{tab:ablation} summarizes the evaluated configurations. For clarity, we present the structure of the ablation table without including numerical results.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{ccccc|ccc|ccc|ccc}
+\toprule
+\multicolumn{5}{c|}{\textbf{Priors}} &
+\multicolumn{3}{c|}{\textbf{DeepBlending}} &
+\multicolumn{3}{c|}{\textbf{UCU Indoor}} &
+\multicolumn{3}{c}{\textbf{Efficiency}} \\
+\midrule
+N & D & E & M & P &
+PSNR & SSIM & LPIPS &
+PSNR & SSIM & LPIPS &
+\#Gauss & Size & Time \\
+\midrule
+
+\xmark & \xmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\cmark & \xmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\xmark & \cmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\xmark & \xmark & \cmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\xmark & \xmark & \xmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\xmark & \xmark & \xmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
+
+\cmark & \cmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\cmark & \cmark & \cmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\cmark & \cmark & \cmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
+\cmark & \cmark & \cmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
+
+\bottomrule
+\end{tabular}
+\caption{Structure of the ablation study over combinations of geometric priors.}
+\label{tab:ablation}
+\end{table*}
+
+\section{Results and Discussion}
+
+The experimental results reveal several consistent patterns. First, combining multiple geometric priors generally leads to improved reconstruction quality, indicating that different sources of geometric information provide complementary benefits. However, the improvements are not always additive. In particular, the contribution of normal-based regularization becomes less significant when depth supervision is already present, suggesting partial redundancy between these modalities.
+
+Structural priors play a particularly important role in indoor environments. The inclusion of edge and planarity constraints leads to more stable and coherent reconstructions, especially in regions with large flat surfaces. This effect is most noticeable near object boundaries, where standard Gaussian Splatting methods tend to produce artifacts.
+
+Another important observation concerns efficiency. Configurations that incorporate stronger geometric priors often require fewer Gaussians to achieve comparable or better reconstruction quality. This indicates that geometry-aware regularization not only improves visual fidelity but also leads to more compact representations.
+
+Finally, the introduction of edge-aware constraints proves to be especially beneficial near planar boundaries. These constraints help distribute Gaussians more effectively, reducing oversmoothing in the center of planes while preserving fine details near edges. As a result, the reconstructed geometry is both more accurate and visually consistent.
