@@ -204,7 +204,7 @@ The experimental results from the comprehensive 32-configuration ablation study 
 
 \subsection{Overall Performance Trends}
 
-Table~\ref{tab:deepblending_all_scenes} presents comprehensive quantitative results averaged across all three indoor scenes (DrJohnson, Library, Playroom) from the Deep Blending dataset. For each of the 33 configurations (baseline plus 32 geometric prior combinations), we compute the mean PSNR, SSIM, and LPIPS across the three scenes. The best result for each metric is highlighted in dark red, second-best in medium red, and third-best in light red, enabling quick identification of top-performing configurations.
+Table~\ref{tab:ablation_results} presents comprehensive quantitative results averaged across all three indoor scenes (DrJohnson, Library, Playroom) from the Deep Blending dataset. For each of the 33 configurations (baseline plus 32 geometric prior combinations), we compute the mean PSNR, SSIM, LPIPS, Gaussian count, and training time across the three scenes. The best result for each metric is highlighted in dark red, second-best in medium red, and third-best in light red, enabling quick identification of top-performing configurations.
 
 % Include the generated table
 \input{deepblending_results.tex}
@@ -217,6 +217,8 @@ The results demonstrate that geometric priors generally improve reconstruction q
     \item \textbf{Best SSIM:} \textit{normals\_depths\_planarity\_meshes} reaches 0.865 average SSIM, indicating that comprehensive geometric regularization improves structural similarity and perceptual quality.
     
     \item \textbf{Best LPIPS:} \textit{normals\_depths} achieves 0.288 average LPIPS, showing that combining complementary monocular priors enhances perceptual fidelity measured by learned metrics.
+    
+    \item \textbf{Most Compact:} \textit{normals\_depths\_edges} requires only 1,053K Gaussians on average, demonstrating that edge-aware adaptive densification significantly improves representation efficiency while maintaining quality.
 \end{itemize}
 
 Notably, simpler configurations often outperform the full configuration with all five priors enabled. This observation suggests that adding more geometric constraints does not guarantee better results—careful selection of complementary priors is essential to avoid conflicting gradients or over-regularization.
