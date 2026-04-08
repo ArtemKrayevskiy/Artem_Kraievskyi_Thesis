@@ -1,101 +1,77 @@
-\documentclass{standalone}
+\documentclass[border=5mm]{standalone}
 \usepackage{tikz}
-\usetikzlibrary{positioning, arrows.meta, shapes, fit}
+\usetikzlibrary{positioning, arrows.meta, shapes}
 
 \begin{document}
 
 \begin{tikzpicture}[
     font=\small,
-    node distance=1.8cm and 2.2cm,
-    box/.style={draw, rounded corners, minimum width=3.2cm, minimum height=1cm, align=center},
-    smallbox/.style={draw, rounded corners, minimum width=2.8cm, minimum height=0.9cm, align=center},
-    arrow/.style={->, thick},
-    mainarrow/.style={->, very thick},
-    dashedarrow/.style={->, dashed}
+    box/.style={rectangle, draw, very thick, rounded corners=4pt, minimum height=1.1cm, align=center},
+    prior/.style={box, fill=blue!12, minimum width=2.5cm},
+    loss/.style={box, fill=green!18, minimum width=2.3cm},
+    proc/.style={box, fill=purple!12, minimum width=2.3cm},
+    opt/.style={box, fill=orange!12, minimum width=10cm, minimum height=2.2cm},
+    arrow/.style={-{Stealth[length=3mm]}, line width=1pt},
+    dasharrow/.style={-{Stealth[length=3mm]}, dashed, line width=1pt}
 ]
 
-% =====================
-% INPUT PRIORS (TOP)
-% =====================
-\node[box, fill=blue!10] (depth) {Depth Maps\\{\scriptsize (Depth-Anything)}};
-\node[box, fill=blue!10, right=of depth] (normal) {Normal Maps\\{\scriptsize (DSINE)}};
-\node[box, fill=blue!10, right=of normal] (plane) {Plane Segments\\{\scriptsize (RANSAC)}};
+% Column 1: Depth & Edge
+\node[prior] (depth) at (0,0) {\textbf{Depth}\\[-0.05cm]{\footnotesize Depth-Anything}};
+\node[prior] (edge) at (0,-1.8) {\textbf{Edges}\\[-0.05cm]{\footnotesize $\nabla D$}};
+\node[proc] (densify) at (0,-3.6) {\textbf{Adaptive Densification}\\[-0.05cm]{\footnotesize \& Scaling}};
 
-\node[box, fill=blue!10, below=1.2cm of depth] (edge) {Edge Maps\\{\scriptsize $\nabla D > \tau_{edge}$}};
+% Column 2: Loss depth
+\node[loss] (ldepth) at (3,-2.7) {$\mathcal{L}_{depth}$};
 
-% =====================
-% LOSSES (MIDDLE)
-% =====================
-\node[smallbox, fill=green!15, below=1.5cm of depth, xshift=1.1cm] (ldepth) {$\mathcal{L}_{depth}$\\{\scriptsize Depth consistency}};
-\node[smallbox, fill=green!15, below=1.5cm of normal] (lnormal) {$\mathcal{L}_{normal}$\\{\scriptsize Normal consistency}};
-\node[smallbox, fill=green!15, below=1.5cm of plane, xshift=-1.1cm] (lplanar) {$\mathcal{L}_{planar}$\\{\scriptsize Planar constraint}};
+% Column 3: Normal
+\node[prior] (normal) at (6,0) {\textbf{Normals}\\[-0.05cm]{\footnotesize DSINE}};
+\node[loss] (lnormal) at (6,-2.7) {$\mathcal{L}_{normal}$};
 
-% =====================
-% MESH BRANCH
-% =====================
-\node[smallbox, right=3.5cm of lplanar] (tsdf) {TSDF Fusion\\{\scriptsize \textit{4× slower}}};
-\node[smallbox, below=1.2cm of tsdf] (mesh) {Mesh\\{\scriptsize Surface extraction}};
-\node[smallbox, below=1.2cm of mesh, fill=green!15] (lmesh) {$\mathcal{L}_{mesh}$\\{\scriptsize Mesh regularization}};
+% Column 4: Plane
+\node[prior] (plane) at (9,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize RANSAC}};
+\node[loss] (lplanar) at (9,-2.7) {$\mathcal{L}_{planar}$};
 
-% =====================
-% EDGE-AWARE BRANCH
-% =====================
-\node[smallbox, fill=purple!15, below=1.5cm of edge] (densify) {Adaptive\\Densification};
-\node[smallbox, fill=purple!15, below left=1cm and 0.3cm of densify] (split) {Split / Clone\\{\scriptsize At edges}};
-\node[smallbox, fill=purple!15, below right=1cm and 0.3cm of densify] (scale) {Gaussian Scaling\\{\scriptsize $s_{edge} < s_{planar}$}};
+% Column 5: Mesh
+\node[proc] (tsdf) at (12,0) {\textbf{TSDF}\\[-0.05cm]{\footnotesize 4× slower}};
+\node[proc] (mesh) at (12,-1.8) {\textbf{Mesh}};
+\node[loss] (lmesh) at (12,-3.3) {$\mathcal{L}_{mesh}$};
 
-% =====================
-% OPTIMIZATION (BOTTOM)
-% =====================
-\node[box, fill=orange!15, below=4.5cm of normal, minimum width=7cm, minimum height=2.5cm] (opt) {
-\textbf{3D Gaussian Splatting Optimization}\\[0.3em]
-{\scriptsize $\mathcal{L}_{total} = \mathcal{L}_{rgb} + \lambda_d \mathcal{L}_{depth} + \lambda_n \mathcal{L}_{normal} + \lambda_p \mathcal{L}_{planar} + \lambda_m \mathcal{L}_{mesh}$}\\[0.3em]
-{\scriptsize Adaptive densification via edge-aware split/clone/scale}
+% Optimization (centered below losses)
+\node[opt] (optim) at (6,-5.5) {
+    \textbf{3D Gaussian Splatting Optimization}\\[0.15cm]
+    {\footnotesize $\mathcal{L}_{total} = \mathcal{L}_{rgb} + \lambda_d \mathcal{L}_{depth} + \lambda_n \mathcal{L}_{normal} + \lambda_p \mathcal{L}_{planar} + \lambda_m \mathcal{L}_{mesh}$}
 };
 
-\node[box, below=1.5cm of opt] (output) {Optimized 3D Gaussians\\{\scriptsize Compact representation}};
+% Output
+\node[box, fill=green!25, minimum width=6cm] (output) at (6,-7.5) {\textbf{Optimized 3D Gaussians}};
 
-% =====================
-% CONNECTIONS
-% =====================
+% ===== ARROWS =====
 
-% Priors → losses
+% Depth → Edge → Densify
+\draw[arrow] (depth) -- (edge);
+\draw[arrow] (edge) -- (densify);
+
+% Priors → Losses
 \draw[arrow] (depth) -- (ldepth);
 \draw[arrow] (normal) -- (lnormal);
 \draw[arrow] (plane) -- (lplanar);
 
-% Depth → edge
-\draw[arrow] (depth) -- node[right, font=\scriptsize] {gradient} (edge);
-
-% Edge → densification
-\draw[arrow] (edge) -- (densify);
-\draw[arrow] (densify) -- (split);
-\draw[arrow] (densify) -- (scale);
-
-% Mesh branch (from optimization rendered depth)
-\draw[arrow] (opt.east) -- ++(1.5,0) |- node[near start, right, font=\scriptsize] {rendered depth} (tsdf);
+% Mesh branch
+\draw[arrow] (plane) -- (tsdf);
 \draw[arrow] (tsdf) -- (mesh);
 \draw[arrow] (mesh) -- (lmesh);
 
-% Losses → optimization
-\draw[mainarrow] (ldepth) -- (opt);
-\draw[mainarrow] (lnormal) -- (opt);
-\draw[mainarrow] (lplanar) -- (opt);
-\draw[mainarrow] (lmesh.south) -- ++(0,-0.5) -| (opt.south);
+% Losses → Optimization
+\draw[arrow] (ldepth) -- (optim);
+\draw[arrow] (lnormal) -- (optim);
+\draw[arrow] (lplanar) -- (optim);
+\draw[arrow] (lmesh) -- (optim);
 
-% Edge-aware affects optimization
-\draw[dashedarrow] (split) -- (opt);
-\draw[dashedarrow] (scale) -- (opt);
+% Densification → Optimization (dashed, shows control not loss)
+\draw[dasharrow] (densify) -- (optim);
 
-% Optimization → output
-\draw[mainarrow] (opt) -- (output);
-
-% =====================
-% GROUP BOXES (VISUAL STRUCTURE)
-% =====================
-\node[draw, dashed, rounded corners, fit=(depth)(normal)(plane)(edge), label=above:{\textbf{Monocular Priors (Pre-computed)}}] {};
-\node[draw, dashed, rounded corners, fit=(ldepth)(lnormal)(lplanar)(lmesh), label=above:{\textbf{Geometric Regularization}}] {};
-\node[draw, dashed, rounded corners, fit=(densify)(split)(scale), label=right:{\textbf{Edge-Aware Control}}] {};
+% Output
+\draw[arrow, line width=1.3pt] (optim) -- (output);
 
 \end{tikzpicture}
 
