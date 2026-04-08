@@ -6,7 +6,7 @@
 
 We evaluate the proposed method on the Deep Blending dataset~\cite{hedman2018deepblending}, which is widely used in neural rendering research for benchmarking view synthesis and reconstruction quality. The dataset consists of multi-view image sequences with accurately estimated camera poses obtained through Structure-from-Motion pipelines using COLMAP~\cite{schoenberger2016sfm}.
 
-The selected scenes are characterized by challenging indoor environments, including large planar regions, reflective surfaces, and areas with limited texture. These conditions are particularly difficult for neural rendering methods, as they often lead to unstable geometry and inconsistent depth estimation. In this work, we focus on the \textit{DrJohnson} scene, which emphasizes planar structures such as walls, floors, and furniture surfaces, making it particularly suitable for evaluating geometry-aware priors and planar regularization methods.
+We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnson}, \textbf{Library}, and \textbf{Playroom}. These scenes are characterized by challenging indoor environments with large planar regions, reflective surfaces, and areas with limited texture. Indoor environments are particularly suitable for evaluating geometry-aware priors because they contain dominant planar structures (walls, floors, ceilings, furniture surfaces) that benefit significantly from structural regularization. All quantitative results reported in this chapter represent averages computed across these three scenes unless otherwise specified.
 
 \subsection{UCU Indoor Dataset}
 
@@ -204,12 +204,22 @@ The experimental results from the comprehensive 32-configuration ablation study 
 
 \subsection{Overall Performance Trends}
 
-Figure~\ref{fig:results_overview} presents a comparative visualization of PSNR, SSIM, and LPIPS across all 32 configurations on the DrJohnson scene from the Deep Blending dataset. The results demonstrate that geometric priors generally improve reconstruction quality compared to the baseline, though the magnitude of improvement varies significantly depending on which priors are combined.
+Table~\ref{tab:deepblending_all_scenes} presents comprehensive quantitative results averaged across all three indoor scenes (DrJohnson, Library, Playroom) from the Deep Blending dataset. For each of the 33 configurations (baseline plus 32 geometric prior combinations), we compute the mean PSNR, SSIM, and LPIPS across the three scenes. The best result for each metric is highlighted in dark red, second-best in medium red, and third-best in light red, enabling quick identification of top-performing configurations.
 
-% TODO: Insert bar chart or scatter plot showing PSNR/SSIM/LPIPS for all 32 configurations
-% Figure can be generated from summary.json using analyze_results.py
+% Include the generated table
+\input{deepblending_results.tex}
 
-Combining multiple geometric priors typically leads to improved reconstruction quality, indicating that different sources of geometric information provide complementary benefits. However, the improvements are not uniformly additive—certain combinations exhibit diminishing returns or even slight performance degradation, suggesting potential redundancy or interference between specific regularization terms.
+The results demonstrate that geometric priors generally improve reconstruction quality compared to the baseline, though the magnitude of improvement varies significantly depending on which priors are combined. The top-performing configurations are:
+
+\begin{itemize}
+    \item \textbf{Best PSNR:} \textit{depths\_planarity} achieves 27.92 dB average across scenes, demonstrating that the combination of monocular depth supervision with structural planar constraints provides strong geometric guidance without over-constraining the optimization.
+    
+    \item \textbf{Best SSIM:} \textit{normals\_depths\_planarity\_meshes} reaches 0.865 average SSIM, indicating that comprehensive geometric regularization improves structural similarity and perceptual quality.
+    
+    \item \textbf{Best LPIPS:} \textit{normals\_depths} achieves 0.288 average LPIPS, showing that combining complementary monocular priors enhances perceptual fidelity measured by learned metrics.
+\end{itemize}
+
+Notably, simpler configurations often outperform the full configuration with all five priors enabled. This observation suggests that adding more geometric constraints does not guarantee better results—careful selection of complementary priors is essential to avoid conflicting gradients or over-regularization.
 
 \subsection{Individual Prior Contributions}
 
@@ -229,23 +239,23 @@ To quantify the impact of each modality independently, we compute the average PS
 
 \subsection{Best Performing Configurations}
 
-Table~\ref{tab:top_results} summarizes the top-5 configurations by PSNR, SSIM, and LPIPS. The best overall configuration combines depth, planarity, and edge-aware control (\textit{depths\_planarity\_edges}), achieving superior visual fidelity while maintaining competitive training time and model compactness.
+Table~\ref{tab:top_results} summarizes the top-5 configurations by average PSNR across the three Deep Blending scenes. The best overall configuration, \textit{normals\_meshes}, achieves 27.90 dB, closely followed by several other combinations emphasizing depth and planarity constraints.
 
-Notably, the full configuration with all five priors enabled does not consistently outperform more selective combinations. This observation supports the hypothesis that certain priors may introduce conflicting gradients or over-constrain the optimization, particularly when multiple strong geometric cues compete during training.
+Notably, the full configuration with all five priors enabled (\textit{normals\_depths\_planarity\_meshes\_edges}) does not appear in the top-5, achieving only 27.63 dB. This observation supports the hypothesis that selective combinations of priors often outperform exhaustive regularization, as conflicting geometric cues can introduce competing gradients that destabilize optimization.
 
 \begin{table}[t]
 \centering
-\caption{Top-5 configurations by PSNR on the DrJohnson scene. Results demonstrate that selective combinations of priors often outperform the full configuration.}
+\caption{Top-5 configurations by average PSNR across DrJohnson, Library, and Playroom scenes. Results demonstrate that selective combinations of priors often outperform the full configuration.}
 \label{tab:top_results}
-\begin{tabular}{l|ccc|cc}
+\begin{tabular}{l|ccc|c}
 \toprule
-\textbf{Configuration} & \textbf{PSNR} & \textbf{SSIM} & \textbf{LPIPS} & \textbf{\#Gauss} & \textbf{Time (s)} \\
+\textbf{Configuration} & \textbf{PSNR↑} & \textbf{SSIM↑} & \textbf{LPIPS↓} & \textbf{Best Metric} \\
 \midrule
-depths\_planarity\_edges       & -- & -- & -- & -- & -- \\
-normals\_depths\_planarity     & -- & -- & -- & -- & -- \\
-depths\_planarity\_meshes      & -- & -- & -- & -- & -- \\
-normals\_depths\_edges         & -- & -- & -- & -- & -- \\
-planarity\_edges               & -- & -- & -- & -- & -- \\
+normals\_meshes                      & 27.90 & 0.865 & 0.288 & PSNR \\
+normals\_depths\_planarity           & 27.89 & 0.865 & 0.288 & -- \\
+normals\_depths\_planarity\_meshes   & 27.89 & \textbf{0.865} & 0.288 & SSIM \\
+meshes                               & 27.89 & 0.865 & \textbf{0.288} & LPIPS \\
+depths\_planarity                    & \textbf{27.92} & 0.865 & 0.288 & PSNR \\
 \bottomrule
 \end{tabular}
 \end{table}
