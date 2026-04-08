@@ -1,0 +1,48 @@
+\begin{table*}[t]
+\centering
+\caption{Quantitative results on Deep Blending indoor scenes. For each metric, the best result is highlighted in dark red, second-best in medium red, third-best in light red. Averages are computed across all three scenes.}
+\label{tab:deepblending_all_scenes}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|ccc|ccc|ccc|ccc}
+\toprule
+& \multicolumn{3}{c|}{\textbf{DrJohnson}} & \multicolumn{3}{c|}{\textbf{Library}} & \multicolumn{3}{c|}{\textbf{Playroom}} & \multicolumn{3}{c}{\textbf{Average}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13}
+\textbf{Configuration} & PSNR↑ & SSIM↑ & LPIPS↓ & PSNR↑ & SSIM↑ & LPIPS↓ & PSNR↑ & SSIM↑ & LPIPS↓ & PSNR↑ & SSIM↑ & LPIPS↓ \\
+\midrule
+baseline & 29.03 & 0.903 & 0.252 & 24.13 & 0.782 & 0.366 & 30.48 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.88} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+depths & 29.16 & 0.903 & 0.250 & 24.12 & 0.781 & 0.366 & 30.35 & 0.909 & 0.249 & \cellcolor{red!0} \textbf{27.88} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+depths\_edges & 28.68 & 0.898 & 0.269 & 23.92 & 0.784 & 0.375 & 30.11 & 0.908 & 0.254 & \cellcolor{red!0} \textbf{27.57} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.300} \\
+depths\_meshes & 29.05 & 0.903 & 0.251 & 24.13 & 0.782 & 0.366 & 30.37 & 0.910 & 0.250 & \cellcolor{red!0} \textbf{27.85} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+depths\_meshes\_edges & 28.67 & 0.897 & 0.271 & 23.91 & 0.783 & 0.375 & 30.14 & 0.908 & 0.255 & \cellcolor{red!0} \textbf{27.57} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.300} \\
+depths\_planarity & 29.08 & 0.903 & 0.252 & 24.13 & 0.782 & 0.366 & 30.54 & 0.911 & 0.248 & \cellcolor{red!80} \textbf{27.92} & \cellcolor{red!50} \textbf{0.865} & \cellcolor{red!0} \textbf{0.288} \\
+depths\_planarity\_edges & 28.60 & 0.897 & 0.270 & 24.00 & 0.784 & 0.374 & 30.23 & 0.909 & 0.254 & \cellcolor{red!0} \textbf{27.61} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.299} \\
+depths\_planarity\_meshes & 29.01 & 0.904 & 0.250 & 24.13 & 0.782 & 0.366 & 30.27 & 0.910 & 0.250 & \cellcolor{red!0} \textbf{27.81} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+depths\_planarity\_meshes\_edges & 28.63 & 0.898 & 0.270 & 23.94 & 0.783 & 0.374 & 30.10 & 0.908 & 0.256 & \cellcolor{red!0} \textbf{27.55} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.300} \\
+edges & 28.70 & 0.898 & 0.269 & 24.07 & 0.785 & 0.372 & 30.14 & 0.907 & 0.255 & \cellcolor{red!0} \textbf{27.64} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.299} \\
+meshes & 29.11 & 0.904 & 0.249 & 24.11 & 0.782 & 0.366 & 30.46 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.89} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!20} \textbf{0.288} \\
+meshes\_edges & 28.67 & 0.897 & 0.273 & 23.92 & 0.783 & 0.375 & 30.16 & 0.908 & 0.253 & \cellcolor{red!0} \textbf{27.58} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.300} \\
+normals & 29.06 & 0.902 & 0.252 & 24.10 & 0.782 & 0.366 & 30.43 & 0.909 & 0.249 & \cellcolor{red!0} \textbf{27.86} & \cellcolor{red!0} \textbf{0.864} & \cellcolor{red!0} \textbf{0.289} \\
+normals\_depths & 29.11 & 0.904 & 0.248 & 24.13 & 0.782 & 0.366 & 30.41 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.88} & \cellcolor{red!20} \textbf{0.865} & \cellcolor{red!80} \textbf{0.288} \\
+normals\_depths\_edges & 27.71 & 0.889 & 0.280 & 23.97 & 0.784 & 0.376 & 30.14 & 0.909 & 0.254 & \cellcolor{red!0} \textbf{27.27} & \cellcolor{red!0} \textbf{0.861} & \cellcolor{red!0} \textbf{0.304} \\
+normals\_depths\_meshes & 29.05 & 0.904 & 0.249 & 24.13 & 0.781 & 0.366 & 30.42 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.87} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.288} \\
+normals\_depths\_meshes\_edges & 28.69 & 0.898 & 0.268 & 23.93 & 0.785 & 0.373 & 30.24 & 0.908 & 0.254 & \cellcolor{red!0} \textbf{27.62} & \cellcolor{red!0} \textbf{0.864} & \cellcolor{red!0} \textbf{0.299} \\
+normals\_depths\_planarity & 29.13 & 0.903 & 0.251 & 24.10 & 0.782 & 0.366 & 30.45 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.89} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.288} \\
+normals\_depths\_planarity\_edges & 28.77 & 0.898 & 0.267 & 23.92 & 0.784 & 0.373 & 30.15 & 0.908 & 0.254 & \cellcolor{red!0} \textbf{27.61} & \cellcolor{red!0} \textbf{0.864} & \cellcolor{red!0} \textbf{0.298} \\
+normals\_depths\_planarity\_meshes & 29.13 & 0.904 & 0.250 & 24.12 & 0.782 & 0.366 & 30.43 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.89} & \cellcolor{red!80} \textbf{0.865} & \cellcolor{red!0} \textbf{0.288} \\
+normals\_depths\_planarity\_meshes\_edges & 28.69 & 0.898 & 0.269 & 23.98 & 0.783 & 0.374 & 30.23 & 0.908 & 0.255 & \cellcolor{red!0} \textbf{27.63} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.299} \\
+normals\_edges & 28.14 & 0.893 & 0.278 & 23.90 & 0.783 & 0.375 & 30.18 & 0.908 & 0.255 & \cellcolor{red!0} \textbf{27.41} & \cellcolor{red!0} \textbf{0.861} & \cellcolor{red!0} \textbf{0.303} \\
+normals\_meshes & 29.14 & 0.904 & 0.250 & 24.10 & 0.781 & 0.366 & 30.45 & 0.910 & 0.249 & \cellcolor{red!20} \textbf{27.90} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.288} \\
+normals\_meshes\_edges & 28.57 & 0.897 & 0.271 & 24.05 & 0.785 & 0.374 & 30.23 & 0.909 & 0.254 & \cellcolor{red!0} \textbf{27.62} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.300} \\
+normals\_planarity & 29.08 & 0.903 & 0.252 & 24.12 & 0.782 & 0.366 & 30.39 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.87} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+normals\_planarity\_edges & 28.66 & 0.897 & 0.271 & 23.95 & 0.783 & 0.373 & 30.12 & 0.907 & 0.255 & \cellcolor{red!0} \textbf{27.58} & \cellcolor{red!0} \textbf{0.862} & \cellcolor{red!0} \textbf{0.300} \\
+normals\_planarity\_meshes & 29.16 & 0.904 & 0.250 & 24.07 & 0.781 & 0.366 & 30.39 & 0.909 & 0.249 & \cellcolor{red!0} \textbf{27.87} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+normals\_planarity\_meshes\_edges & 28.68 & 0.898 & 0.268 & 23.93 & 0.783 & 0.375 & 30.12 & 0.908 & 0.255 & \cellcolor{red!0} \textbf{27.58} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.299} \\
+original & 29.08 & 0.902 & 0.252 & 24.10 & 0.782 & 0.366 & 30.37 & 0.910 & 0.250 & \cellcolor{red!0} \textbf{27.85} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.289} \\
+planarity & 29.06 & 0.903 & 0.250 & 24.06 & 0.782 & 0.366 & 30.42 & 0.910 & 0.249 & \cellcolor{red!0} \textbf{27.85} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!0} \textbf{0.288} \\
+planarity\_edges & 28.61 & 0.897 & 0.270 & 24.02 & 0.784 & 0.374 & 30.08 & 0.907 & 0.255 & \cellcolor{red!0} \textbf{27.57} & \cellcolor{red!0} \textbf{0.863} & \cellcolor{red!0} \textbf{0.299} \\
+planarity\_meshes & 29.12 & 0.904 & 0.249 & 24.08 & 0.781 & 0.366 & 30.51 & 0.910 & 0.249 & \cellcolor{red!50} \textbf{27.90} & \cellcolor{red!0} \textbf{0.865} & \cellcolor{red!50} \textbf{0.288} \\
+planarity\_meshes\_edges & 28.41 & 0.896 & 0.272 & 23.95 & 0.783 & 0.375 & 30.14 & 0.908 & 0.256 & \cellcolor{red!0} \textbf{27.50} & \cellcolor{red!0} \textbf{0.862} & \cellcolor{red!0} \textbf{0.301} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
