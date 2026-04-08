@@ -12,13 +12,14 @@
     proc/.style={box, fill=purple!12, minimum width=2.3cm},
     opt/.style={box, fill=orange!12, minimum width=10cm, minimum height=2.2cm},
     arrow/.style={-{Stealth[length=3mm]}, line width=1pt},
-    dasharrow/.style={-{Stealth[length=3mm]}, dashed, line width=1pt}
+    dasharrow/.style={-{Stealth[length=3mm]}, dashed, line width=1pt},
+    looparrow/.style={-{Stealth[length=3mm]}, dotted, line width=1.2pt, red!70}
 ]
 
 % Column 1: Depth & Edge
 \node[prior] (depth) at (0,0) {\textbf{Depth}\\[-0.05cm]{\footnotesize Depth-Anything}};
 \node[prior] (edge) at (0,-1.8) {\textbf{Edges}\\[-0.05cm]{\footnotesize $\nabla D$}};
-\node[proc] (densify) at (-0.5,-3.6) {\textbf{Adaptive Densification}\\[-0.05cm]{\footnotesize \textbf{\& Scaling}}};
+\node[proc] (densify) at (-0.5,-3.6) {\textbf{Adaptive Densification}\\[-0.05cm]\textbf{\& Scaling}};
 
 % Column 2: Loss depth
 \node[loss] (ldepth) at (3,-2.7) {$\mathcal{L}_{depth}$};
@@ -28,13 +29,13 @@
 \node[loss] (lnormal) at (6,-2.7) {$\mathcal{L}_{normal}$};
 
 % Column 4: Plane
-\node[prior] (plane) at (9,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize RANSAC}};
+\node[prior] (plane) at (9,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize SAM3}};
 \node[loss] (lplanar) at (9,-2.7) {$\mathcal{L}_{planar}$};
 
 % Column 5: Mesh
-\node[proc] (tsdf) at (12,0) {\textbf{TSDF}\\[-0.05cm]{\footnotesize 4× slower}};
+\node[proc] (tsdf) at (12,0) {\textbf{TSDF Fusion}\\[-0.05cm]{\footnotesize periodic}};
 \node[proc] (mesh) at (12,-1.8) {\textbf{Mesh}};
-\node[loss] (lmesh) at (12,-3.3) {$\mathcal{L}_{mesh}$};
+\node[loss] (lmesh) at (12,-3.6) {$\mathcal{L}_{mesh}$};
 
 % Optimization (centered below losses)
 \node[opt] (optim) at (6,-5.5) {
@@ -57,7 +58,6 @@
 \draw[arrow] (plane) -- (lplanar);
 
 % Mesh branch
-\draw[arrow] (plane) -- (tsdf);
 \draw[arrow] (tsdf) -- (mesh);
 \draw[arrow] (mesh) -- (lmesh);
 
