@@ -59,10 +59,8 @@ Figure~\ref{fig:unified_pipeline} illustrates the overall framework.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\linewidth]{unified_pipeline.png}
-    \caption{Geometry-aware Gaussian Splatting framework.
-    Solid arrows denote the core rendering pipeline.
-    Dashed arrows represent geometric priors and adaptive densification modules.}
+    \includegraphics[width=\linewidth]{pipeline_unified.pdf}
+    \caption{Unified geometry-aware 3D Gaussian Splatting framework. The pipeline integrates four monocular geometric priors (depth, normals, planar segmentation, edges) to regularize Gaussian optimization through five loss terms: $\mathcal{L}_{depth}$, $\mathcal{L}_{normal}$, $\mathcal{L}_{planar}$, and $\mathcal{L}_{mesh}$ (via TSDF fusion). Edge-aware adaptive densification controls Gaussian primitive allocation and scaling based on depth gradients. Solid arrows indicate direct dependencies, dashed arrows show optional adaptive control paths.}
     \label{fig:unified_pipeline}
 \end{figure}
 
