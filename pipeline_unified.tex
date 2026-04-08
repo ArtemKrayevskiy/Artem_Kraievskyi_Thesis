@@ -16,21 +16,21 @@
     looparrow/.style={-{Stealth[length=3mm]}, dotted, line width=1.2pt, red!70}
 ]
 
-% Column 1: Depth & Edge
-\node[prior] (depth) at (0,0) {\textbf{Depth}\\[-0.05cm]{\footnotesize Depth-Anything}};
-\node[prior] (edge) at (0,-1.8) {\textbf{Edges}\\[-0.05cm]{\footnotesize $\nabla D$}};
+% Column 1: Planes & Edge & Densify
+\node[prior] (plane) at (0,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize SAM3}};
+\node[prior] (edge) at (0,-1.8) {\textbf{Edges}\\[-0.05cm]{\footnotesize SAM3 plane boundaries}};
 \node[proc] (densify) at (-0.5,-3.6) {\textbf{Adaptive Densification}\\[-0.05cm]\textbf{\& Scaling}};
 
-% Column 2: Loss depth
-\node[loss] (ldepth) at (3,-2.7) {$\mathcal{L}_{depth}$};
+% Column 2: Planar Loss
+\node[loss] (lplanar) at (3,-2.7) {$\mathcal{L}_{planar}$};
 
-% Column 3: Normal
-\node[prior] (normal) at (6,0) {\textbf{Normals}\\[-0.05cm]{\footnotesize DSINE}};
-\node[loss] (lnormal) at (6,-2.7) {$\mathcal{L}_{normal}$};
+% Column 3: Depth
+\node[prior] (depth) at (6,0) {\textbf{Depth}\\[-0.05cm]{\footnotesize DUSt3R}};
+\node[loss] (ldepth) at (6,-2.7) {$\mathcal{L}_{depth}$};
 
-% Column 4: Plane
-\node[prior] (plane) at (9,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize SAM3}};
-\node[loss] (lplanar) at (9,-2.7) {$\mathcal{L}_{planar}$};
+% Column 4: Normals
+\node[prior] (normal) at (9,0) {\textbf{Normals}\\[-0.05cm]{\footnotesize DUSt3R}};
+\node[loss] (lnormal) at (9,-2.7) {$\mathcal{L}_{normal}$};
 
 % Column 5: Mesh
 \node[proc] (tsdf) at (12,0) {\textbf{TSDF Fusion}\\[-0.05cm]{\footnotesize periodic}};
@@ -38,18 +38,18 @@
 \node[loss] (lmesh) at (12,-3.6) {$\mathcal{L}_{mesh}$};
 
 % Optimization (centered below losses)
-\node[opt] (optim) at (6,-5.5) {
+\node[opt] (optim) at (7,-5.5) {
     \textbf{3D Gaussian Splatting Optimization}\\[0.15cm]
-    {\footnotesize $\mathcal{L}_{total} = \mathcal{L}_{rgb} + \lambda_d \mathcal{L}_{depth} + \lambda_n \mathcal{L}_{normal} + \lambda_p \mathcal{L}_{planar} + \lambda_m \mathcal{L}_{mesh}$}
+    {\footnotesize $\mathcal{L}_{total} = \mathcal{L}_{rgb} + \lambda_p \mathcal{L}_{planar} + \lambda_d \mathcal{L}_{depth} + \lambda_n \mathcal{L}_{normal} + \lambda_m \mathcal{L}_{mesh}$}
 };
 
 % Output
-\node[box, fill=green!25, minimum width=6cm] (output) at (6,-7.5) {\textbf{Optimized 3D Gaussians}};
+\node[box, fill=green!25, minimum width=6cm] (output) at (7,-7.5) {\textbf{Optimized 3D Gaussians}};
 
 % ===== ARROWS =====
 
 % Depth → Edge → Densify
-\draw[arrow] (depth) -- (edge);
+\draw[arrow] (plane) -- (edge);
 \draw[arrow] (edge) -- (densify);
 
 % Priors → Losses
