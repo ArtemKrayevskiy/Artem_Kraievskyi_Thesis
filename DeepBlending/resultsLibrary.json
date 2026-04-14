@@ -1,0 +1,470 @@
+{
+  "scene_name": "Library",
+  "dataset_path": "/workspace/Library",
+  "total_combinations": 33,
+  "timestamp": "2026-04-04T00:10:29.337309",
+  "results": [
+    {
+      "combination": "original",
+      "results": {
+        "SSIM": 0.7816781997680664,
+        "PSNR": 24.099313735961914,
+        "LPIPS": 0.3659069836139679,
+        "training_time_seconds": 2859.318212032318,
+        "num_gaussians": 1757104,
+        "point_cloud_size_mb": 415.57629013061523,
+        "combination": "original",
+        "scene_name": "Library",
+        "timestamp": "2026-03-31T09:24:03.769248"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.7834286093711853,
+        "PSNR": 23.983470916748047,
+        "LPIPS": 0.37374404072761536,
+        "training_time_seconds": 12371.49870800972,
+        "num_gaussians": 1231009,
+        "point_cloud_size_mb": 291.1489143371582,
+        "combination": "normals_depths_planarity_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-03-31T12:53:13.791377"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_meshes",
+      "results": {
+        "SSIM": 0.7822535634040833,
+        "PSNR": 24.11678695678711,
+        "LPIPS": 0.3660569489002228,
+        "training_time_seconds": 19698.450087070465,
+        "num_gaussians": 1759848,
+        "point_cloud_size_mb": 416.2252769470215,
+        "combination": "normals_depths_planarity_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-03-31T18:24:30.252721"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_edges",
+      "results": {
+        "SSIM": 0.7838299870491028,
+        "PSNR": 23.921146392822266,
+        "LPIPS": 0.37334421277046204,
+        "training_time_seconds": 2866.3641498088837,
+        "num_gaussians": 1239840,
+        "point_cloud_size_mb": 293.23754501342773,
+        "combination": "normals_depths_planarity_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-03-31T19:17:35.879721"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity",
+      "results": {
+        "SSIM": 0.7816893458366394,
+        "PSNR": 24.104854583740234,
+        "LPIPS": 0.36561933159828186,
+        "training_time_seconds": 2893.359543800354,
+        "num_gaussians": 1767433,
+        "point_cloud_size_mb": 418.01921463012695,
+        "combination": "normals_depths_planarity",
+        "scene_name": "Library",
+        "timestamp": "2026-03-31T20:08:53.725018"
+      }
+    },
+    {
+      "combination": "normals_depths_meshes_edges",
+      "results": {
+        "SSIM": 0.7851740717887878,
+        "PSNR": 23.930551528930664,
+        "LPIPS": 0.3734031319618225,
+        "training_time_seconds": 11972.761885166168,
+        "num_gaussians": 1243896,
+        "point_cloud_size_mb": 294.196834564209,
+        "combination": "normals_depths_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-03-31T23:32:22.777387"
+      }
+    },
+    {
+      "combination": "normals_depths_meshes",
+      "results": {
+        "SSIM": 0.7811499834060669,
+        "PSNR": 24.125200271606445,
+        "LPIPS": 0.36615005135536194,
+        "training_time_seconds": 19864.188859462738,
+        "num_gaussians": 1766891,
+        "point_cloud_size_mb": 417.8910255432129,
+        "combination": "normals_depths_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T05:06:30.394062"
+      }
+    },
+    {
+      "combination": "normals_depths_edges",
+      "results": {
+        "SSIM": 0.7840824127197266,
+        "PSNR": 23.966552734375,
+        "LPIPS": 0.37602829933166504,
+        "training_time_seconds": 2878.3534784317017,
+        "num_gaussians": 1221593,
+        "point_cloud_size_mb": 288.92192459106445,
+        "combination": "normals_depths_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T05:59:36.284541"
+      }
+    },
+    {
+      "combination": "normals_depths",
+      "results": {
+        "SSIM": 0.7817749381065369,
+        "PSNR": 24.129812240600586,
+        "LPIPS": 0.36554455757141113,
+        "training_time_seconds": 2897.162999153137,
+        "num_gaussians": 1784515,
+        "point_cloud_size_mb": 422.05929946899414,
+        "combination": "normals_depths",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T06:50:55.469866"
+      }
+    },
+    {
+      "combination": "normals_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.7833267450332642,
+        "PSNR": 23.927732467651367,
+        "LPIPS": 0.37507352232933044,
+        "training_time_seconds": 13578.356031656265,
+        "num_gaussians": 1234623,
+        "point_cloud_size_mb": 292.00366592407227,
+        "combination": "normals_planarity_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T10:40:13.938159"
+      }
+    },
+    {
+      "combination": "normals_planarity_meshes",
+      "results": {
+        "SSIM": 0.7813447117805481,
+        "PSNR": 24.067853927612305,
+        "LPIPS": 0.36593231558799744,
+        "training_time_seconds": 20364.921668052673,
+        "num_gaussians": 1782009,
+        "point_cloud_size_mb": 421.46660232543945,
+        "combination": "normals_planarity_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T16:22:49.407314"
+      }
+    },
+    {
+      "combination": "normals_planarity_edges",
+      "results": {
+        "SSIM": 0.7828501462936401,
+        "PSNR": 23.946889877319336,
+        "LPIPS": 0.3734472095966339,
+        "training_time_seconds": 2902.7003943920135,
+        "num_gaussians": 1246673,
+        "point_cloud_size_mb": 294.8536262512207,
+        "combination": "normals_planarity_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T17:14:13.842628"
+      }
+    },
+    {
+      "combination": "normals_planarity",
+      "results": {
+        "SSIM": 0.7819429636001587,
+        "PSNR": 24.12263298034668,
+        "LPIPS": 0.36595940589904785,
+        "training_time_seconds": 2986.1717665195465,
+        "num_gaussians": 1772095,
+        "point_cloud_size_mb": 419.12182998657227,
+        "combination": "normals_planarity",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T18:07:01.743161"
+      }
+    },
+    {
+      "combination": "normals_meshes_edges",
+      "results": {
+        "SSIM": 0.7845063805580139,
+        "PSNR": 24.054738998413086,
+        "LPIPS": 0.37416982650756836,
+        "training_time_seconds": 12044.857646226883,
+        "num_gaussians": 1235405,
+        "point_cloud_size_mb": 292.1886177062988,
+        "combination": "normals_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-01T21:30:48.279186"
+      }
+    },
+    {
+      "combination": "normals_meshes",
+      "results": {
+        "SSIM": 0.7814694046974182,
+        "PSNR": 24.10183334350586,
+        "LPIPS": 0.36625194549560547,
+        "training_time_seconds": 19896.2837805748,
+        "num_gaussians": 1766854,
+        "point_cloud_size_mb": 417.88227462768555,
+        "combination": "normals_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T03:05:28.355360"
+      }
+    },
+    {
+      "combination": "normals_edges",
+      "results": {
+        "SSIM": 0.783264696598053,
+        "PSNR": 23.90256118774414,
+        "LPIPS": 0.37526971101760864,
+        "training_time_seconds": 2870.290578842163,
+        "num_gaussians": 1240656,
+        "point_cloud_size_mb": 293.43053817749023,
+        "combination": "normals_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T03:56:18.478791"
+      }
+    },
+    {
+      "combination": "normals",
+      "results": {
+        "SSIM": 0.7815644145011902,
+        "PSNR": 24.10411262512207,
+        "LPIPS": 0.366182416677475,
+        "training_time_seconds": 2881.7513144016266,
+        "num_gaussians": 1776193,
+        "point_cloud_size_mb": 420.0910530090332,
+        "combination": "normals",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T04:47:24.771025"
+      }
+    },
+    {
+      "combination": "depths_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.7832513451576233,
+        "PSNR": 23.938173294067383,
+        "LPIPS": 0.37429672479629517,
+        "training_time_seconds": 12556.81617975235,
+        "num_gaussians": 1234390,
+        "point_cloud_size_mb": 291.94855880737305,
+        "combination": "depths_planarity_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T08:19:41.192086"
+      }
+    },
+    {
+      "combination": "depths_planarity_meshes",
+      "results": {
+        "SSIM": 0.781885027885437,
+        "PSNR": 24.134374618530273,
+        "LPIPS": 0.3661361038684845,
+        "training_time_seconds": 19720.697348833084,
+        "num_gaussians": 1778994,
+        "point_cloud_size_mb": 420.7535209655762,
+        "combination": "depths_planarity_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T13:51:26.323134"
+      }
+    },
+    {
+      "combination": "depths_planarity_edges",
+      "results": {
+        "SSIM": 0.7836498618125916,
+        "PSNR": 24.004230499267578,
+        "LPIPS": 0.37372875213623047,
+        "training_time_seconds": 2875.940512418747,
+        "num_gaussians": 1231767,
+        "point_cloud_size_mb": 291.3281898498535,
+        "combination": "depths_planarity_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T14:42:32.001063"
+      }
+    },
+    {
+      "combination": "depths_planarity",
+      "results": {
+        "SSIM": 0.7819713354110718,
+        "PSNR": 24.13374900817871,
+        "LPIPS": 0.3659340739250183,
+        "training_time_seconds": 2925.493700504303,
+        "num_gaussians": 1788574,
+        "point_cloud_size_mb": 423.0192985534668,
+        "combination": "depths_planarity",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T15:34:24.763732"
+      }
+    },
+    {
+      "combination": "depths_meshes_edges",
+      "results": {
+        "SSIM": 0.7830662131309509,
+        "PSNR": 23.914628982543945,
+        "LPIPS": 0.3748926520347595,
+        "training_time_seconds": 12970.628371715546,
+        "num_gaussians": 1236583,
+        "point_cloud_size_mb": 292.467227935791,
+        "combination": "depths_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-02T19:13:38.254671"
+      }
+    },
+    {
+      "combination": "depths_meshes",
+      "results": {
+        "SSIM": 0.7819007635116577,
+        "PSNR": 24.129180908203125,
+        "LPIPS": 0.36622804403305054,
+        "training_time_seconds": 21264.63950562477,
+        "num_gaussians": 1773520,
+        "point_cloud_size_mb": 419.45885848999023,
+        "combination": "depths_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T01:11:31.299645"
+      }
+    },
+    {
+      "combination": "depths_edges",
+      "results": {
+        "SSIM": 0.7837017178535461,
+        "PSNR": 23.9215145111084,
+        "LPIPS": 0.37549713253974915,
+        "training_time_seconds": 2844.0272698402405,
+        "num_gaussians": 1232356,
+        "point_cloud_size_mb": 291.4674949645996,
+        "combination": "depths_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T02:01:58.962002"
+      }
+    },
+    {
+      "combination": "depths",
+      "results": {
+        "SSIM": 0.7811238169670105,
+        "PSNR": 24.11870002746582,
+        "LPIPS": 0.36632421612739563,
+        "training_time_seconds": 2860.234534263611,
+        "num_gaussians": 1782751,
+        "point_cloud_size_mb": 421.64209365844727,
+        "combination": "depths",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T02:52:45.772093"
+      }
+    },
+    {
+      "combination": "planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.7830312848091125,
+        "PSNR": 23.94570541381836,
+        "LPIPS": 0.37495484948158264,
+        "training_time_seconds": 11949.219052553177,
+        "num_gaussians": 1226188,
+        "point_cloud_size_mb": 290.00869369506836,
+        "combination": "planarity_meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T06:15:00.197681"
+      }
+    },
+    {
+      "combination": "planarity_meshes",
+      "results": {
+        "SSIM": 0.7809704542160034,
+        "PSNR": 24.08102798461914,
+        "LPIPS": 0.36594918370246887,
+        "training_time_seconds": 19414.307515859604,
+        "num_gaussians": 1772834,
+        "point_cloud_size_mb": 419.2966117858887,
+        "combination": "planarity_meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T11:41:49.988965"
+      }
+    },
+    {
+      "combination": "planarity_edges",
+      "results": {
+        "SSIM": 0.7842146158218384,
+        "PSNR": 24.019046783447266,
+        "LPIPS": 0.37383535504341125,
+        "training_time_seconds": 2922.966117143631,
+        "num_gaussians": 1243605,
+        "point_cloud_size_mb": 294.1280097961426,
+        "combination": "planarity_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T12:33:47.363501"
+      }
+    },
+    {
+      "combination": "planarity",
+      "results": {
+        "SSIM": 0.7815209031105042,
+        "PSNR": 24.064340591430664,
+        "LPIPS": 0.36637941002845764,
+        "training_time_seconds": 2946.0124368667603,
+        "num_gaussians": 1784598,
+        "point_cloud_size_mb": 422.07892990112305,
+        "combination": "planarity",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T13:26:11.306014"
+      }
+    },
+    {
+      "combination": "meshes_edges",
+      "results": {
+        "SSIM": 0.7832241058349609,
+        "PSNR": 23.923616409301758,
+        "LPIPS": 0.3751646876335144,
+        "training_time_seconds": 12406.8133456707,
+        "num_gaussians": 1227041,
+        "point_cloud_size_mb": 290.2104377746582,
+        "combination": "meshes_edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T16:56:14.700895"
+      }
+    },
+    {
+      "combination": "meshes",
+      "results": {
+        "SSIM": 0.7815210223197937,
+        "PSNR": 24.11026382446289,
+        "LPIPS": 0.36611899733543396,
+        "training_time_seconds": 19559.98622250557,
+        "num_gaussians": 1775367,
+        "point_cloud_size_mb": 419.895694732666,
+        "combination": "meshes",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T22:25:33.145106"
+      }
+    },
+    {
+      "combination": "edges",
+      "results": {
+        "SSIM": 0.7846158146858215,
+        "PSNR": 24.071855545043945,
+        "LPIPS": 0.372321754693985,
+        "training_time_seconds": 2953.931222677231,
+        "num_gaussians": 1239704,
+        "point_cloud_size_mb": 293.205379486084,
+        "combination": "edges",
+        "scene_name": "Library",
+        "timestamp": "2026-04-03T23:18:00.578648"
+      }
+    },
+    {
+      "combination": "baseline",
+      "results": {
+        "SSIM": 0.7824429869651794,
+        "PSNR": 24.129606246948242,
+        "LPIPS": 0.3660809397697449,
+        "training_time_seconds": 2929.3925206661224,
+        "num_gaussians": 1761328,
+        "point_cloud_size_mb": 416.57531356811523,
+        "combination": "baseline",
+        "scene_name": "Library",
+        "timestamp": "2026-04-04T00:10:08.474396"
+      }
+    }
+  ]
+}

@@ -1,0 +1,470 @@
+{
+  "scene_name": "DrJohnson",
+  "dataset_path": "/workspace/DrJohnson",
+  "total_combinations": 33,
+  "timestamp": "2026-03-30T07:58:41.015851",
+  "results": [
+    {
+      "combination": "original",
+      "results": {
+        "SSIM": 0.9022308588027954,
+        "PSNR": 29.080101013183594,
+        "LPIPS": 0.2515096366405487,
+        "training_time_seconds": 2678.583595752716,
+        "num_gaussians": 1690087,
+        "point_cloud_size_mb": 399.726016998291,
+        "combination": "original",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T12:57:27.850093"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.8979648947715759,
+        "PSNR": 28.69347381591797,
+        "LPIPS": 0.2687705159187317,
+        "training_time_seconds": 5352.9327557086945,
+        "num_gaussians": 989280,
+        "point_cloud_size_mb": 233.97729015350342,
+        "combination": "normals_depths_planarity_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T14:33:15.412491"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_meshes",
+      "results": {
+        "SSIM": 0.9035276770591736,
+        "PSNR": 29.129417419433594,
+        "LPIPS": 0.25016602873802185,
+        "training_time_seconds": 7398.9125418663025,
+        "num_gaussians": 1707736,
+        "point_cloud_size_mb": 403.900203704834,
+        "combination": "normals_depths_planarity_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T16:43:00.740005"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_edges",
+      "results": {
+        "SSIM": 0.8984500765800476,
+        "PSNR": 28.766868591308594,
+        "LPIPS": 0.2673972547054291,
+        "training_time_seconds": 2628.7247743606567,
+        "num_gaussians": 996950,
+        "point_cloud_size_mb": 235.79133129119873,
+        "combination": "normals_depths_planarity_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T17:32:59.188983"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity",
+      "results": {
+        "SSIM": 0.9031360149383545,
+        "PSNR": 29.125707626342773,
+        "LPIPS": 0.25070449709892273,
+        "training_time_seconds": 2626.496409893036,
+        "num_gaussians": 1704860,
+        "point_cloud_size_mb": 403.21999740600586,
+        "combination": "normals_depths_planarity",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T18:22:47.513340"
+      }
+    },
+    {
+      "combination": "normals_depths_meshes_edges",
+      "results": {
+        "SSIM": 0.8981620669364929,
+        "PSNR": 28.694122314453125,
+        "LPIPS": 0.268351674079895,
+        "training_time_seconds": 5358.0209991931915,
+        "num_gaussians": 964524,
+        "point_cloud_size_mb": 228.12221813201904,
+        "combination": "normals_depths_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T19:58:26.279086"
+      }
+    },
+    {
+      "combination": "normals_depths_meshes",
+      "results": {
+        "SSIM": 0.903742790222168,
+        "PSNR": 29.047067642211914,
+        "LPIPS": 0.24905499815940857,
+        "training_time_seconds": 7306.534116268158,
+        "num_gaussians": 1702378,
+        "point_cloud_size_mb": 402.6329765319824,
+        "combination": "normals_depths_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T22:06:33.292087"
+      }
+    },
+    {
+      "combination": "normals_depths_edges",
+      "results": {
+        "SSIM": 0.8888562917709351,
+        "PSNR": 27.711166381835938,
+        "LPIPS": 0.280416339635849,
+        "training_time_seconds": 2671.2971453666687,
+        "num_gaussians": 979258,
+        "point_cloud_size_mb": 231.6069746017456,
+        "combination": "normals_depths_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T22:57:30.772277"
+      }
+    },
+    {
+      "combination": "normals_depths",
+      "results": {
+        "SSIM": 0.9038233160972595,
+        "PSNR": 29.107881546020508,
+        "LPIPS": 0.2484152764081955,
+        "training_time_seconds": 2645.2111456394196,
+        "num_gaussians": 1716733,
+        "point_cloud_size_mb": 406.0280952453613,
+        "combination": "normals_depths",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-28T23:48:30.690184"
+      }
+    },
+    {
+      "combination": "normals_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.8983505368232727,
+        "PSNR": 28.680187225341797,
+        "LPIPS": 0.2677187919616699,
+        "training_time_seconds": 5184.105794668198,
+        "num_gaussians": 1005306,
+        "point_cloud_size_mb": 237.76762008666992,
+        "combination": "normals_planarity_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T01:20:56.951895"
+      }
+    },
+    {
+      "combination": "normals_planarity_meshes",
+      "results": {
+        "SSIM": 0.9039472341537476,
+        "PSNR": 29.159677505493164,
+        "LPIPS": 0.25048914551734924,
+        "training_time_seconds": 7486.49334359169,
+        "num_gaussians": 1708763,
+        "point_cloud_size_mb": 404.1431007385254,
+        "combination": "normals_planarity_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T03:32:00.910526"
+      }
+    },
+    {
+      "combination": "normals_planarity_edges",
+      "results": {
+        "SSIM": 0.8971271514892578,
+        "PSNR": 28.66337776184082,
+        "LPIPS": 0.27082154154777527,
+        "training_time_seconds": 2583.1082861423492,
+        "num_gaussians": 997194,
+        "point_cloud_size_mb": 235.8490400314331,
+        "combination": "normals_planarity_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T04:20:50.731868"
+      }
+    },
+    {
+      "combination": "normals_planarity",
+      "results": {
+        "SSIM": 0.9027729034423828,
+        "PSNR": 29.081661224365234,
+        "LPIPS": 0.25153863430023193,
+        "training_time_seconds": 2648.6972212791443,
+        "num_gaussians": 1702550,
+        "point_cloud_size_mb": 402.67365646362305,
+        "combination": "normals_planarity",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T05:10:23.508743"
+      }
+    },
+    {
+      "combination": "normals_meshes_edges",
+      "results": {
+        "SSIM": 0.8966501951217651,
+        "PSNR": 28.571331024169922,
+        "LPIPS": 0.27102845907211304,
+        "training_time_seconds": 5262.082015514374,
+        "num_gaussians": 974075,
+        "point_cloud_size_mb": 230.38113689422607,
+        "combination": "normals_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T06:43:59.390364"
+      }
+    },
+    {
+      "combination": "normals_meshes",
+      "results": {
+        "SSIM": 0.9035596251487732,
+        "PSNR": 29.142446517944336,
+        "LPIPS": 0.25019609928131104,
+        "training_time_seconds": 7292.815196275711,
+        "num_gaussians": 1698337,
+        "point_cloud_size_mb": 401.6772346496582,
+        "combination": "normals_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T08:51:44.897957"
+      }
+    },
+    {
+      "combination": "normals_edges",
+      "results": {
+        "SSIM": 0.8928319811820984,
+        "PSNR": 28.13697052001953,
+        "LPIPS": 0.2781306505203247,
+        "training_time_seconds": 2665.2190687656403,
+        "num_gaussians": 977669,
+        "point_cloud_size_mb": 231.23115825653076,
+        "combination": "normals_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T09:42:09.431908"
+      }
+    },
+    {
+      "combination": "normals",
+      "results": {
+        "SSIM": 0.9023195505142212,
+        "PSNR": 29.064716339111328,
+        "LPIPS": 0.2515471875667572,
+        "training_time_seconds": 2648.121888399124,
+        "num_gaussians": 1696514,
+        "point_cloud_size_mb": 401.2460746765137,
+        "combination": "normals",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T10:31:59.571945"
+      }
+    },
+    {
+      "combination": "depths_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.8977764844894409,
+        "PSNR": 28.628875732421875,
+        "LPIPS": 0.27010202407836914,
+        "training_time_seconds": 5106.076439142227,
+        "num_gaussians": 978170,
+        "point_cloud_size_mb": 231.3496503829956,
+        "combination": "depths_planarity_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T12:03:20.288495"
+      }
+    },
+    {
+      "combination": "depths_planarity_meshes",
+      "results": {
+        "SSIM": 0.9035462141036987,
+        "PSNR": 29.00949478149414,
+        "LPIPS": 0.2501339912414551,
+        "training_time_seconds": 7514.77761554718,
+        "num_gaussians": 1708316,
+        "point_cloud_size_mb": 404.03738021850586,
+        "combination": "depths_planarity_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T14:16:04.797380"
+      }
+    },
+    {
+      "combination": "depths_planarity_edges",
+      "results": {
+        "SSIM": 0.8974301815032959,
+        "PSNR": 28.596569061279297,
+        "LPIPS": 0.27005577087402344,
+        "training_time_seconds": 2601.8783552646637,
+        "num_gaussians": 1001681,
+        "point_cloud_size_mb": 236.9102668762207,
+        "combination": "depths_planarity_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T15:05:56.134791"
+      }
+    },
+    {
+      "combination": "depths_planarity",
+      "results": {
+        "SSIM": 0.9027844071388245,
+        "PSNR": 29.081790924072266,
+        "LPIPS": 0.25161013007164,
+        "training_time_seconds": 2675.6880416870117,
+        "num_gaussians": 1698321,
+        "point_cloud_size_mb": 401.6734504699707,
+        "combination": "depths_planarity",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T15:57:16.769874"
+      }
+    },
+    {
+      "combination": "depths_meshes_edges",
+      "results": {
+        "SSIM": 0.8970556259155273,
+        "PSNR": 28.665386199951172,
+        "LPIPS": 0.27069318294525146,
+        "training_time_seconds": 4904.221258163452,
+        "num_gaussians": 981272,
+        "point_cloud_size_mb": 232.08330821990967,
+        "combination": "depths_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T17:25:19.848330"
+      }
+    },
+    {
+      "combination": "depths_meshes",
+      "results": {
+        "SSIM": 0.9032803177833557,
+        "PSNR": 29.050329208374023,
+        "LPIPS": 0.2505790889263153,
+        "training_time_seconds": 7469.562042951584,
+        "num_gaussians": 1703614,
+        "point_cloud_size_mb": 402.9253044128418,
+        "combination": "depths_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T19:36:47.118602"
+      }
+    },
+    {
+      "combination": "depths_edges",
+      "results": {
+        "SSIM": 0.8978230953216553,
+        "PSNR": 28.67965316772461,
+        "LPIPS": 0.26942458748817444,
+        "training_time_seconds": 2563.2751677036285,
+        "num_gaussians": 992104,
+        "point_cloud_size_mb": 234.64519786834717,
+        "combination": "depths_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T20:26:09.433037"
+      }
+    },
+    {
+      "combination": "depths",
+      "results": {
+        "SSIM": 0.9033488631248474,
+        "PSNR": 29.159175872802734,
+        "LPIPS": 0.25031137466430664,
+        "training_time_seconds": 2643.3628969192505,
+        "num_gaussians": 1703476,
+        "point_cloud_size_mb": 402.8926658630371,
+        "combination": "depths",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T21:16:33.889218"
+      }
+    },
+    {
+      "combination": "planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.8957198858261108,
+        "PSNR": 28.40752601623535,
+        "LPIPS": 0.271817684173584,
+        "training_time_seconds": 5253.637625217438,
+        "num_gaussians": 988219,
+        "point_cloud_size_mb": 233.72635173797607,
+        "combination": "planarity_meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-29T22:50:32.504250"
+      }
+    },
+    {
+      "combination": "planarity_meshes",
+      "results": {
+        "SSIM": 0.9041348099708557,
+        "PSNR": 29.120817184448242,
+        "LPIPS": 0.24892179667949677,
+        "training_time_seconds": 7383.935899972916,
+        "num_gaussians": 1696832,
+        "point_cloud_size_mb": 401.32128524780273,
+        "combination": "planarity_meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T00:59:33.953179"
+      }
+    },
+    {
+      "combination": "planarity_edges",
+      "results": {
+        "SSIM": 0.8970788717269897,
+        "PSNR": 28.606008529663086,
+        "LPIPS": 0.26989611983299255,
+        "training_time_seconds": 2567.6793162822723,
+        "num_gaussians": 980454,
+        "point_cloud_size_mb": 231.88984203338623,
+        "combination": "planarity_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T01:48:51.410036"
+      }
+    },
+    {
+      "combination": "planarity",
+      "results": {
+        "SSIM": 0.9030558466911316,
+        "PSNR": 29.058269500732422,
+        "LPIPS": 0.2502923905849457,
+        "training_time_seconds": 2653.6950759887695,
+        "num_gaussians": 1693269,
+        "point_cloud_size_mb": 400.4785957336426,
+        "combination": "planarity",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T02:39:13.044202"
+      }
+    },
+    {
+      "combination": "meshes_edges",
+      "results": {
+        "SSIM": 0.8971081972122192,
+        "PSNR": 28.66718864440918,
+        "LPIPS": 0.272663414478302,
+        "training_time_seconds": 5014.084088802338,
+        "num_gaussians": 964799,
+        "point_cloud_size_mb": 228.18725872039795,
+        "combination": "meshes_edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T04:08:37.322967"
+      }
+    },
+    {
+      "combination": "meshes",
+      "results": {
+        "SSIM": 0.9038745164871216,
+        "PSNR": 29.10747718811035,
+        "LPIPS": 0.2493537813425064,
+        "training_time_seconds": 7365.622900724411,
+        "num_gaussians": 1707115,
+        "point_cloud_size_mb": 403.7533302307129,
+        "combination": "meshes",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T06:17:48.160541"
+      }
+    },
+    {
+      "combination": "edges",
+      "results": {
+        "SSIM": 0.8978384137153625,
+        "PSNR": 28.70384407043457,
+        "LPIPS": 0.2694297730922699,
+        "training_time_seconds": 2591.6186311244965,
+        "num_gaussians": 988157,
+        "point_cloud_size_mb": 233.711688041687,
+        "combination": "edges",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T07:07:52.007052"
+      }
+    },
+    {
+      "combination": "baseline",
+      "results": {
+        "SSIM": 0.9025924205780029,
+        "PSNR": 29.02972412109375,
+        "LPIPS": 0.25230419635772705,
+        "training_time_seconds": 2638.164029121399,
+        "num_gaussians": 1704140,
+        "point_cloud_size_mb": 403.04970932006836,
+        "combination": "baseline",
+        "scene_name": "DrJohnson",
+        "timestamp": "2026-03-30T07:58:27.980793"
+      }
+    }
+  ]
+}

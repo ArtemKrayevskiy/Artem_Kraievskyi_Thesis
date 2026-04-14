@@ -1,104 +1,33 @@
 \chapter{Theoretical background}
 
-\section{Structure-from-Motion}
+\section{Structure-from-Motion and Camera Models}
 \label{sec:sfm}
 
-Structure-from-Motion (SfM) is a foundational technique in computer vision that recovers three-dimensional scene structure and camera motion from multiple two-dimensional images. Given a set of images of a static scene captured from different viewpoints, SfM jointly estimates camera intrinsics, camera poses, and a sparse 3D point cloud by exploiting multi-view geometric constraints.
+Structure-from-Motion (SfM) recovers 3D scene geometry and camera positions from multiple 2D images by matching visual features across views and solving for camera poses and 3D point locations simultaneously.
 
 \subsection{Pinhole Camera Model}
 
-The pinhole camera model provides a mathematical abstraction of image formation. A 3D point in world coordinates is represented in homogeneous form as
-\begin{equation}
-\mathbf{X} = (X, Y, Z, 1)^\top.
-\end{equation}
-The projection of $\mathbf{X}$ onto the image plane is given by
-\begin{equation}
-\mathbf{x} \sim \mathbf{P} \mathbf{X},
-\end{equation}
-where $\mathbf{x} = (u, v, 1)^\top$ denotes a homogeneous image point, and $\mathbf{P}$ is the $3 \times 4$ camera projection matrix.
+The pinhole camera model describes image formation through perspective projection. A 3D point $\mathbf{X} = (X, Y, Z, 1)^\top$ in world coordinates projects to an image point $\mathbf{x} \sim \mathbf{P} \mathbf{X}$ through the camera projection matrix $\mathbf{P} = \mathbf{K} [\mathbf{R} \mid \mathbf{t}]$, where $\mathbf{K}$ contains intrinsic parameters (focal length, principal point), and $\mathbf{R}$, $\mathbf{t}$ represent camera pose (rotation and translation).
 
-The projection matrix can be decomposed as
+The key perspective transformation involves normalizing by depth:
 \begin{equation}
-\mathbf{P} = \mathbf{K} [\mathbf{R} \mid \mathbf{t}],
+u = \frac{x}{z}, \quad v = \frac{y}{z},
 \end{equation}
-where $\mathbf{R} \in SO(3)$ and $\mathbf{t} \in \mathbb{R}^3$ represent the camera rotation and translation from world to camera coordinates. The intrinsic calibration matrix $\mathbf{K}$ is defined as
-\begin{equation}
-\mathbf{K} =
-\begin{bmatrix}
-f_x & s & c_x \\
-0 & f_y & c_y \\
-0 & 0 & 1
-\end{bmatrix},
-\end{equation}
-with focal lengths $f_x, f_y$, skew parameter $s$, and principal point $(c_x, c_y)$. In most modern datasets, the skew is assumed to be zero.
+where $z$ is the depth. This non-linear division introduces the fundamental ambiguity in monocular reconstruction: multiple 3D points can project to the same image location if depth is unknown.
 
-In camera coordinates, the perspective projection is expressed as
-\begin{equation}
-\begin{bmatrix}
-x \\ y \\ z
-\end{bmatrix}
-=
-\mathbf{R}
-\begin{bmatrix}
-X \\ Y \\ Z
-\end{bmatrix}
-+
-\mathbf{t},
-\end{equation}
-followed by normalization:
-\begin{equation}
-u = \frac{x}{z}, \quad v = \frac{y}{z}.
-\end{equation}
-This non-linear division by depth $z$ is the fundamental source of projective ambiguity in monocular reconstruction.
+\subsection{Multi-View Geometry and Reconstruction}
 
-\subsection{Two-View Geometry and Epipolar Constraint}
-
-Consider two pinhole cameras observing the same 3D point $\mathbf{X}$, producing image projections $\mathbf{x}_1$ and $\mathbf{x}_2$. The relative camera motion induces a geometric constraint known as epipolar geometry.
-
-Let $\mathbf{C}_1$ and $\mathbf{C}_2$ denote the camera centers. The baseline connecting the two centers, together with $\mathbf{X}$, defines the epipolar plane. The intersection of this plane with each image plane yields an epipolar line. Consequently, the projection of $\mathbf{X}$ in one image must lie on the epipolar line corresponding to its projection in the other image.
-
-This relationship is algebraically encoded by the fundamental matrix $\mathbf{F}$:
+When two cameras observe the same 3D point from different viewpoints, epipolar geometry constrains the possible 3D locations. The essential matrix $\mathbf{E}$ encodes this relationship in normalized image coordinates, enabling estimation of relative camera pose. Triangulation then uses these poses to recover 3D point positions by minimizing reprojection error:
 \begin{equation}
-\mathbf{x}_2^\top \mathbf{F} \mathbf{x}_1 = 0.
-\end{equation}
-For a fixed point $\mathbf{x}_1$, the corresponding epipolar line in the second image is given by
-\begin{equation}
-\mathbf{l}_2 = \mathbf{F} \mathbf{x}_1.
+\min_{\mathbf{X}} \sum_i \left\| \mathbf{x}_i - \pi(\mathbf{P}_i \mathbf{X}) \right\|^2.
 \end{equation}
 
-The epipoles $\mathbf{e}_1$ and $\mathbf{e}_2$ are defined as the projections of the opposite camera centers onto each image plane and satisfy
-\begin{equation}
-\mathbf{F} \mathbf{e}_1 = \mathbf{0}, \quad \mathbf{e}_2^\top \mathbf{F} = \mathbf{0}.
-\end{equation}
-
-\subsection{Essential Matrix and Relative Pose Recovery}
-
-If the intrinsic calibration matrices $\mathbf{K}_1$ and $\mathbf{K}_2$ are known, the epipolar constraint can be expressed in normalized image coordinates using the essential matrix $\mathbf{E}$:
-\begin{equation}
-\mathbf{E} = \mathbf{K}_2^\top \mathbf{F} \mathbf{K}_1.
-\end{equation}
-The essential matrix has rank 2 and can be decomposed as
-\begin{equation}
-\mathbf{E} = [\mathbf{t}]_\times \mathbf{R},
-\end{equation}
-where $[\mathbf{t}]_\times$ is the skew-symmetric matrix corresponding to the translation vector. Decomposition of $\mathbf{E}$ yields up to four possible solutions for $(\mathbf{R}, \mathbf{t})$, which are disambiguated by enforcing positive depth constraints during triangulation.
-
-\subsection{Triangulation and Reprojection Error}
-
-Given camera projection matrices $\mathbf{P}_i$ and corresponding observations $\mathbf{x}_i$, the 3D point $\mathbf{X}$ is estimated by triangulation. In practice, triangulation is performed by minimizing the reprojection error:
-\begin{equation}
-\min_{\mathbf{X}} \sum_i \left\| \mathbf{x}_i - \pi(\mathbf{P}_i \mathbf{X}) \right\|^2,
-\end{equation}
-where $\pi(\cdot)$ denotes homogeneous normalization. Reprojection error serves as the primary geometric objective throughout the SfM pipeline.
-
-\subsection{Global Optimization via Bundle Adjustment}
-
-To achieve a consistent reconstruction across all views, SfM employs bundle adjustment, a joint non-linear optimization over camera parameters and 3D points:
+To refine the entire reconstruction globally, bundle adjustment jointly optimizes all camera parameters and 3D points:
 \begin{equation}
 \min_{\{\mathbf{R}_i, \mathbf{t}_i, \mathbf{X}_j\}} 
 \sum_{i,j} \left\| \pi(\mathbf{K}_i (\mathbf{R}_i \mathbf{X}_j + \mathbf{t}_i)) - \mathbf{x}_{ij} \right\|^2.
 \end{equation}
-This optimization refines camera poses, intrinsics, and 3D structure simultaneously, significantly improving geometric accuracy.
+This process produces accurate camera poses and a sparse but geometrically consistent point cloud.
 
 \subsection{COLMAP as a Practical SfM System}
 

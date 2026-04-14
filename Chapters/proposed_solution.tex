@@ -77,21 +77,21 @@ All geometric constraints are applied in rendering space rather than directly co
 
 \subsubsection{Depth Prior}
 
-Rendered depth $D_r$ is aligned with a prior depth map $D_p$:
+Depth prior maps $D_p$ are estimated per-view using DUST3R (Dense Unsupervised Surface Transformation via Regression), a fast monocular depth estimator. These priors are aligned with rendered depth $D_r$ to stabilize optimization in textureless regions:
 
 \begin{equation}
 \mathcal{L}_{depth}
 =
 \left\|
 D_r - D_p
-\right\|_1.
+\right\|_1,
 \end{equation}
 
-This term stabilizes optimization in textureless regions and reduces floating artifacts.
+reducing floating artifacts and improving geometric consistency across views.
 
 \subsubsection{Normal Prior}
 
-Rendered normals $N_r$ are regularized using prior normals $N_p$:
+Surface normal prior maps $N_p$ are also estimated using DUST3R per-view. These normals are regularized alongside rendered normals $N_r$:
 
 \begin{equation}
 \mathcal{L}_{normal}
@@ -100,10 +100,10 @@ Rendered normals $N_r$ are regularized using prior normals $N_p$:
 N_r - N_p
 \right\|_1
 +
-\left(1 - N_r \cdot N_p \right).
+\left(1 - N_r \cdot N_p \right),
 \end{equation}
 
-This promotes locally coherent surface orientation.
+promoting locally coherent surface orientation and reducing normal inconsistencies.
 
 \subsubsection{Depth--Normal Consistency}
 
@@ -119,9 +119,7 @@ N_r - N_{depth}
 
 \subsubsection{Planar Regularization}
 
-For segmented planar regions, a plane is estimated from the rendered depth map.  
-Let $D_{plane}$ denote the depth induced by the fitted plane.  
-The planar consistency loss is:
+Planar segmentation priors are extracted from single images using SAM3 (Segment Anything Model v3), which identifies and delineates planar regions. For each segmented planar region, a plane is fitted to the rendered depth map. Let $D_{plane}$ denote the depth values induced by this fitted plane. The planar consistency loss is:
 
 \begin{equation}
 \mathcal{L}_{planar}
@@ -131,28 +129,27 @@ D_r - D_{plane}
 \right\|_1.
 \end{equation}
 
-Importantly, Gaussian centers are not explicitly projected onto planes.  
-The constraint operates purely at the rendering level, allowing primitives to reorganize naturally during optimization.
+Importantly, Gaussian centers are not explicitly projected onto planes; the constraint operates purely at the rendering level, allowing primitives to reorganize naturally during optimization.
 
 \subsection{Edge-Aware Adaptive Representation}
 
-In addition to geometric priors, we introduce a spatially adaptive densification mechanism.
+In addition to geometric priors, we introduce a spatially adaptive densification mechanism. Structural edges are identified from SAM3 planar segment boundaries (which encode discontinuities in planar geometry).
 
 Instead of uniformly refining the scene, the method distinguishes between:
 
 \begin{itemize}
-    \item Structural boundary regions (edges),
+    \item Structural boundary regions (edges from SAM3 segment boundaries),
     \item Homogeneous planar interiors.
 \end{itemize}
 
-During training:
+During training, the OPPOSITE strategy is employed:
 
 \begin{itemize}
-    \item Regions near structural edges are encouraged to maintain smaller, more localized Gaussians and higher refinement activity.
+    \item Regions near structural edges are encouraged to maintain smaller, more localized Gaussians and higher refinement activity (via edge-aware split boost).
     \item Planar interiors favor larger primitives and reduced splitting frequency.
 \end{itemize}
 
-This adaptive allocation concentrates representational capacity where geometric detail is required while preventing unnecessary primitive growth in flat regions.
+This adaptive allocation concentrates representational capacity where geometric detail is required while preventing unnecessary primitive growth in flat regions, achieving a more compact overall representation.
 
 \subsubsection{Edge-Specific Normal Reinforcement}
 

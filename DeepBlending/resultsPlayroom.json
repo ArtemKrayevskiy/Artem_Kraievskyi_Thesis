@@ -1,0 +1,470 @@
+{
+  "scene_name": "Playroom",
+  "dataset_path": "/workspace/Playroom",
+  "total_combinations": 33,
+  "timestamp": "2026-04-01T06:20:03.655514",
+  "results": [
+    {
+      "combination": "original",
+      "results": {
+        "SSIM": 0.9096265435218811,
+        "PSNR": 30.368671417236328,
+        "LPIPS": 0.24957750737667084,
+        "training_time_seconds": 2356.086160182953,
+        "num_gaussians": 1202944,
+        "point_cloud_size_mb": 284.51122665405273,
+        "combination": "original",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T00:05:52.882287"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.9084237813949585,
+        "PSNR": 30.22522735595703,
+        "LPIPS": 0.2546897828578949,
+        "training_time_seconds": 3997.7567749023438,
+        "num_gaussians": 957538,
+        "point_cloud_size_mb": 226.46995067596436,
+        "combination": "normals_depths_planarity_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T01:15:15.080440"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_meshes",
+      "results": {
+        "SSIM": 0.9099326729774475,
+        "PSNR": 30.43303871154785,
+        "LPIPS": 0.24898605048656464,
+        "training_time_seconds": 4241.637869596481,
+        "num_gaussians": 1211160,
+        "point_cloud_size_mb": 286.454402923584,
+        "combination": "normals_depths_planarity_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T02:28:26.605926"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity_edges",
+      "results": {
+        "SSIM": 0.9082959294319153,
+        "PSNR": 30.148412704467773,
+        "LPIPS": 0.25423577427864075,
+        "training_time_seconds": 2375.9196548461914,
+        "num_gaussians": 961779,
+        "point_cloud_size_mb": 227.47299480438232,
+        "combination": "normals_depths_planarity_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T03:10:51.777758"
+      }
+    },
+    {
+      "combination": "normals_depths_planarity",
+      "results": {
+        "SSIM": 0.910383939743042,
+        "PSNR": 30.452905654907227,
+        "LPIPS": 0.2489238977432251,
+        "training_time_seconds": 2384.3617544174194,
+        "num_gaussians": 1211775,
+        "point_cloud_size_mb": 286.59985733032227,
+        "combination": "normals_depths_planarity",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T03:53:09.988270"
+      }
+    },
+    {
+      "combination": "normals_depths_meshes_edges",
+      "results": {
+        "SSIM": 0.9084554314613342,
+        "PSNR": 30.238256454467773,
+        "LPIPS": 0.25423961877822876,
+        "training_time_seconds": 4033.5099551677704,
+        "num_gaussians": 958819,
+        "point_cloud_size_mb": 226.77292156219482,
+        "combination": "normals_depths_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T05:02:56.371116"
+      }
+    },
+    {
+      "combination": "normals_depths_meshes",
+      "results": {
+        "SSIM": 0.9100706577301025,
+        "PSNR": 30.42435646057129,
+        "LPIPS": 0.24938391149044037,
+        "training_time_seconds": 4246.237185001373,
+        "num_gaussians": 1212719,
+        "point_cloud_size_mb": 286.82312393188477,
+        "combination": "normals_depths_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T06:16:11.034446"
+      }
+    },
+    {
+      "combination": "normals_depths_edges",
+      "results": {
+        "SSIM": 0.9086461663246155,
+        "PSNR": 30.14008140563965,
+        "LPIPS": 0.2544608414173126,
+        "training_time_seconds": 2397.9293010234833,
+        "num_gaussians": 958064,
+        "point_cloud_size_mb": 226.59435558319092,
+        "combination": "normals_depths_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T06:58:48.152973"
+      }
+    },
+    {
+      "combination": "normals_depths",
+      "results": {
+        "SSIM": 0.9099780917167664,
+        "PSNR": 30.405780792236328,
+        "LPIPS": 0.24915507435798645,
+        "training_time_seconds": 2396.4306626319885,
+        "num_gaussians": 1217725,
+        "point_cloud_size_mb": 288.0070991516113,
+        "combination": "normals_depths",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T07:41:15.774309"
+      }
+    },
+    {
+      "combination": "normals_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.9076224565505981,
+        "PSNR": 30.117292404174805,
+        "LPIPS": 0.2548981010913849,
+        "training_time_seconds": 3998.2486004829407,
+        "num_gaussians": 965628,
+        "point_cloud_size_mb": 228.38332653045654,
+        "combination": "normals_planarity_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T08:50:25.851471"
+      }
+    },
+    {
+      "combination": "normals_planarity_meshes",
+      "results": {
+        "SSIM": 0.9091828465461731,
+        "PSNR": 30.392921447753906,
+        "LPIPS": 0.2491879016160965,
+        "training_time_seconds": 4273.250834941864,
+        "num_gaussians": 1216908,
+        "point_cloud_size_mb": 287.81386947631836,
+        "combination": "normals_planarity_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T10:04:19.318306"
+      }
+    },
+    {
+      "combination": "normals_planarity_edges",
+      "results": {
+        "SSIM": 0.907245397567749,
+        "PSNR": 30.11623191833496,
+        "LPIPS": 0.25494125485420227,
+        "training_time_seconds": 2388.4855349063873,
+        "num_gaussians": 955770,
+        "point_cloud_size_mb": 226.0517988204956,
+        "combination": "normals_planarity_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T10:46:56.848103"
+      }
+    },
+    {
+      "combination": "normals_planarity",
+      "results": {
+        "SSIM": 0.9098113775253296,
+        "PSNR": 30.391820907592773,
+        "LPIPS": 0.24933497607707977,
+        "training_time_seconds": 2406.2592618465424,
+        "num_gaussians": 1213363,
+        "point_cloud_size_mb": 286.97543716430664,
+        "combination": "normals_planarity",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T11:29:37.830489"
+      }
+    },
+    {
+      "combination": "normals_meshes_edges",
+      "results": {
+        "SSIM": 0.9085922837257385,
+        "PSNR": 30.227022171020508,
+        "LPIPS": 0.25408968329429626,
+        "training_time_seconds": 3989.7202026844025,
+        "num_gaussians": 965646,
+        "point_cloud_size_mb": 228.38758373260498,
+        "combination": "normals_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T12:39:00.393097"
+      }
+    },
+    {
+      "combination": "normals_meshes",
+      "results": {
+        "SSIM": 0.9096631407737732,
+        "PSNR": 30.454301834106445,
+        "LPIPS": 0.2487671971321106,
+        "training_time_seconds": 4277.7954297065735,
+        "num_gaussians": 1213200,
+        "point_cloud_size_mb": 286.93688583374023,
+        "combination": "normals_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T13:52:47.478095"
+      }
+    },
+    {
+      "combination": "normals_edges",
+      "results": {
+        "SSIM": 0.9082571864128113,
+        "PSNR": 30.18068504333496,
+        "LPIPS": 0.2546054720878601,
+        "training_time_seconds": 2399.997921228409,
+        "num_gaussians": 958048,
+        "point_cloud_size_mb": 226.59057140350342,
+        "combination": "normals_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T14:35:18.603391"
+      }
+    },
+    {
+      "combination": "normals",
+      "results": {
+        "SSIM": 0.9093227386474609,
+        "PSNR": 30.42555809020996,
+        "LPIPS": 0.24903029203414917,
+        "training_time_seconds": 2390.9104883670807,
+        "num_gaussians": 1209137,
+        "point_cloud_size_mb": 285.9759407043457,
+        "combination": "normals",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T15:17:37.588432"
+      }
+    },
+    {
+      "combination": "depths_planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.9075571298599243,
+        "PSNR": 30.096481323242188,
+        "LPIPS": 0.25557270646095276,
+        "training_time_seconds": 4022.1829159259796,
+        "num_gaussians": 954814,
+        "point_cloud_size_mb": 225.82569408416748,
+        "combination": "depths_planarity_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T16:27:17.932904"
+      }
+    },
+    {
+      "combination": "depths_planarity_meshes",
+      "results": {
+        "SSIM": 0.9096725583076477,
+        "PSNR": 30.27364158630371,
+        "LPIPS": 0.25009360909461975,
+        "training_time_seconds": 4223.8498611450195,
+        "num_gaussians": 1209582,
+        "point_cloud_size_mb": 286.0811882019043,
+        "combination": "depths_planarity_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T17:40:22.563404"
+      }
+    },
+    {
+      "combination": "depths_planarity_edges",
+      "results": {
+        "SSIM": 0.908672571182251,
+        "PSNR": 30.226293563842773,
+        "LPIPS": 0.25397637486457825,
+        "training_time_seconds": 2406.354826927185,
+        "num_gaussians": 961669,
+        "point_cloud_size_mb": 227.44697856903076,
+        "combination": "depths_planarity_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T18:23:14.013667"
+      }
+    },
+    {
+      "combination": "depths_planarity",
+      "results": {
+        "SSIM": 0.9108532667160034,
+        "PSNR": 30.543027877807617,
+        "LPIPS": 0.24753454327583313,
+        "training_time_seconds": 2392.53032040596,
+        "num_gaussians": 1223862,
+        "point_cloud_size_mb": 289.45856857299805,
+        "combination": "depths_planarity",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T19:05:44.764243"
+      }
+    },
+    {
+      "combination": "depths_meshes_edges",
+      "results": {
+        "SSIM": 0.9077501893043518,
+        "PSNR": 30.137983322143555,
+        "LPIPS": 0.2552618682384491,
+        "training_time_seconds": 4021.145745038986,
+        "num_gaussians": 965112,
+        "point_cloud_size_mb": 228.26128673553467,
+        "combination": "depths_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T20:15:24.848904"
+      }
+    },
+    {
+      "combination": "depths_meshes",
+      "results": {
+        "SSIM": 0.9095170497894287,
+        "PSNR": 30.369054794311523,
+        "LPIPS": 0.24981513619422913,
+        "training_time_seconds": 4186.9567704200745,
+        "num_gaussians": 1213932,
+        "point_cloud_size_mb": 287.11001205444336,
+        "combination": "depths_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T21:27:33.119599"
+      }
+    },
+    {
+      "combination": "depths_edges",
+      "results": {
+        "SSIM": 0.907945454120636,
+        "PSNR": 30.10557746887207,
+        "LPIPS": 0.2541256248950958,
+        "training_time_seconds": 2310.2918281555176,
+        "num_gaussians": 966626,
+        "point_cloud_size_mb": 228.61936473846436,
+        "combination": "depths_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T22:08:41.602478"
+      }
+    },
+    {
+      "combination": "depths",
+      "results": {
+        "SSIM": 0.9092095494270325,
+        "PSNR": 30.35110855102539,
+        "LPIPS": 0.2493578940629959,
+        "training_time_seconds": 2318.615173816681,
+        "num_gaussians": 1217902,
+        "point_cloud_size_mb": 288.0489616394043,
+        "combination": "depths",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T22:49:54.513291"
+      }
+    },
+    {
+      "combination": "planarity_meshes_edges",
+      "results": {
+        "SSIM": 0.9079998135566711,
+        "PSNR": 30.139671325683594,
+        "LPIPS": 0.2555087208747864,
+        "training_time_seconds": 4018.5465035438538,
+        "num_gaussians": 959618,
+        "point_cloud_size_mb": 226.96189403533936,
+        "combination": "planarity_meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-03-31T23:59:43.169882"
+      }
+    },
+    {
+      "combination": "planarity_meshes",
+      "results": {
+        "SSIM": 0.910126805305481,
+        "PSNR": 30.508607864379883,
+        "LPIPS": 0.24886144697666168,
+        "training_time_seconds": 4117.706038475037,
+        "num_gaussians": 1218006,
+        "point_cloud_size_mb": 288.07355880737305,
+        "combination": "planarity_meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T01:10:49.781983"
+      }
+    },
+    {
+      "combination": "planarity_edges",
+      "results": {
+        "SSIM": 0.9071598649024963,
+        "PSNR": 30.076580047607422,
+        "LPIPS": 0.25466853380203247,
+        "training_time_seconds": 2295.649473428726,
+        "num_gaussians": 961681,
+        "point_cloud_size_mb": 227.4498167037964,
+        "combination": "planarity_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T01:51:27.602085"
+      }
+    },
+    {
+      "combination": "planarity",
+      "results": {
+        "SSIM": 0.9101386666297913,
+        "PSNR": 30.417970657348633,
+        "LPIPS": 0.24880897998809814,
+        "training_time_seconds": 2296.6626858711243,
+        "num_gaussians": 1213477,
+        "point_cloud_size_mb": 287.0023994445801,
+        "combination": "planarity",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T02:32:17.822142"
+      }
+    },
+    {
+      "combination": "meshes_edges",
+      "results": {
+        "SSIM": 0.9081960916519165,
+        "PSNR": 30.15573501586914,
+        "LPIPS": 0.25319594144821167,
+        "training_time_seconds": 4048.39222741127,
+        "num_gaussians": 969683,
+        "point_cloud_size_mb": 229.34237957000732,
+        "combination": "meshes_edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T03:42:18.400626"
+      }
+    },
+    {
+      "combination": "meshes",
+      "results": {
+        "SSIM": 0.9099518060684204,
+        "PSNR": 30.463010787963867,
+        "LPIPS": 0.24875319004058838,
+        "training_time_seconds": 4209.322912931442,
+        "num_gaussians": 1217225,
+        "point_cloud_size_mb": 287.88884353637695,
+        "combination": "meshes",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T04:55:01.801285"
+      }
+    },
+    {
+      "combination": "edges",
+      "results": {
+        "SSIM": 0.9072860479354858,
+        "PSNR": 30.14211082458496,
+        "LPIPS": 0.25530168414115906,
+        "training_time_seconds": 2380.8569705486298,
+        "num_gaussians": 956585,
+        "point_cloud_size_mb": 226.24455547332764,
+        "combination": "edges",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T05:37:30.099311"
+      }
+    },
+    {
+      "combination": "baseline",
+      "results": {
+        "SSIM": 0.9103259444236755,
+        "PSNR": 30.484413146972656,
+        "LPIPS": 0.24874427914619446,
+        "training_time_seconds": 2378.3672761917114,
+        "num_gaussians": 1214652,
+        "point_cloud_size_mb": 287.28030014038086,
+        "combination": "baseline",
+        "scene_name": "Playroom",
+        "timestamp": "2026-04-01T06:19:45.699106"
+      }
+    }
+  ]
+}
