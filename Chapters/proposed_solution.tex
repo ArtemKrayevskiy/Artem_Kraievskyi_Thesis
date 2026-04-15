@@ -55,7 +55,7 @@ The final objective becomes:
 \section{Solution Architecture}
 \label{sec:solution_architecture}
 
-Figure~\ref{fig:unified_pipeline} illustrates the overall framework.
+Figure~\ref{fig:unified_pipeline} illustrates the overall framework. The diagram uses color coding to distinguish component types: \textit{blue boxes} represent input geometric priors extracted from images, \textit{green boxes} denote loss regularization terms, \textit{purple boxes} indicate processing steps, and \textit{orange} represents the central optimization objective. Edges are derived from detected plane boundaries and positioned as the first prior column, followed by planes, depth, normals, and mesh data in subsequent columns.
 
 \begin{figure}[t]
     \centering
@@ -150,23 +150,16 @@ Importantly, Gaussian centers are not explicitly projected onto planes; the cons
 
 \subsection{Edge-Aware Adaptive Representation}
 
-In addition to geometric priors, we introduce a spatially adaptive densification mechanism. Structural edges are identified from SAM3 planar segment boundaries (which encode discontinuities in planar geometry).
+In addition to geometric priors, we introduce a spatially adaptive densification mechanism. The core intuition is straightforward: structural boundaries between planes require precise, fine-grained representation, while large homogeneous planar interiors can be covered efficiently with fewer, larger primitives.
 
-Instead of uniformly refining the scene, the method distinguishes between:
-
-\begin{itemize}
-    \item Structural boundary regions (edges from SAM3 segment boundaries),
-    \item Homogeneous planar interiors.
-\end{itemize}
-
-During training, the OPPOSITE strategy is employed:
+Structural edges are identified from SAM3 planar segment boundaries, which naturally encode geometric discontinuities in the scene. Based on each Gaussian's 3D distance to these boundaries, the optimization applies two complementary rules:
 
 \begin{itemize}
-    \item Regions near structural edges are encouraged to maintain smaller, more localized Gaussians and higher refinement activity (via edge-aware split boost).
-    \item Planar interiors favor larger primitives and reduced splitting frequency.
+    \item \textbf{Near structural edges:} densification is boosted (split probability multiplied by $\times$2.5) and scale is capped small ($s_{\min} = 0.3$), producing many precise, localized Gaussians that capture sharp transitions faithfully.
+    \item \textbf{In planar interiors:} densification is suppressed (split probability reduced by $\times$0.4) and Gaussians are free to grow large ($s_{\max} = 2.0$), covering large flat surfaces with far fewer primitives.
 \end{itemize}
 
-This adaptive allocation concentrates representational capacity where geometric detail is required while preventing unnecessary primitive growth in flat regions, achieving a more compact overall representation.
+This allocation strategy concentrates representational capacity exactly where geometric detail is required, while preventing over-densification in uniform regions — the primary mechanism behind the model size reduction achieved by our method.
 
 \begin{figure}[h]
     \centering
@@ -181,7 +174,7 @@ This adaptive allocation concentrates representational capacity where geometric 
         \includegraphics[width=\textwidth]{comparison_figures/edge_extracted_lines.png}
         \caption{Extracted structural line segments}
     \end{subfigure}
-    \caption{Structural edge detection on a DrJohnson training view. Boundaries between segmented planes (left) are used to derive structural line segments (right), which define the edge proximity field guiding adaptive densification: Gaussians near these lines receive a higher split boost and smaller scale cap, while those in planar interiors are encouraged to grow larger.}
+    \caption{Structural edge detection on a DrJohnson training view. Boundaries between segmented planes (left) are converted to structural line segments (right), which define the edge proximity field. Gaussians close to these lines are kept small and densified more aggressively; Gaussians in the planar interiors are allowed to grow large and are split less often.}
     \label{fig:edge_detection}
 \end{figure}
 

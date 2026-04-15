@@ -16,12 +16,12 @@
     looparrow/.style={-{Stealth[length=3mm]}, dotted, line width=1.2pt, red!70}
 ]
 
-% Column 1: Planes & Edge & Densify
-\node[prior] (plane) at (0,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize SAM3}};
-\node[prior] (edge) at (0,-1.8) {\textbf{Edges}\\[-0.05cm]{\footnotesize SAM3 plane boundaries}};
-\node[proc] (densify) at (-0.5,-3.6) {\textbf{Adaptive Densification}\\[-0.05cm]\textbf{\& Scaling}};
+% Column 1: Edges
+\node[prior] (edge) at (0,0) {\textbf{Edges}\\[-0.05cm]{\footnotesize from planes}};
+\node[loss] (ledge) at (0,-2.7) {$\mathcal{L}_{edge}$};
 
-% Column 2: Planar Loss
+% Column 2: Planes
+\node[prior] (plane) at (3,0) {\textbf{Planes}\\[-0.05cm]{\footnotesize SAM3}};
 \node[loss] (lplanar) at (3,-2.7) {$\mathcal{L}_{planar}$};
 
 % Column 3: Depth
@@ -38,37 +38,33 @@
 \node[loss] (lmesh) at (12,-3.6) {$\mathcal{L}_{mesh}$};
 
 % Optimization (centered below losses)
-\node[opt] (optim) at (7,-5.5) {
+\node[opt] (optim) at (6,-5.5) {
     \textbf{3D Gaussian Splatting Optimization}\\[0.15cm]
-    {\footnotesize $\mathcal{L}_{total} = \mathcal{L}_{rgb} + \lambda_p \mathcal{L}_{planar} + \lambda_d \mathcal{L}_{depth} + \lambda_n \mathcal{L}_{normal} + \lambda_m \mathcal{L}_{mesh}$}
+    {\footnotesize $\mathcal{L}_{total} = \mathcal{L}_{rgb} + \lambda_e \mathcal{L}_{edge} + \lambda_p \mathcal{L}_{planar} + \lambda_d \mathcal{L}_{depth} + \lambda_n \mathcal{L}_{normal} + \lambda_m \mathcal{L}_{mesh}$}
 };
 
 % Output
-\node[box, fill=green!25, minimum width=6cm] (output) at (7,-7.5) {\textbf{Optimized 3D Gaussians}};
-
-% ===== ARROWS =====
-
-% Depth → Edge → Densify
-\draw[arrow] (plane) -- (edge);
-\draw[arrow] (edge) -- (densify);
+\node[box, fill=green!25, minimum width=6cm] (output) at (6,-7.5) {\textbf{Optimized 3D Gaussians}};
 
 % Priors → Losses
+\draw[arrow] (edge) -- (ledge);
+\draw[arrow] (plane) -- (lplanar);
 \draw[arrow] (depth) -- (ldepth);
 \draw[arrow] (normal) -- (lnormal);
-\draw[arrow] (plane) -- (lplanar);
 
 % Mesh branch
 \draw[arrow] (tsdf) -- (mesh);
 \draw[arrow] (mesh) -- (lmesh);
 
+% Planes → Edges (showing derivation)
+\draw[arrow] (plane) -- (edge);
+
 % Losses → Optimization
+\draw[arrow] (ledge) -- (optim);
+\draw[arrow] (lplanar) -- (optim);
 \draw[arrow] (ldepth) -- (optim);
 \draw[arrow] (lnormal) -- (optim);
-\draw[arrow] (lplanar) -- (optim);
 \draw[arrow] (lmesh) -- (optim);
-
-% Densification → Optimization (dashed, shows control not loss)
-\draw[dasharrow] (densify) -- (optim);
 
 % Output
 \draw[arrow, line width=1.3pt] (optim) -- (output);
