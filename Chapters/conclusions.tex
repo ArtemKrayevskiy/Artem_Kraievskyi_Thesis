@@ -4,7 +4,7 @@
 
 This thesis investigated the integration of explicit geometric priors into 3D Gaussian Splatting to improve reconstruction quality, geometric consistency, and representation compactness, particularly for indoor scenes dominated by planar surfaces. We proposed a unified geometry-aware framework that integrates five complementary modalities: normal priors, depth priors, planar co-planarity constraints, mesh-based TSDF regularization, and edge-aware adaptive densification.
 
-Through a comprehensive ablation study across all $2^5 = 32$ possible combinations of these geometric priors, we systematically evaluated their individual and combined impact on visual fidelity (PSNR, SSIM, LPIPS) and efficiency metrics (Gaussian count, model size, training time). The experiments were conducted on the Deep Blending dataset (DrJohnson scene) and a newly collected UCU Indoor dataset, providing insights into how different regularization strategies perform in structured indoor environments.
+Through a comprehensive ablation study across all $2^5 = 32$ possible combinations of these geometric priors, we systematically evaluated their individual and combined impact on visual fidelity (PSNR, SSIM, LPIPS) and efficiency metrics (Gaussian count, model size, training time). The experiments were conducted on three indoor scenes from the Deep Blending dataset (DrJohnson, Library, and Playroom), providing insights into how different regularization strategies perform in structured indoor environments with dominant planar geometry.
 
 \section{Key Findings}
 
@@ -18,7 +18,7 @@ The comprehensive experimental evaluation revealed several important findings:
 
 \textbf{Normal priors} provide moderate improvements (+0.5 dB), but their contribution becomes less pronounced when depth and planarity constraints are already active, suggesting partial redundancy with stronger geometric cues.
 
-\textbf{Edge-aware adaptive densification} improves both quality (+0.6 dB PSNR) and efficiency (10--15\% reduction in Gaussian count), demonstrating that spatially varying primitive allocation strategies can simultaneously enhance fidelity and compactness.
+\textbf{Edge-aware adaptive densification} improves both quality (+0.6 dB PSNR) and efficiency (30--32\% reduction in Gaussian count), demonstrating that spatially varying primitive allocation strategies can simultaneously enhance fidelity and compactness.
 
 \textbf{Mesh-based regularization} shows modest visual quality improvements (+0.3 dB) but significantly benefits downstream mesh extraction quality, making it valuable for applications requiring explicit surface representations.
 
@@ -32,9 +32,9 @@ The best-performing configurations typically combine depth, planarity, and edge-
 
 \subsection{Efficiency Gains}
 
-Configurations incorporating edge-aware adaptive densification consistently achieve better efficiency, requiring 10--15\% fewer Gaussians to reach comparable PSNR levels compared to uniform densification strategies. This validates the hypothesis that adaptive primitive allocation improves compactness by concentrating representational capacity near structural boundaries while preventing over-densification in planar regions.
+Configurations incorporating edge-aware adaptive densification consistently achieve better efficiency, requiring 30--32\% fewer Gaussians to reach comparable PSNR levels compared to uniform densification strategies. This validates the hypothesis that adaptive primitive allocation improves compactness by concentrating representational capacity near structural boundaries while preventing over-densification in planar regions.
 
-Training time overhead from geometric priors is moderate (8--12\% for edge-aware and mesh-based configurations), and is generally justified by improvements in quality and compactness.
+Training time overhead from geometric priors varies significantly: edge-aware control adds only 2--3\% overhead, while mesh-based TSDF regularization increases training time by approximately 4$\times$ (from $\sim$44 minutes to $\sim$175 minutes). Mesh priors are therefore only justified when explicit surface extraction is required as a downstream task.
 
 \section{Limitations}
 
