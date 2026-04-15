@@ -131,6 +131,23 @@ D_r - D_{plane}
 
 Importantly, Gaussian centers are not explicitly projected onto planes; the constraint operates purely at the rendering level, allowing primitives to reorganize naturally during optimization.
 
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/planar_mask_overlay.png}
+        \caption{Segmented planar regions (each colour = one plane)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/plane_boundaries_pink.png}
+        \caption{Plane boundaries extracted from segmentation}
+    \end{subfigure}
+    \caption{Planar segmentation on a DrJohnson training view. SAM3 assigns each image region to a distinct plane (left); the resulting segment boundaries (right) define where planar co-planarity constraints are applied during Gaussian optimization.}
+    \label{fig:planar_segmentation}
+\end{figure}
+
 \subsection{Edge-Aware Adaptive Representation}
 
 In addition to geometric priors, we introduce a spatially adaptive densification mechanism. Structural edges are identified from SAM3 planar segment boundaries (which encode discontinuities in planar geometry).
@@ -150,6 +167,23 @@ During training, the OPPOSITE strategy is employed:
 \end{itemize}
 
 This adaptive allocation concentrates representational capacity where geometric detail is required while preventing unnecessary primitive growth in flat regions, achieving a more compact overall representation.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/edge_boundaries_on_image.png}
+        \caption{Plane boundary lines overlaid on scene}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/edge_extracted_lines.png}
+        \caption{Extracted structural line segments}
+    \end{subfigure}
+    \caption{Structural edge detection on a DrJohnson training view. Boundaries between segmented planes (left) are used to derive structural line segments (right), which define the edge proximity field guiding adaptive densification: Gaussians near these lines receive a higher split boost and smaller scale cap, while those in planar interiors are encouraged to grow larger.}
+    \label{fig:edge_detection}
+\end{figure}
 
 \subsubsection{Edge-Specific Normal Reinforcement}
 

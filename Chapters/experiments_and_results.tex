@@ -13,21 +13,35 @@ We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnso
     \begin{subfigure}{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view01.png}
-        \caption{Green room with portrait and door}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view02.png}
-        \caption{Patterned carpet floor view}
+        \caption{DrJohnson: green room}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view03.png}
-        \caption{Hallway leading to dining area}
+        \caption{DrJohnson: hallway}
     \end{subfigure}
-    \caption{Ground truth test views from the Deep Blending DrJohnson scene. The scene features large planar surfaces (walls, floor), low-texture regions, and challenging indoor lighting — conditions that benefit strongly from geometry-aware regularization.}
+    \hfill
+    \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view04.png}
+        \caption{DrJohnson: cabinet room}
+    \end{subfigure}
+
+    \vspace{0.5em}
+
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/library_sample.jpg}
+        \caption{Library: wooden furniture and stucco fireplace}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_figures/playroom_sample.jpg}
+        \caption{Playroom: large uniform walls and ceiling}
+    \end{subfigure}
+    \caption{Sample views from the three Deep Blending indoor scenes used in evaluation: DrJohnson (top row), Library, and Playroom (bottom row). Each scene features dominant planar surfaces, low-texture regions, and complex indoor lighting — characteristics that make them well-suited for assessing geometry-aware regularization.}
     \label{fig:dataset_samples}
 \end{figure}
 
@@ -300,35 +314,45 @@ Beyond quantitative metrics, we present qualitative visual comparisons demonstra
     \centering
     \setlength{\tabcolsep}{2pt}
     \renewcommand{\arraystretch}{0.5}
-    \begin{tabular}{cccc}
-        \small View 1 & \small View 2 & \small View 3 \\[2pt]
+    \begin{tabular}{ccccc}
+        \small View 1 & \small View 2 & \small View 3 & \small View 4 & \small View 5 \\[2pt]
         % Ground Truth row
-        \includegraphics[width=0.3\textwidth]{comparison_figures/drjohnson_gt_view01.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/drjohnson_gt_view02.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/drjohnson_gt_view03.png} \\
-        \multicolumn{3}{c}{\small\textbf{(a) Ground Truth}} \\[4pt]
+        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view01.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view02.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view03.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view04.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view05.png} \\
+        \multicolumn{5}{c}{\small\textbf{(a) Ground Truth}} \\[4pt]
         % 3D-GS row
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_3DGS_original.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_3DGS_Original.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_3DGS_Original.png} \\
-        \multicolumn{3}{c}{\small\textbf{(b) 3D Gaussian Splatting} — 740 MB} \\[4pt]
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_3DGS_original.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_3DGS_Original.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_3DGS_Original.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_3DGS.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_3DGS.png} \\
+        \multicolumn{5}{c}{\small\textbf{(b) 3D Gaussian Splatting} — 740 MB} \\[4pt]
         % GeoGaussian row
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_GeoGaussian.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_GeoGaussian.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_GeoGaussian.png} \\
-        \multicolumn{3}{c}{\small\textbf{(c) GeoGaussian} — 281 MB} \\[4pt]
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_GeoGaussian.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_GeoGaussian.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_GeoGaussian.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_GeoGaussian.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_GeoGaussian.png} \\
+        \multicolumn{5}{c}{\small\textbf{(c) GeoGaussian} — 281 MB} \\[4pt]
         % PlanarGS row
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_PlanarGS.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_PlanarGS.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_PlanarGS.png} \\
-        \multicolumn{3}{c}{\small\textbf{(d) PlanarGS} — 410 MB} \\[4pt]
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_PlanarGS.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_PlanarGS.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_PlanarGS.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_PlanarGS.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_PlanarGS.png} \\
+        \multicolumn{5}{c}{\small\textbf{(d) PlanarGS} — 410 MB} \\[4pt]
         % Ours row
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_PlanarGS_Opus_new.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_PlanarGS_Opus_new.png} &
-        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_PlanarGS_Opus_new.png} \\
-        \multicolumn{3}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_PlanarGS_Opus_new.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_PlanarGS_Opus_new.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_PlanarGS_Opus_new.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_PlanarGS_Opus_new.png} &
+        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_PlanarGS_Opus_new.png} \\
+        \multicolumn{5}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
     \end{tabular}
-    \caption{Qualitative comparison across three DrJohnson viewpoints. From top to bottom: ground truth, 3D-GS (740 MB), GeoGaussian (281 MB), PlanarGS (410 MB), and our method (222 MB). Model sizes reflect the PLY point-cloud file at 30{,}000 iterations. Our method achieves a 70\% size reduction relative to 3D-GS while preserving visual quality through edge-aware adaptive densification.}
+    \caption{Qualitative comparison across five DrJohnson viewpoints. From top to bottom: ground truth, 3D-GS (740 MB), GeoGaussian (281 MB), PlanarGS (410 MB), and our method (222 MB). Model sizes reflect the PLY point-cloud file at 30{,}000 iterations. Our method achieves a 70\% size reduction relative to 3D-GS while preserving visual quality through edge-aware adaptive densification.}
     \label{fig:qualitative_comparison}
 \end{figure}
 
