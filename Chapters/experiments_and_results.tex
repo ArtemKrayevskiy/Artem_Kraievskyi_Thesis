@@ -12,30 +12,24 @@ We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnso
     \centering
     \begin{subfigure}{0.32\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_boxes_vis.png}
-        \caption{DrJohnson ground truth}
+        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view01.png}
+        \caption{Green room with portrait and door}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.32\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_plane_boundaries.png}
-        \caption{Detected planar boundaries}
+        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view02.png}
+        \caption{Patterned carpet floor view}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.32\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_visualizations.png}
-        \caption{Planar segmentation overlay}
+        \includegraphics[width=\textwidth]{comparison_figures/drjohnson_gt_view03.png}
+        \caption{Hallway leading to dining area}
     \end{subfigure}
-    \caption{Deep Blending DrJohnson scene samples showing indoor furniture, planar structures, and multi-view capture characteristics used in our evaluation.}
+    \caption{Ground truth test views from the Deep Blending DrJohnson scene. The scene features large planar surfaces (walls, floor), low-texture regions, and challenging indoor lighting — conditions that benefit strongly from geometry-aware regularization.}
     \label{fig:dataset_samples}
 \end{figure}
-
-\subsection{UCU Indoor Dataset}
-
-In addition to standard benchmarks, we collected a new dataset in collaboration with the UCU Machine Learning Lab, referred to as \textit{UCU Indoor Scenes}. The dataset contains several indoor environments captured using a handheld camera, with camera poses and sparse point clouds reconstructed using COLMAP~\cite{schoenberger2016sfm}.
-
-The primary motivation for this dataset is to provide a more realistic evaluation setting for geometry-aware reconstruction methods. The scenes include large uniform surfaces, low-texture regions, and complex spatial layouts that are often underrepresented in existing benchmarks. These characteristics make the dataset especially suitable for analyzing the effect of structural and planar constraints in real-world capture conditions where perfect multi-view consistency is not guaranteed.
 
 \section{Experimental Setup}
 
@@ -83,9 +77,9 @@ Depth prior start iteration & 7,000 \\
 Planar loss start iteration & 14,000 \\
 Normal prior start iteration & 20,000 \\
 \midrule
-Edge split boost factor & 1.5 \\
-Center split reduction factor & 0.7 \\
-Edge scale minimum ($s_{min}$) & 1.0 \\
+Edge split boost factor & 2.5 \\
+Center split reduction factor & 0.4 \\
+Edge scale minimum ($s_{min}$) & 0.3 \\
 Center scale maximum ($s_{max}$) & 2.0 \\
 \midrule
 TSDF voxel size & 0.02 m \\
@@ -282,16 +276,9 @@ Analyzing Table~\ref{tab:ablation_results}, we observe several important trade-o
 
 \subsection{Efficiency Analysis}
 
-A primary contribution of this work is demonstrating that geometric priors enable compact scene representations without sacrificing visual quality. Figure~\ref{fig:efficiency} plots the trade-off between PSNR and Gaussian count across all 33 configurations, revealing several key insights.
+A primary contribution of this work is demonstrating that geometric priors enable compact scene representations without sacrificing visual quality. The trade-off between PSNR and Gaussian count across all 33 configurations reveals several key insights.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{efficiency_analysis.pdf}
-    \caption{Efficiency analysis showing PSNR versus Gaussian count for all 33 configurations. Blue markers denote edge-aware configurations achieving superior compactness; green triangles represent other prior combinations; red square shows baseline. Edge-aware methods consistently achieve better efficiency, reducing Gaussian count by 30--32\% while maintaining competitive PSNR.}
-    \label{fig:efficiency}
-\end{figure}
-
-\textbf{Key Observation:} Configurations incorporating edge-aware control consistently achieve better efficiency, requiring 30-32\% fewer Gaussians to reach comparable PSNR levels compared to baseline. This validates the hypothesis that adaptive densification strategies improve compactness by concentrating representational capacity near structural boundaries while preventing over-densification in homogeneous planar regions.
+\textbf{Key Observation:} Configurations incorporating edge-aware control consistently achieve better efficiency, requiring 30--32\% fewer Gaussians to reach comparable PSNR levels compared to baseline. This validates the hypothesis that adaptive densification strategies improve compactness by concentrating representational capacity near structural boundaries while preventing over-densification in homogeneous planar regions.
 
 Specifically, comparing configurations with and without edge-aware control:
 
@@ -309,30 +296,45 @@ Model file sizes correlate directly with Gaussian count, with edge-aware configu
 
 Beyond quantitative metrics, we present qualitative visual comparisons demonstrating that our method achieves significant model size reduction while preserving rendering quality. Figure~\ref{fig:qualitative_comparison} shows renders from the DrJohnson scene across three methods (3D-GS baseline, PlanarGS, and our edge-aware optimized configuration) at three different viewpoints.
 
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
-    \begin{subfigure}{0.22\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Experiments/3DGSDRjohnson/test/ours_30000/renders/00000.png}
-        \caption*{\textbf{3D-GS}\\740 MB}
-    \end{subfigure}
-    \begin{subfigure}{0.22\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Experiments/PlanarGS/output/DrJohnson/test/ours_30000/renders/IMG_6292.png}
-        \caption*{\textbf{PlanarGS}\\510 MB}
-    \end{subfigure}
-    \begin{subfigure}{0.22\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{PlanarGSWithOpus/ToDownload/outputAfterOpus_new/test/ours_30000/renders/IMG_6292.png}
-        \caption*{\textbf{Ours (Optimized)}\\222 MB}
-    \end{subfigure}
-    \caption{Qualitative comparison at three DrJohnson viewpoints. Our method achieves 70\% model size reduction (740 MB $\rightarrow$ 222 MB) compared to baseline 3D-GS while maintaining visual rendering quality. PlanarGS achieves 31\% reduction (510 MB).}
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{0.5}
+    \begin{tabular}{cccc}
+        \small View 1 & \small View 2 & \small View 3 \\[2pt]
+        % Ground Truth row
+        \includegraphics[width=0.3\textwidth]{comparison_figures/drjohnson_gt_view01.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/drjohnson_gt_view02.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/drjohnson_gt_view03.png} \\
+        \multicolumn{3}{c}{\small\textbf{(a) Ground Truth}} \\[4pt]
+        % 3D-GS row
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_3DGS_original.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_3DGS_Original.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_3DGS_Original.png} \\
+        \multicolumn{3}{c}{\small\textbf{(b) 3D Gaussian Splatting} — 740 MB} \\[4pt]
+        % GeoGaussian row
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_GeoGaussian.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_GeoGaussian.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_GeoGaussian.png} \\
+        \multicolumn{3}{c}{\small\textbf{(c) GeoGaussian} — 281 MB} \\[4pt]
+        % PlanarGS row
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_PlanarGS.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_PlanarGS.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_PlanarGS.png} \\
+        \multicolumn{3}{c}{\small\textbf{(d) PlanarGS} — 410 MB} \\[4pt]
+        % Ours row
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_01_PlanarGS_Opus_new.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_02_PlanarGS_Opus_new.png} &
+        \includegraphics[width=0.3\textwidth]{comparison_figures/view_03_PlanarGS_Opus_new.png} \\
+        \multicolumn{3}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
+    \end{tabular}
+    \caption{Qualitative comparison across three DrJohnson viewpoints. From top to bottom: ground truth, 3D-GS (740 MB), GeoGaussian (281 MB), PlanarGS (410 MB), and our method (222 MB). Model sizes reflect the PLY point-cloud file at 30{,}000 iterations. Our method achieves a 70\% size reduction relative to 3D-GS while preserving visual quality through edge-aware adaptive densification.}
     \label{fig:qualitative_comparison}
 \end{figure}
 
 \textbf{Key Observations:} 
 
-The visual quality across methods appears subjectively similar in standard RGB renderings, despite dramatic differences in model size. The baseline 3D-GS uses 740 MB for the DrJohnson scene, while our optimized configuration requires only 222 MB—a 70\% reduction in storage requirements. Intermediate method (PlanarGS) achieves 31\% reduction at 510 MB. 
+The visual quality across methods appears subjectively similar in standard RGB renderings, despite dramatic differences in model size. Baseline 3D-GS requires 740 MB for the DrJohnson scene. GeoGaussian reduces this to 281 MB (62\% reduction) through geometry-guided initialization. PlanarGS achieves 410 MB (45\% reduction) via planar primitive flattening. Our method reaches 222 MB (70\% reduction) while applying edge-aware adaptive densification on top of the PlanarGS backbone.
 
 This substantial compactness improvement is enabled by:
 \begin{itemize}
