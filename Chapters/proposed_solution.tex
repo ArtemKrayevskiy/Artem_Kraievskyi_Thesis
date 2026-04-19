@@ -132,7 +132,7 @@ All geometric constraints are applied in rendering space rather than directly co
 \subsubsection{Depth Prior}
 \label{sec:depth_prior}
 
-Depth prior maps $D_p$ are estimated per-view using DUST3R (Dense Unsupervised Surface Transformation via Regression), a fast monocular depth estimator. These priors are aligned with rendered depth $D_r$ to stabilize optimization in textureless regions:
+Depth prior maps $D_p$ are estimated per-view using DUSt3R~\cite{dust3r} (Section~\ref{sec:dust3r}), a Transformer-based dense reconstruction model. These priors are aligned with rendered depth $D_r$ to stabilize optimization in textureless regions:
 
 \begin{equation}
 \mathcal{L}_{depth}
@@ -147,7 +147,7 @@ reducing floating artifacts and improving geometric consistency across views.
 \subsubsection{Normal Prior}
 \label{sec:normal_prior}
 
-Surface normal prior maps $N_p$ are also estimated using DUST3R per-view. These normals are regularized alongside rendered normals $N_r$:
+Surface normal prior maps $N_p$ are also estimated using DUSt3R~\cite{dust3r} per-view. These normals are regularized alongside rendered normals $N_r$:
 
 \begin{equation}
 \mathcal{L}_{normal}
@@ -164,7 +164,7 @@ promoting locally coherent surface orientation and reducing normal inconsistenci
 \subsubsection{Planar Regularization}
 \label{sec:planar_prior}
 
-Planar segmentation priors are extracted from single images using SAM3 (Segment Anything Model v3), which identifies and delineates planar regions. For each segmented planar region, a plane is fitted to the rendered depth map. Let $D_{plane}$ denote the depth values induced by this fitted plane. The planar consistency loss is:
+Planar segmentation priors are extracted from single images using SAM~3~\cite{sam3} (Section~\ref{sec:sam3}), which identifies and delineates planar regions via concept-based segmentation. For each segmented planar region, a plane is fitted to the rendered depth map. Let $D_{plane}$ denote the depth values induced by this fitted plane. The planar consistency loss is:
 
 \begin{equation}
 \mathcal{L}_{planar}

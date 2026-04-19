@@ -10,17 +10,11 @@ Through a comprehensive ablation study across all $2^5 = 32$ possible combinatio
 
 The comprehensive experimental evaluation revealed several important findings about the contribution of individual modalities and their interactions.
 
-\textbf{Depth priors} provide substantial stabilization during optimization, particularly in textureless regions, contributing an average improvement of approximately +0.8 dB in PSNR. Depth supervision effectively reduces floating artifacts and improves depth consistency across viewpoints.
+Among individual priors, planar co-planarity constraints deliver the strongest contribution, improving PSNR by approximately +1.2 dB on average in the indoor scenes tested — a result consistent with the thesis hypothesis that structural priors aligned with dominant scene geometry are the most effective. Depth priors follow as the second most impactful modality (+0.8 dB), providing stability in textureless regions by reducing floating artifacts and improving depth consistency across viewpoints. Normal priors offer more moderate gains (+0.5 dB) and exhibit partial redundancy when depth and planarity constraints are already active, suggesting that all three modalities encode partially overlapping geometric information.
 
-\textbf{Planar co-planarity constraints} deliver the strongest individual contribution (+1.2 dB PSNR on average) in indoor scenes with dominant planar surfaces. This confirms that structural constraints tailored to scene geometry are highly effective when geometric assumptions align with scene characteristics.
+Edge-aware adaptive densification stands out as the only modality that simultaneously improves both quality and efficiency: it yields a +0.6 dB PSNR gain while reducing the Gaussian count by 30--32\%, demonstrating that spatially varying primitive allocation is a more principled strategy than uniform densification. Mesh-based TSDF regularization provides only modest visual quality improvements (+0.3 dB), but benefits downstream surface extraction quality and is therefore most valuable in applications requiring explicit meshes — at the cost of a roughly 4$\times$ increase in training time (from $\sim$44 to $\sim$175 minutes).
 
-\textbf{Normal priors} provide moderate improvements (+0.5 dB), but their contribution becomes less pronounced when depth and planarity constraints are already active, suggesting partial redundancy with stronger geometric cues.
-
-\textbf{Edge-aware adaptive densification} improves both quality (+0.6 dB PSNR) and efficiency (30--32\% reduction in Gaussian count), demonstrating that spatially varying primitive allocation strategies can simultaneously enhance fidelity and compactness.
-
-\textbf{Mesh-based regularization} shows modest visual quality improvements (+0.3 dB) but significantly benefits downstream mesh extraction quality, making it valuable for applications requiring explicit surface representations. It also increases training time by approximately 4$\times$ (from $\sim$44 minutes to $\sim$175 minutes).
-
-The ablation study also revealed that geometric priors are not uniformly additive. Combining depth, planarity, and edge-aware control yields strong results, but adding all five priors simultaneously does not consistently outperform selective combinations. This suggests that certain priors introduce conflicting gradients or over-constrain optimization. Normal priors exhibit clear redundancy with depth and planarity in structured environments, and edge-aware control adds only 2--3\% training overhead while consistently achieving 30--32\% fewer Gaussians.
+A broader insight from the ablation study is that geometric priors are not uniformly additive. Combining depth, planarity, and edge-aware control yields strong results, but enabling all five priors simultaneously does not consistently outperform selective combinations, suggesting that certain priors introduce conflicting gradients or over-constrain the optimization. These interactions underscore the importance of systematic ablation over exhaustive regularization.
 
 \section{Limitations}
 
