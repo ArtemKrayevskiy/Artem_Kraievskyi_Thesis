@@ -3,52 +3,40 @@
 
 \section{Motivation}
 
-Modern computer vision and graphics applications -- from AR/VR systems to robotics and real-time rendering -- depend critically on 3D scene representations that are both compact and geometrically accurate. In AR/VR, for instance, convincing user experiences require precise geometry: objects must stay anchored in place, occlusions need to look correct, and the overall spatial structure must remain stable under user movement. At the same time, these systems operate under strict real-time and memory constraints, so representations cannot be arbitrarily large or slow to process. Current 3D Gaussian Splatting approaches often require 500+ MB per scene, making them impractical for deployment on mobile devices or real-time streaming applications. Similar demands arise in robotics, where reliable 3D understanding directly impacts localization, path planning, and safe interaction with the environment -- errors in geometry can have tangible consequences. Likewise, in graphics pipelines tasked with rendering complex scenes, the representation must scale efficiently without sacrificing visual quality.
+Modern computer vision and graphics applications -- from AR/VR systems to robotics and real-time rendering -- depend critically on 3D scene representations that are both compact and geometrically accurate. Indoor environments are particularly demanding in this respect: rooms, offices, and public spaces are dominated by large planar structures — walls, floors, ceilings — whose geometry must be reconstructed faithfully for downstream tasks such as localization, navigation, and scene understanding. In AR/VR, for instance, convincing indoor experiences require precise geometry: virtual objects must stay anchored in place, occlusions must look correct, and the spatial layout must remain stable under user movement. At the same time, these systems operate under strict real-time and memory constraints, so representations cannot be arbitrarily large or slow to process. Current 3D Gaussian Splatting approaches often require 500+ MB per scene, making them impractical for deployment on mobile devices or real-time streaming applications. Similar demands arise in indoor robotics, where reliable 3D understanding directly impacts localization, path planning, and safe interaction with the environment.
 
 Recent neural rendering methods have made impressive strides in synthesizing novel views from sparse image sets. Techniques such as Neural Radiance Fields (NeRFs)~\cite{mildenhall2020nerf} and, more recently, 3D Gaussian Splatting (3DGS)~\cite{kerbl20233dgs}, can produce highly photorealistic images by learning scene representations directly from photographs. 3DGS, in particular, stands out for its real-time rendering performance and memory efficiency, making it attractive for interactive and large-scale applications. However, these methods are primarily optimized for appearance fidelity rather than explicit geometric correctness.
 
 A key challenge is that depth and surface structure emerge implicitly in these models rather than being explicitly enforced. Without strong geometric supervision, reconstructed scenes often suffer from depth inconsistencies across viewpoints, incorrect scale, and poorly defined surfaces, especially in challenging regions such as textureless walls or repetitive patterns. Individual primitives are optimized largely independently, which can result in fragmented or noisy surface reconstructions that appear acceptable in rendered images but degrade when evaluated geometrically. As a result, while neural rendering techniques excel at visual synthesis, the underlying 3D structure is frequently unreliable for applications that require accurate surface reconstruction or metrically consistent representations.
 
-Figure~\ref{fig:normal_comparison_intro} makes the geometric quality problem concrete. Surface normal maps encode per-pixel surface orientation and expose geometric inconsistencies that are invisible in standard RGB renders. The red-boxed region is the same across all methods and reveals a clear progression: standard 3DGS produces incoherent, structureless normals in areas that should be flat walls — a sign that the underlying geometry is noisy and fragmented. Many recent methods attempt to address this through geometry-aware initialization (GeoGaussian), planar constraints (PlanarGS), and other structural regularization strategies, each making measurable progress. Our goal in this thesis is not to outperform state-of-the-art methods in rendering quality, but to demonstrate that comparable geometric fidelity can be achieved at a fraction of the storage cost — 222~MB versus 740~MB for vanilla 3DGS — through principled integration of geometric priors and edge-aware adaptive densification.
+Figure~\ref{fig:normal_comparison_intro} makes the geometric quality problem concrete. Surface normal maps encode per-pixel surface orientation — each pixel's color represents the direction the surface faces — and expose geometric inconsistencies that are invisible in standard RGB renders. Standard 3DGS has no native mechanism for producing coherent surface normals, since the geometry it learns is implicit and unreliable. Methods such as PlanarGS address this through planar co-planarity constraints, achieving structured and geometrically consistent reconstructions. One of the central objectives of this thesis is therefore to preserve the level of geometric fidelity that PlanarGS provides, while substantially reducing the storage footprint. Figure~\ref{fig:normal_comparison_intro} shows a direct comparison: PlanarGS (410~MB) and our method (222~MB) produce surface normals of comparable coherence across all four viewpoints, demonstrating that the same geometric quality can be maintained at 46\% less storage.
 
 \begin{figure}[t]
     \centering
     \setlength{\tabcolsep}{2pt}
     \renewcommand{\arraystretch}{0.5}
     \begin{tabular}{cccc}
-        \small View 1 & \small View 3 & \small View 4 & \small View 5 \\[2pt]
+        \small View 1 & \small View 2 & \small View 3 & \small View 4 \\[2pt]
         % Ground Truth row
-        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view01_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view03_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view04_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view05_rect.png} \\
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view01.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view03.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view04.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view05.png} \\
         \multicolumn{4}{c}{\small\textbf{(a) Ground Truth}} \\[4pt]
-        % 3DGS normals
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view01_3DGS_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view03_3DGS_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view04_3DGS_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view05_3DGS_rect.png} \\
-        \multicolumn{4}{c}{\small\textbf{(b) 3D Gaussian Splatting} — 740 MB} \\[4pt]
-        % GeoGaussian normals
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view01_GeoGaussian_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view03_GeoGaussian_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view04_GeoGaussian_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view05_GeoGaussian_rect.png} \\
-        \multicolumn{4}{c}{\small\textbf{(c) GeoGaussian} — 281 MB} \\[4pt]
         % PlanarGS normals
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view01_PlanarGS_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view03_PlanarGS_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view04_PlanarGS_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view05_PlanarGS_rect.png} \\
-        \multicolumn{4}{c}{\small\textbf{(d) PlanarGS} — 410 MB} \\[4pt]
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view01_PlanarGS.jpg} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view03_PlanarGS.jpg} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view04_PlanarGS.jpg} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view05_PlanarGS.jpg} \\
+        \multicolumn{4}{c}{\small\textbf{(b) PlanarGS surface normals} — 410 MB} \\[4pt]
         % Ours normals
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view01_Ours_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view03_Ours_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view04_Ours_rect.png} &
-        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view05_Ours_rect.png} \\
-        \multicolumn{4}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view01_Ours.jpg} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view03_Ours.jpg} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view04_Ours.jpg} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/normal_view05_Ours.jpg} \\
+        \multicolumn{4}{c}{\small\textbf{(c) Ours (PlanarGS + edge-aware) surface normals} — 222 MB} \\
     \end{tabular}
-    \caption{Surface normal maps rendered from four DrJohnson viewpoints. Row~(a) shows ground truth RGB images for reference. Rows~(b)--(e) show rendered normals, which directly encode per-pixel surface orientation and reveal geometric quality differences that are invisible in RGB renders. The red rectangle marks the same region across all methods. Standard 3DGS (b) produces incoherent normals with no discernible surface structure in the highlighted region. GeoGaussian (c) shows improvement from geometry-aware initialization but remains noisy. PlanarGS (d) achieves visibly cleaner planar normals. Our method (e) produces the most coherent surfaces, matching PlanarGS quality while storing the scene in only 222~MB — 70\% less than 3DGS.}
+    \caption{Surface normal maps rendered from four DrJohnson viewpoints. Row~(a) shows ground truth RGB images for reference. Rows~(b) and~(c) show rendered surface normals, where each pixel's color encodes the local surface orientation. PlanarGS~(b) achieves coherent, structured normals through planar co-planarity constraints. Our method~(c) matches this geometric quality while reducing the model size from 410~MB to 222~MB — a 46\% reduction — by replacing over-densified planar interiors with fewer, larger Gaussian primitives.}
     \label{fig:normal_comparison_intro}
 \end{figure}
 
@@ -71,4 +59,4 @@ The contributions of this thesis are summarized as follows:
 
 \section{Structure Of The Thesis}
 
-This thesis is organized as follows. Chapter~2 reviews related work on recent advances in 3D Gaussian Splatting, with a particular focus on geometry-aware extensions that incorporate depth, normal, surface-based constraints, and planar regularization. Chapter~3 introduces the theoretical background necessary for understanding the proposed approach, including camera geometry, Structure-from-Motion, and 3D Gaussian Splatting fundamentals. Chapter~4 presents the proposed unified framework, detailing the integration of five geometric modalities: normal priors, depth priors, planar constraints, mesh regularization, and edge-aware adaptive densification. Chapter~5 describes the comprehensive experimental methodology and results, including the systematic ablation study across 32 configurations, efficiency analysis, and modality-wise impact assessment on three indoor scenes from the Deep Blending dataset. Finally, Chapter~6 summarizes the main findings, discusses the limitations of the proposed approach, and outlines directions for future work.
+Chapter~2 surveys the landscape of geometry-aware Gaussian Splatting, covering depth and normal regularization, surface-based constraints, planar priors, and initialization strategies. Chapter~3 establishes the theoretical foundations — camera geometry, Structure-from-Motion, 3DGS rendering, and the monocular estimators (DUSt3R, SAM~3) that supply geometric priors in our pipeline. Chapter~4 presents the proposed unified framework: the five geometric modalities, their loss formulations, and the edge-aware adaptive densification mechanism. Chapter~5 reports the experimental results, including the 32-configuration ablation study, efficiency analysis, and qualitative comparison on three indoor scenes from the Deep Blending dataset. Chapter~6 draws conclusions, discusses limitations, and points to future directions.
