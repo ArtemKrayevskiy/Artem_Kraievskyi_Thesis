@@ -114,7 +114,7 @@ Figure~\ref{fig:unified_pipeline} presents the overall architecture of the propo
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{pipeline_unified.pdf}
-    \caption{Unified geometry-aware 3D Gaussian Splatting framework.}
+    \caption{Unified geometry-aware 3D Gaussian Splatting framework. The pipeline integrates five monocular geometric priors (edges from plane boundaries, planes, depth, normals) and TSDF-based mesh data to regularize Gaussian optimization through six loss terms: $\mathcal{L}_{rgb}$, $\mathcal{L}_{edge}$, $\mathcal{L}_{planar}$, $\mathcal{L}_{depth}$, $\mathcal{L}_{normal}$, and $\mathcal{L}_{mesh}$. Each prior flows downward to its corresponding loss term, which then contributes to the unified optimization objective. Solid arrows indicate data flow dependencies.}
     \label{fig:unified_pipeline}
 \end{figure}
 
