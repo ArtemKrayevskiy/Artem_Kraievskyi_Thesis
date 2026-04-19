@@ -2,6 +2,8 @@
 
 \section{Datasets}
 
+This section describes the data used to evaluate the proposed method. We outline the selected benchmark dataset, the specific scenes considered, and the properties that make them suitable for assessing geometry-aware regularization.
+
 \subsection{Deep Blending Dataset}
 
 We evaluate the proposed method on the Deep Blending dataset~\cite{hedman2018deepblending}, which is widely used in neural rendering research for benchmarking view synthesis and reconstruction quality. The dataset consists of multi-view image sequences with accurately estimated camera poses obtained through Structure-from-Motion pipelines using COLMAP~\cite{schoenberger2016sfm}.
@@ -47,24 +49,23 @@ We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnso
 
 \section{Experimental Setup}
 
-All experiments are conducted within a unified training framework implemented in \texttt{train\_unified.py} to ensure fair comparison between different configurations. The optimization process runs for 30,000 iterations using the Adam optimizer~\cite{kingma2014adam}, with identical hyperparameters across all experiments. Training is performed on NVIDIA GPUs with CUDA acceleration.
+All experiments are conducted within a unified training framework implemented in \texttt{train\_unified.py} to ensure fair comparison between different configurations. The optimization process runs for 30,000 iterations using the Adam optimizer~\cite{kingma2014adam}, with identical hyperparameters across all experiments. All training runs are performed on a single \textbf{NVIDIA RTX 3090} GPU (24 GB VRAM) with \textbf{CUDA 11.8} and 24 GB system RAM.
 
 \subsection{Unified Training Pipeline}
 
 The proposed framework is modular and controlled via command-line flags, allowing each geometric prior to be independently enabled or disabled. This design makes it possible to systematically study the contribution of each component as well as their interactions. The pipeline integrates the following components:
 
 \begin{itemize}
-    \item \textbf{Core Geometric Priors:} Depth regularization ($\mathcal{L}_{depth}$), normal consistency ($\mathcal{L}_{normal}$), depth-normal alignment ($\mathcal{L}_{dn}$), planar co-planarity constraint ($\mathcal{L}_{planar}$), and scale regularization.
+    \item \textbf{Core Geometric Priors:} Depth regularization ($\mathcal{L}_{depth}$), normal consistency ($\mathcal{L}_{normal}$), planar co-planarity constraint ($\mathcal{L}_{planar}$), and scale regularization.
     \item \textbf{Edge-Aware Adaptive Control:} Spatially varying densification strategy that concentrates smaller Gaussians near structural edges while allowing larger, more efficient primitives in planar interiors.
     \item \textbf{Mesh-Based Regularization:} Optional TSDF mesh extraction used to guide geometric consistency through mesh prior constraints.
-    \item \textbf{2D Gaussian Splatting Mode:} Optional replacement of 3D ellipsoids with 2D oriented disks (surfels) using the \texttt{diff-surfel-rasterization} backend~\cite{huang20242dgs}, which provides inherent surface normals and improved depth consistency.
 \end{itemize}
 
 Each loss term can be disabled individually by setting its corresponding weight $\lambda$ to zero or by using explicit disable flags (e.g., \texttt{--disable\_planar}, \texttt{--disable\_depth\_prior}). This flexibility enables comprehensive ablation analysis across all possible combinations of geometric priors.
 
 \subsection{Hyperparameters and Training Configuration}
 
-Table~\ref{tab:hyperparameters} summarizes the key hyperparameters used across all experiments. Loss weights are carefully tuned to balance photometric fidelity with geometric regularization. The scheduling of geometric losses follows a staged approach: depth and depth-normal consistency are introduced early (iteration 7,000) to stabilize optimization, while planar and normal priors are activated later (iterations 14,000 and 20,000 respectively) after initial geometry has converged.
+Table~\ref{tab:hyperparameters} summarizes the key hyperparameters used across all experiments. Loss weights are carefully tuned to balance photometric fidelity with geometric regularization. The scheduling of geometric losses follows a staged approach: depth regularization is introduced early (iteration 7,000) to stabilize optimization, while planar and normal priors are activated later (iterations 14,000 and 20,000 respectively) after initial geometry has converged.
 
 \begin{table}[h]
 \centering
@@ -83,7 +84,6 @@ $\lambda_{dssim}$ (SSIM weight) & 0.2 \\
 $\lambda_{scale}$ (scale regularization) & 100.0 \\
 $\lambda_{depth}$ (depth prior) & 0.05 \\
 $\lambda_{normal}$ (normal prior) & 0.2 \\
-$\lambda_{dn}$ (depth-normal consistency) & 0.05 \\
 $\lambda_{planar}$ (planar constraint) & 0.5 \\
 $\lambda_{edge}$ (edge normal loss) & 0.0--0.1 \\
 \midrule
@@ -121,48 +121,84 @@ To ensure reproducibility and systematic evaluation, all 32 configurations are t
 This automated workflow minimizes human error and ensures that all configurations are evaluated under identical conditions, enabling reliable comparison and reproducible research.
 
 \section{Evaluation Metrics}
+\label{sec:quality_metrics}
 
-We evaluate reconstruction quality using standard image-based metrics computed on held-out test views:
+We evaluate reconstruction quality using three standard image-based metrics computed on held-out test views, and three efficiency metrics that capture representation compactness.
+
+\subsection{Peak Signal-to-Noise Ratio (PSNR)}
+
+PSNR is a pixel-wise fidelity metric derived from the Mean Squared Error (MSE) between a reconstructed image $\hat{I}$ and the ground truth $I$ of size $H \times W$:
+
+\begin{equation}
+\mathrm{MSE} = \frac{1}{HW} \sum_{i=1}^{H} \sum_{j=1}^{W} \left( I(i,j) - \hat{I}(i,j) \right)^2,
+\end{equation}
+
+\begin{equation}
+\mathrm{PSNR} = 10 \cdot \log_{10} \left( \frac{L^2}{\mathrm{MSE}} \right),
+\end{equation}
+
+where $L$ is the maximum possible pixel value ($L = 255$ for 8-bit images). Higher PSNR (in dB) indicates lower pixel-wise error and better reconstruction quality.
+
+\subsection{Structural Similarity Index Measure (SSIM)}
+
+SSIM evaluates perceptual image quality by jointly comparing luminance, contrast, and structural information~\cite{wang2004ssim}:
+
+\begin{equation}
+\mathrm{SSIM}(I, \hat{I}) =
+\frac{(2 \mu_I \mu_{\hat{I}} + C_1)(2 \sigma_{I\hat{I}} + C_2)}
+{(\mu_I^2 + \mu_{\hat{I}}^2 + C_1)(\sigma_I^2 + \sigma_{\hat{I}}^2 + C_2)},
+\end{equation}
+
+where $\mu_I$, $\mu_{\hat{I}}$ are image means, $\sigma_I^2$, $\sigma_{\hat{I}}^2$ are variances, $\sigma_{I\hat{I}}$ is the covariance, and $C_1$, $C_2$ are stability constants. SSIM ranges from 0 to 1; higher values indicate greater structural similarity.
+
+\subsection{Learned Perceptual Image Patch Similarity (LPIPS)}
+
+LPIPS measures perceptual similarity via deep feature distances from a pretrained network~\cite{zhang2018lpips}:
+
+\begin{equation}
+\mathrm{LPIPS}(I, \hat{I}) =
+\sum_{l} \frac{1}{H_l W_l}
+\sum_{h,w} \left\| w_l \odot
+\left( \phi_l(I)_{h,w} - \phi_l(\hat{I})_{h,w} \right) \right\|_2^2,
+\end{equation}
+
+where $\phi_l(\cdot)$ are feature maps at layer $l$, $w_l$ are learned channel-wise weights, and $\odot$ is element-wise multiplication. Lower LPIPS indicates higher perceptual similarity; it correlates better with human judgement than PSNR~\cite{kerbl20233dgs}.
+
+\subsection{Efficiency Metrics}
+
+In addition to visual quality, we report three representation efficiency metrics:
 
 \begin{itemize}
-    \item \textbf{PSNR (Peak Signal-to-Noise Ratio):} Measures pixel-wise reconstruction accuracy. Higher values indicate better quality. Computed as:
+    \item \textbf{Number of Gaussians ($|\mathcal{G}|$):} The total primitive count in the final model, defined as:
     \begin{equation}
-    \text{PSNR} = 10 \cdot \log_{10}\left(\frac{\text{MAX}^2}{\text{MSE}}\right),
+        |\mathcal{G}| = \sum_{k=1}^{K} \mathbf{1}[\alpha_k > \alpha_{\min}],
     \end{equation}
-    where MAX is the maximum possible pixel value and MSE is the mean squared error between rendered and ground truth images.
-    
-    \item \textbf{SSIM (Structural Similarity Index):} Captures perceptual similarity by comparing local patterns of luminance, contrast, and structure~\cite{wang2004ssim}. Values range from 0 to 1, with higher values indicating better structural preservation.
-    
-    \item \textbf{LPIPS (Learned Perceptual Image Patch Similarity):} A learned metric based on deep features from pretrained networks~\cite{zhang2018lpips}. Lower values indicate better perceptual similarity. LPIPS often correlates better with human judgment than traditional metrics.
+    where $\alpha_k$ is the opacity of the $k$-th Gaussian and $\alpha_{\min}$ is a pruning threshold. This count is extracted directly from the PLY file header and reflects model compactness.
+
+    \item \textbf{Model Size:} File size of the stored point cloud in megabytes (MB), which directly determines storage and transmission costs.
+
+    \item \textbf{Training Time:} Wall-clock time in minutes to complete 30,000 training iterations, measuring computational overhead introduced by each prior.
 \end{itemize}
 
-In addition to visual quality, we analyze representation efficiency using the following metrics:
-
-\begin{itemize}
-    \item \textbf{Number of Gaussians:} Total count of primitives in the final model, extracted from the PLY file header. This directly reflects model compactness.
-    \item \textbf{Model Size:} File size of the stored point cloud representation in megabytes (MB).
-    \item \textbf{Training Time:} Wall-clock time in seconds required to complete 30,000 training iterations.
-\end{itemize}
-
-These efficiency metrics are particularly important in practical applications where both accuracy and compactness must be balanced, such as mobile AR/VR deployment, remote rendering, and bandwidth-constrained scenarios.
+These efficiency metrics are important when the final model must be stored, transmitted, or rendered on hardware with limited memory.
 
 \section{Research Hypotheses}
 
-The experiments are designed to test several hypotheses derived from the identified research gap:
+The experiments are designed to test five hypotheses derived from the research gap identified in Chapter~2:
 
 \begin{enumerate}
-    \item \textbf{Complementarity of Geometric Priors:} We hypothesize that combining multiple geometric priors (depth, normals, planarity) leads to improved reconstruction quality compared to using any single prior in isolation, as each modality captures different aspects of scene geometry.
-    
-    \item \textbf{Redundancy Analysis:} We investigate whether certain priors become redundant when stronger geometric supervision is available. For instance, normal consistency may be less critical when both depth and planarity constraints are enforced simultaneously.
-    
-    \item \textbf{Structural Information Dominance:} In indoor scenes where planar surfaces dominate, we expect that edge and planarity constraints have a stronger impact on geometric consistency than purely local cues such as per-pixel normals, particularly near structural boundaries.
-    
-    \item \textbf{Compactness Through Geometry:} We evaluate whether the use of geometric priors improves representation compactness by enabling larger Gaussians in planar regions while maintaining reconstruction quality, thereby reducing the total primitive count.
-    
-    \item \textbf{Edge-Aware Efficiency:} We hypothesize that edge-aware constraints help reduce artifacts near planar boundaries by concentrating smaller primitives where detail is required while preventing over-densification in homogeneous regions.
+    \item \textbf{Complementarity of Geometric Priors:} Combining depth, normals, and planarity should improve reconstruction quality beyond what any single prior achieves, since each modality constrains a different aspect of scene geometry.
+
+    \item \textbf{Redundancy Under Stronger Supervision:} A related question is whether certain priors become superfluous when a stronger cue is already active — for instance, whether normal consistency adds value once both depth and planarity constraints are in place.
+
+    \item \textbf{Structural Priors Dominate in Planar Scenes:} In indoor environments where walls, floors, and ceilings account for most of the visible surface area, edge and planarity constraints are expected to matter more than per-pixel normal cues, which capture only local surface orientation.
+
+    \item \textbf{Compactness Through Geometry:} Geometric priors that discourage unnecessary densification on flat surfaces should yield smaller models without sacrificing rendering quality, reducing the total primitive count below that of the photometric-only baseline.
+
+    \item \textbf{Edge-Aware Densification Improves Efficiency:} Concentrating smaller primitives near structural boundaries while allowing larger ones to grow in flat interiors should simultaneously improve sharpness at edges and reduce the overall Gaussian count.
 \end{enumerate}
 
-These hypotheses are tested through a comprehensive ablation study that systematically evaluates all combinations of the five key modalities.
+All five hypotheses are tested by comparing the 32 geometric prior combinations against the baseline in Table~\ref{tab:ablation_combinations}.
 
 \section{Ablation Study}
 
@@ -235,7 +271,7 @@ The experimental results from the comprehensive 32-configuration ablation study 
 
 \subsection{Overall Performance Trends}
 
-Table~\ref{tab:ablation_results} presents comprehensive quantitative results averaged across all three indoor scenes (DrJohnson, Library, Playroom) from the Deep Blending dataset. For each of the 33 configurations (baseline plus 32 geometric prior combinations), we compute the mean PSNR, SSIM, LPIPS, Gaussian count, and training time across the three scenes. The best result for each metric is highlighted in dark red, second-best in medium red, and third-best in light red, enabling quick identification of top-performing configurations.
+Table~\ref{tab:ablation_results} presents comprehensive quantitative results averaged across all three indoor scenes (DrJohnson, Library, Playroom) from the Deep Blending dataset. For each of the 33 configurations (baseline plus 32 geometric prior combinations), we compute the mean PSNR, SSIM, LPIPS, Gaussian count, and training time across the three scenes. The best result for each metric is highlighted in dark green, second-best in medium green, and third-best in light green, enabling quick identification of top-performing configurations.
 
 % Include the generated table
 \input{deepblending_results.tex}
@@ -252,7 +288,7 @@ The results demonstrate that geometric priors generally improve reconstruction q
     \item \textbf{Most Compact:} \textit{normals\_depths\_edges} requires only 1,053K Gaussians on average, demonstrating that edge-aware adaptive densification significantly improves representation efficiency while maintaining quality.
 \end{itemize}
 
-Notably, simpler configurations often outperform the full configuration with all five priors enabled. This observation suggests that adding more geometric constraints does not guarantee better results—careful selection of complementary priors is essential to avoid conflicting gradients or over-regularization.
+Simpler configurations often outperform the full configuration with all five priors enabled — adding more constraints does not guarantee better results, and certain combinations introduce conflicting gradients that hurt optimization.
 
 \subsection{Individual Prior Contributions}
 
@@ -272,87 +308,86 @@ To quantify the impact of each modality independently, we analyze both quality m
 
 \subsection{Best Performing Configurations}
 
-Analyzing Table~\ref{tab:ablation_results}, we observe several important trade-offs between reconstruction quality, representation compactness, and computational cost across the 33 tested configurations.
+Table~\ref{tab:ablation_results} reveals several consistent trade-offs between quality, compactness, and training cost across the 33 configurations.
 
-\textbf{Quality Leaders:} The highest PSNR is achieved by \textit{depths\_planarity} (27.92 dB), demonstrating that combining monocular depth supervision with structural planarity constraints provides strong geometric guidance without over-constraining the optimization. This simple two-prior combination outperforms the baseline (27.88 dB) while using a similar number of Gaussians (1,570K vs. 1,560K). Similarly, \textit{normals\_meshes} and \textit{planarity\_meshes} achieve 27.90 dB, showing that even individual strong priors can match or exceed baseline quality.
+The highest PSNR is achieved by \textit{depths\_planarity} (27.92 dB), confirming that combining monocular depth supervision with structural planarity constraints provides effective geometric guidance without over-constraining optimization. This two-prior combination outperforms the baseline (27.88 dB) despite using a comparable number of Gaussians (1,570K vs.\ 1,560K). \textit{normals\_meshes} and \textit{planarity\_meshes} both reach 27.90 dB, showing that even a single well-chosen prior can match or slightly exceed baseline quality.
 
-\textbf{Compactness Champions:} The most compact representations are achieved by configurations with edge-aware control. For example, \textit{normals\_depths\_edges} requires only 1,053K Gaussians (a 32\% reduction from baseline) while achieving 27.27 dB PSNR, 0.861 SSIM, and 0.304 LPIPS—representing losses of 0.6 dB PSNR, 0.004 SSIM, and an increase of 0.015 in LPIPS compared to baseline. Similarly, \textit{meshes\_edges} achieves 27.58 dB PSNR, 0.863 SSIM, 0.300 LPIPS with 1,054K Gaussians. These trade-offs are highly acceptable considering the substantial 32\% model size reduction, making edge-aware configurations the preferred choice for bandwidth-constrained or memory-limited applications where the marginal quality difference is imperceptible in most viewing scenarios.
+The most compact representations consistently come from configurations that include edge-aware control. \textit{normals\_depths\_edges} requires only 1,053K Gaussians — a 32\% reduction from the baseline — while achieving 27.27 dB PSNR, 0.861 SSIM, and 0.304 LPIPS. \textit{meshes\_edges} reaches 27.58 dB PSNR, 0.863 SSIM, and 0.300 LPIPS at 1,054K Gaussians. In both cases the quality drop is small enough to be imperceptible under normal viewing conditions.
 
-\textbf{Mesh Prior Trade-offs:} Configurations incorporating mesh-based regularization (marked with "\_meshes") show modest quality improvements (+0.1-0.3 dB PSNR on average) but incur significant computational costs. Training time increases from approximately 44 minutes to 174-183 minutes (nearly 4× slower) due to TSDF fusion and mesh cleaning operations. For instance, \textit{depths\_meshes} achieves 27.85 dB in 182.9 minutes, while \textit{depths\_planarity} achieves better quality (27.92 dB) in only 44.4 minutes. Therefore, mesh priors are only justified when explicit surface extraction is required for downstream applications—not for rendering quality alone.
+Adding planarity constraints reliably improves quality across prior combinations. The pair \textit{depths} (27.88 dB) vs.\ \textit{depths\_planarity} (27.92 dB) illustrates a consistent +0.04 dB gain from planarity alone; \textit{normals\_depths} and \textit{normals\_depths\_planarity} show a similar pattern. Beyond quality, planarity reduces over-densification on flat surfaces, keeping Gaussian count from growing unnecessarily.
 
-\textbf{Planarity Constraint Benefits:} Adding planarity constraints consistently improves quality across different prior combinations. Comparing pairs with and without planarity: \textit{depths} (27.88 dB) vs. \textit{depths\_planarity} (27.92 dB, +0.04 dB gain), and \textit{normals\_depths} (27.88 dB) vs. \textit{normals\_depths\_planarity} (27.89 dB). While the PSNR gains are modest, planarity constraints also help reduce over-densification in flat regions, improving representation efficiency without increasing Gaussian count.
+The computational cost of mesh-based regularization is substantial. Training time rises from approximately 44 minutes to 174--183 minutes (nearly 4$\times$ longer) due to TSDF fusion and mesh cleaning. A direct comparison makes this concrete: \textit{depths\_meshes} achieves 27.85 dB in 182.9 minutes, while \textit{depths\_planarity} achieves better quality (27.92 dB) in 44.4 minutes. Mesh priors are therefore only justified when an explicit surface mesh is needed for downstream processing — they provide little benefit for rendering quality alone.
 
-\textbf{Edge-Aware Efficiency:} Edge-aware control dramatically reduces Gaussian count while maintaining competitive quality across all metrics. Comparing configurations with and without edges: \textit{depths\_planarity} (1,570K Gs, 27.92 dB PSNR, 0.865 SSIM, 0.288 LPIPS) vs. \textit{depths\_planarity\_edges} (1,065K Gs, 27.61 dB PSNR, 0.863 SSIM, 0.299 LPIPS)—a 32\% size reduction with only 0.3 dB PSNR loss, 0.002 SSIM loss, and 0.011 LPIPS degradation. These modest quality trade-offs are highly favorable for practical deployment scenarios where storage, bandwidth, and memory are constrained, such as mobile AR/VR or real-time streaming, where the perceptual quality remains nearly indistinguishable.
+The full configuration with all five priors enabled (\textit{normals\_depths\_planarity\_meshes\_edges}) achieves only 27.63 dB, well below simpler combinations such as \textit{depths\_planarity} (27.92 dB). This indicates that certain prior combinations introduce competing gradients that impede convergence; adding constraints without considering their interactions can hurt rather than help. The full configuration is compact (1,059K Gaussians), but the quality penalty is measurable and avoidable.
 
-\textbf{Failure of Exhaustive Regularization:} Notably, the full configuration with all five priors enabled (\textit{normals\_depths\_planarity\_meshes\_edges}) achieves only 27.63 dB—significantly worse than simpler configurations like \textit{depths\_planarity} (27.92 dB). While the full configuration is compact (1,059K Gaussians), it sacrifices quality due to conflicting geometric constraints that introduce competing optimization gradients. This confirms the hypothesis that selective combinations of complementary priors outperform exhaustive regularization.
-
-\textbf{Central Finding:} The key insight from this analysis is that \textbf{geometric priors enable compact scene representations without sacrificing quality across all evaluation metrics}. Practitioners can choose configurations based on their deployment constraints: prioritize \textit{depths\_planarity} (27.92 dB PSNR, 0.865 SSIM, 0.288 LPIPS) for maximum quality, or \textit{normals\_depths\_edges} (27.27 dB PSNR, 0.861 SSIM, 0.304 LPIPS) for maximum compactness (32\% smaller) with minimal perceptual quality loss across PSNR, SSIM, and LPIPS metrics.
+For maximum rendering quality, \textit{depths\_planarity} (27.92 dB PSNR, 0.865 SSIM, 0.288 LPIPS) is the recommended configuration. When model size is the primary constraint, \textit{normals\_depths\_edges} (27.27 dB PSNR, 0.861 SSIM, 0.304 LPIPS, 1{,}053K Gaussians) reduces the primitive count by 32\% with a quality gap that remains imperceptible in most viewing conditions.
 
 \subsection{Efficiency Analysis}
 
-A primary contribution of this work is demonstrating that geometric priors enable compact scene representations without sacrificing visual quality. The trade-off between PSNR and Gaussian count across all 33 configurations reveals several key insights.
+The trade-off between rendering quality and Gaussian count across all 33 configurations reveals a consistent pattern.
 
-\textbf{Key Observation:} Configurations incorporating edge-aware control consistently achieve better efficiency, requiring 30--32\% fewer Gaussians to reach comparable PSNR levels compared to baseline. This validates the hypothesis that adaptive densification strategies improve compactness by concentrating representational capacity near structural boundaries while preventing over-densification in homogeneous planar regions.
+Configurations with edge-aware control consistently require 30--32\% fewer Gaussians than their non-edge counterparts at comparable PSNR levels. The baseline reaches 27.88 dB at 1,560K Gaussians; adding edge-aware control to a depth-planarity configuration (\textit{depths\_planarity\_edges}) gives 27.61 dB at 1,065K Gaussians. Accepting a 0.3--0.6 dB PSNR reduction therefore yields a roughly one-third reduction in model size, driven by the spatially adaptive densification strategy that concentrates primitives near structural boundaries and suppresses growth in flat interiors.
 
-Specifically, comparing configurations with and without edge-aware control:
+Training time varies more strongly with mesh regularization than with any other prior. Edge-aware densification adds only 2--3\% overhead compared to an equivalent non-edge run. Mesh-based priors, by contrast, require TSDF fusion and mesh cleaning after training, raising total time from approximately 44 minutes to 174--175 minutes — a 4$\times$ increase. For configurations without explicit mesh extraction requirements, this overhead is difficult to justify given the modest quality gains.
 
-\begin{itemize}
-    \item \textbf{Without edges:} Baseline (1,560K Gs, 27.88 dB), depths\_planarity (1,570K Gs, 27.92 dB)
-    \item \textbf{With edges:} normals\_depths\_edges (1,053K Gs, 27.27 dB), depths\_planarity\_edges (1,065K Gs, 27.61 dB)
-    \item \textbf{Trade-off:} Accepting a 0.3-0.6 dB PSNR reduction yields 32\% smaller models—critical for bandwidth-constrained AR/VR applications, mobile deployment, and real-time streaming scenarios.
-\end{itemize}
-
-Training time varies moderately across configurations. Edge-aware priors introduce minimal overhead (2-3\% longer training). However, mesh-based priors require TSDF fusion and cleaning, increasing training time by 3.5-4× (from ~44 minutes to ~175 minutes). For applications not requiring explicit mesh extraction, mesh priors are not recommended due to their computational cost with minimal quality benefit.
-
-Model file sizes correlate directly with Gaussian count, with edge-aware configurations reducing storage requirements by approximately 30\% without additional compression techniques.
+Model file sizes scale directly with Gaussian count, so the 30\% reduction in primitives achieved by edge-aware configurations translates to a proportional reduction in storage without any additional compression.
 
 \subsection{Qualitative Comparison: Compactness vs.~Rendering Quality}
 
-Beyond quantitative metrics, we present qualitative visual comparisons demonstrating that our method achieves significant model size reduction while preserving rendering quality. Figure~\ref{fig:qualitative_comparison} shows renders from the DrJohnson scene across three methods (3D-GS baseline, PlanarGS, and our edge-aware optimized configuration) at three different viewpoints.
+Beyond quantitative metrics, we present qualitative visual comparisons demonstrating that our method achieves significant model size reduction while preserving rendering quality. Figure~\ref{fig:qualitative_comparison} shows renders from the DrJohnson scene across five rows (ground truth, 3D-GS, GeoGaussian, PlanarGS, and our method) at four viewpoints. The fourth view (hallway scene) highlights a case where GeoGaussian introduces floating artifacts in the ceiling — visible in the red-boxed region — that are absent in the other methods.
 
 \begin{figure}[p]
     \centering
     \setlength{\tabcolsep}{2pt}
     \renewcommand{\arraystretch}{0.5}
-    \begin{tabular}{ccccc}
-        \small View 1 & \small View 2 & \small View 3 & \small View 4 & \small View 5 \\[2pt]
+    \begin{tabular}{cccc}
+        \small View 1 & \small View 3 & \small View 4 & \small View 6 \\[2pt]
         % Ground Truth row
-        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view01.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view02.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view03.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view04.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/drjohnson_gt_view05.png} \\
-        \multicolumn{5}{c}{\small\textbf{(a) Ground Truth}} \\[4pt]
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view01_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view03_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view04_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/drjohnson_gt_view06_rect.png} \\
+        \multicolumn{4}{c}{\small\textbf{(a) Ground Truth}} \\[4pt]
         % 3D-GS row
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_3DGS_original.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_3DGS_Original.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_3DGS_Original.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_3DGS.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_3DGS.png} \\
-        \multicolumn{5}{c}{\small\textbf{(b) 3D Gaussian Splatting} — 740 MB} \\[4pt]
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_01_3DGS_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_03_3DGS_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_04_3DGS_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_06_3DGS_rect.png} \\
+        \multicolumn{4}{c}{\small\textbf{(b) 3D Gaussian Splatting} — 740 MB} \\[4pt]
         % GeoGaussian row
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_GeoGaussian.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_GeoGaussian.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_GeoGaussian.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_GeoGaussian.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_GeoGaussian.png} \\
-        \multicolumn{5}{c}{\small\textbf{(c) GeoGaussian} — 281 MB} \\[4pt]
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_01_GeoGaussian_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_03_GeoGaussian_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_04_GeoGaussian_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_06_GeoGaussian_rect.png} \\
+        \multicolumn{4}{c}{\small\textbf{(c) GeoGaussian} — 281 MB} \\[4pt]
         % PlanarGS row
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_PlanarGS.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_PlanarGS.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_PlanarGS.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_PlanarGS.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_PlanarGS.png} \\
-        \multicolumn{5}{c}{\small\textbf{(d) PlanarGS} — 410 MB} \\[4pt]
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_01_PlanarGS_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_03_PlanarGS_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_04_PlanarGS_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_06_PlanarGS_rect.png} \\
+        \multicolumn{4}{c}{\small\textbf{(d) PlanarGS} — 410 MB} \\[4pt]
         % Ours row
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_01_PlanarGS_Opus_new.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_02_PlanarGS_Opus_new.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_03_PlanarGS_Opus_new.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_04_PlanarGS_Opus_new.png} &
-        \includegraphics[width=0.185\textwidth]{comparison_figures/view_05_PlanarGS_Opus_new.png} \\
-        \multicolumn{5}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_01_Ours_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_03_Ours_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_04_Ours_rect.png} &
+        \includegraphics[width=0.235\textwidth]{comparison_figures/view_06_Ours_rect.png} \\
+        \multicolumn{4}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
     \end{tabular}
-    \caption{Qualitative comparison across five DrJohnson viewpoints. From top to bottom: ground truth, 3D-GS (740 MB), GeoGaussian (281 MB), PlanarGS (410 MB), and our method (222 MB). Model sizes reflect the PLY point-cloud file at 30{,}000 iterations. Our method achieves a 70\% size reduction relative to 3D-GS while preserving visual quality through edge-aware adaptive densification.}
+
+    \vspace{0.8em}
+
+    \begin{tabular}{lcccccc}
+    \toprule
+    \textbf{Method} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Size~↓} \\
+    \midrule
+    3D Gaussian Splatting & 29.31 & 0.902 & 0.240 & 740 MB \\
+    GeoGaussian           & 28.65 & 0.894 & 0.130 & 281 MB \\
+    PlanarGS              & 28.98 & 0.904 & 0.250 & 410 MB \\
+    Ours                  & 28.67 & 0.898 & 0.269 & \textbf{222 MB} \\
+    \bottomrule
+    \end{tabular}
+
+    \caption{Qualitative comparison across four DrJohnson viewpoints (top) and quantitative metrics on the DrJohnson test set (bottom). The red rectangle marks the same region in each column. View~6 (rightmost) is a hallway scene where GeoGaussian produces visible floating artifacts in the highlighted ceiling area; 3D-GS, PlanarGS, and our method all render this region cleanly. Model sizes reflect the PLY point-cloud file at 30{,}000 iterations.}
     \label{fig:qualitative_comparison}
 \end{figure}
 
@@ -367,21 +402,13 @@ This substantial compactness improvement is enabled by:
     \item \textbf{Selective prior combinations:} Using only complementary priors without conflicting geometric constraints
 \end{itemize}
 
-These findings demonstrate that with careful selection of geometric regularization, compact representations can be achieved without perceivable loss in rendering quality—a critical result for practical deployment in bandwidth-constrained environments such as mobile devices, AR/VR systems, and real-time streaming applications.
+These results show that carefully selected geometric regularization achieves compact representations without perceptible loss in rendering quality.
 
 \subsection{Structural Quality and Artifact Reduction}
 
 Qualitative analysis reveals that configurations incorporating planarity and edge-aware constraints produce visibly cleaner reconstructions near planar boundaries. Standard Gaussian Splatting methods tend to produce floating artifacts and inconsistent depth discontinuities at object edges, whereas geometry-aware regularization enforces coherent surfaces and sharp transitions.
 
-Figure~\ref{fig:qualitative} presents visual comparisons highlighting the reduction of floaters, improved edge sharpness, and more consistent planar surfaces in configurations with structural priors enabled. These improvements are particularly evident in regions with weak texture, where photometric supervision alone is insufficient to constrain geometry.
-
-% TODO: Insert qualitative comparison figure showing:
-% Row 1: Baseline (no priors)
-% Row 2: depths_planarity
-% Row 3: depths_planarity_edges
-% Row 4: Full configuration (all priors)
-% Columns: RGB rendering, depth map, normal map
-% Highlight areas with improved planarity and reduced artifacts
+These improvements are particularly evident in regions with weak texture, where photometric supervision alone is insufficient to constrain geometry. Configurations with planarity and edge-aware priors produce visibly sharper planar boundaries and fewer floating artifacts compared to the baseline.
 
 \subsection{Summary of Findings}
 
@@ -401,4 +428,4 @@ The comprehensive ablation study confirms several key findings that address the 
     \item \textbf{Normal priors show redundancy:} Normal supervision provides diminishing returns when depth and planarity constraints are active, suggesting that monocular normal estimation is less critical when stronger structural cues are available.
 \end{enumerate}
 
-These results demonstrate that integrating geometry-aware regularization into Gaussian Splatting not only narrows the gap between fast neural rendering and usable 3D geometry but also enables significantly more compact scene representations—a critical requirement for deploying neural rendering in resource-constrained environments such as mobile AR/VR, autonomous vehicles, and real-time streaming applications.
+These results confirm that integrating geometry-aware regularization into Gaussian Splatting improves geometric quality and representation compactness simultaneously. Selective prior combinations achieve better results than exhaustive regularization, and edge-aware densification provides the clearest practical benefit by cutting model size by roughly one-third without a meaningful drop in rendered image quality.

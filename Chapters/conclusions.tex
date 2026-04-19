@@ -8,9 +8,7 @@ Through a comprehensive ablation study across all $2^5 = 32$ possible combinatio
 
 \section{Key Findings}
 
-The comprehensive experimental evaluation revealed several important findings:
-
-\subsection{Individual Modality Contributions}
+The comprehensive experimental evaluation revealed several important findings about the contribution of individual modalities and their interactions.
 
 \textbf{Depth priors} provide substantial stabilization during optimization, particularly in textureless regions, contributing an average improvement of approximately +0.8 dB in PSNR. Depth supervision effectively reduces floating artifacts and improves depth consistency across viewpoints.
 
@@ -20,68 +18,30 @@ The comprehensive experimental evaluation revealed several important findings:
 
 \textbf{Edge-aware adaptive densification} improves both quality (+0.6 dB PSNR) and efficiency (30--32\% reduction in Gaussian count), demonstrating that spatially varying primitive allocation strategies can simultaneously enhance fidelity and compactness.
 
-\textbf{Mesh-based regularization} shows modest visual quality improvements (+0.3 dB) but significantly benefits downstream mesh extraction quality, making it valuable for applications requiring explicit surface representations.
+\textbf{Mesh-based regularization} shows modest visual quality improvements (+0.3 dB) but significantly benefits downstream mesh extraction quality, making it valuable for applications requiring explicit surface representations. It also increases training time by approximately 4$\times$ (from $\sim$44 minutes to $\sim$175 minutes).
 
-\subsection{Combination Effects and Redundancy}
-
-The ablation study revealed that geometric priors are not uniformly additive. While combining depth, planarity, and edge-aware control yields strong results, adding all five priors simultaneously does not consistently outperform selective combinations. This suggests that certain priors introduce conflicting gradients or over-constrain optimization when multiple strong geometric cues compete.
-
-Normal priors exhibit clear redundancy with depth and planarity, particularly in structured environments. This indicates that monocular normal estimation may be less critical when stronger structural constraints are available from depth supervision and planar segmentation.
-
-The best-performing configurations typically combine depth, planarity, and edge-aware control, achieving superior visual fidelity while maintaining competitive training time and model compactness. This suggests an optimal regularization strategy for indoor reconstruction: prioritize structural constraints and depth supervision, while using edge-aware control for efficiency.
-
-\subsection{Efficiency Gains}
-
-Configurations incorporating edge-aware adaptive densification consistently achieve better efficiency, requiring 30--32\% fewer Gaussians to reach comparable PSNR levels compared to uniform densification strategies. This validates the hypothesis that adaptive primitive allocation improves compactness by concentrating representational capacity near structural boundaries while preventing over-densification in planar regions.
-
-Training time overhead from geometric priors varies significantly: edge-aware control adds only 2--3\% overhead, while mesh-based TSDF regularization increases training time by approximately 4$\times$ (from $\sim$44 minutes to $\sim$175 minutes). Mesh priors are therefore only justified when explicit surface extraction is required as a downstream task.
+The ablation study also revealed that geometric priors are not uniformly additive. Combining depth, planarity, and edge-aware control yields strong results, but adding all five priors simultaneously does not consistently outperform selective combinations. This suggests that certain priors introduce conflicting gradients or over-constrain optimization. Normal priors exhibit clear redundancy with depth and planarity in structured environments, and edge-aware control adds only 2--3\% training overhead while consistently achieving 30--32\% fewer Gaussians.
 
 \section{Limitations}
 
-Despite the promising results, several limitations remain:
+Despite the promising results, several limitations remain.
 
 \textbf{Reliance on monocular priors:} The framework depends on monocular depth and normal estimators, which can fail in challenging conditions (textureless regions, specular surfaces, lighting variations). Errors in these priors can propagate into the final reconstruction, particularly when regularization weights are high.
 
-\textbf{Planar segmentation quality:} The effectiveness of planar co-planarity constraints depends critically on accurate plane detection and segmentation. In cluttered scenes or environments with curved surfaces, plane fitting may fail or introduce incorrect constraints.
+\textbf{Planar segmentation quality:} The effectiveness of planar co-planarity constraints depends critically on accurate plane detection. In cluttered scenes or environments with curved surfaces, plane fitting may fail or introduce incorrect constraints.
 
 \textbf{Edge detection limitations:} Edge-aware control relies on line segment detection (LSD), which may miss curved boundaries or fail in low-texture regions. More robust structural boundary detection could further improve adaptive densification.
 
 \textbf{Limited scene diversity:} The evaluation focuses on indoor scenes with dominant planar structures. The generalization of these findings to outdoor, unstructured, or highly detailed scenes remains to be validated.
 
-\textbf{Computational overhead:} While training time overhead is moderate, computing monocular priors, distance fields, and TSDF fusion adds preprocessing and post-processing costs that may be prohibitive for large-scale datasets.
+\textbf{Computational overhead:} Computing monocular priors, distance fields, and TSDF fusion adds preprocessing and post-processing costs that may be prohibitive for large-scale datasets.
 
 \section{Future Work}
 
-Several promising directions for future research emerge from this work:
-
-\subsection{Multi-View Geometric Priors}
-
-Replacing monocular priors with multi-view geometry constraints (e.g., PatchMatch-based MVS depth~\cite{gcaussurf}) could improve robustness and reduce reliance on potentially noisy single-view estimates. Integrating multi-view consistency checks directly into the optimization could further stabilize geometry.
-
-\subsection{Learnable Prior Fusion}
-
-Instead of fixed loss weights, a learned weighting mechanism could dynamically balance photometric and geometric objectives based on local scene characteristics. This could prevent over-regularization in texture-rich regions while maintaining strong constraints where geometric cues are weak.
-
-\subsection{Curved and Non-Planar Constraints}
-
-Extending the framework to handle curved surfaces and more general geometric primitives (e.g., quadrics, splines) would improve applicability beyond planar indoor scenes. Adaptive primitive selection based on local surface curvature could enable efficient representation of both planar and curved regions.
-
-\subsection{Real-Time Optimization}
-
-Investigating efficient implementations of geometric regularization for online or real-time optimization scenarios would enable applications in robotics and AR/VR systems. Approximations or neural networks could accelerate prior computation and reduce preprocessing costs.
-
-\subsection{Unified Geometry-Appearance Optimization}
-
-Joint optimization of geometry and appearance representations (e.g., integrating neural implicit surfaces with Gaussian splatting) could leverage the strengths of both paradigms. This hybrid approach might achieve better geometry while maintaining real-time rendering performance.
-
-\subsection{Generalization to Outdoor Scenes}
-
-Evaluating the framework on outdoor, large-scale, and unstructured scenes would assess the generalizability of findings beyond indoor environments. Adaptive regularization strategies tailored to scene characteristics (planar vs. vegetation vs. architectural detail) could improve robustness.
+The following directions are worth pursuing in future work. Replacing monocular priors with multi-view geometry constraints — such as PatchMatch-based MVS depth~\cite{gcaussurf} — could improve robustness and reduce reliance on potentially noisy single-view estimates. Instead of fixed loss weights, a learned weighting mechanism could dynamically balance photometric and geometric objectives based on local scene characteristics, preventing over-regularization in texture-rich regions while maintaining strong constraints where geometric cues are weak. Extending the framework to handle curved surfaces and more general geometric primitives would improve applicability beyond planar indoor scenes. Investigating efficient implementations of geometric regularization for online or real-time scenarios would enable applications in robotics and AR/VR systems. Finally, evaluating the framework on outdoor, large-scale, and unstructured scenes would assess the generalizability of the findings beyond indoor environments.
 
 \section{Closing Remarks}
 
 This thesis demonstrated that integrating explicit geometric priors into 3D Gaussian Splatting significantly improves reconstruction quality and representation compactness for indoor scenes. The comprehensive 32-configuration ablation study provided practical insights into which geometric modalities are most effective, revealing that selective combinations often outperform exhaustive regularization.
 
 The proposed unified framework bridges the gap between fast neural rendering and geometrically consistent 3D reconstruction, offering a flexible and modular approach for practitioners. By systematically quantifying the contributions and interactions of different geometric priors, this work provides a foundation for informed regularization design in future 3D reconstruction systems.
-
-As neural rendering continues to evolve toward real-time, geometry-aware representations, the insights from this work—particularly the importance of structural constraints and adaptive primitive allocation—will inform the development of more efficient, accurate, and practical 3D scene reconstruction methods.
