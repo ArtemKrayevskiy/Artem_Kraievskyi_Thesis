@@ -2,7 +2,7 @@
 
 \section{Problem Formulation}
 
-Let $\mathcal{I} = \{I_i\}_{i=1}^N$ be a set of calibrated multi-view images with known camera poses obtained from Structure-from-Motion.  
+Let $\mathcal{I} = \{I_i\}_{i=1}^N$ be a set of calibrated multi-view images with known camera poses obtained from Structure-from-Motion.
 The goal is to reconstruct a geometrically consistent scene representation using a set of Gaussian primitives:
 
 \begin{equation}
@@ -45,22 +45,76 @@ The final objective becomes:
 +
 \lambda_n \mathcal{L}_{normal}
 +
-\lambda_{dn} \mathcal{L}_{dn}
-+
 \lambda_p \mathcal{L}_{planar}
 +
-\lambda_e \mathcal{L}_{edge}.
+\lambda_e \mathcal{L}_{edge},
 \end{equation}
+
+\noindent where $\lambda_d$ weights the depth prior described in Section~\ref{sec:depth_prior}, $\lambda_n$ weights the normal prior described in Section~\ref{sec:normal_prior}, $\lambda_p$ weights the planar regularization described in Section~\ref{sec:planar_prior}, and $\lambda_e$ weights the edge-aware normal reinforcement described in Section~\ref{sec:edge_prior}.
+
+\section{Geometric Prior Formulations}
+\label{sec:geometry_priors}
+
+While 3D Gaussian Splatting provides an explicit and efficient scene representation, its optimization is primarily driven by photometric supervision. Purely image-based supervision can lead to geometric artifacts such as floaters, inconsistent surface orientation, and poor reconstruction in textureless regions. To address these limitations, additional geometric priors are incorporated into the training process. This section introduces the general form of each prior type; their specific implementation within our framework is described in Section~\ref{sec:solution_architecture}.
+
+\subsection{Depth Priors}
+
+Depth priors provide direct supervision on scene geometry. Depth information can be obtained from multi-view stereo (MVS) methods, LiDAR sensors, or monocular depth estimation networks. Let $D_{render}(\mathbf{u})$ denote the depth rendered from the Gaussian representation and $D_{prior}(\mathbf{u})$ the externally estimated depth map. A common supervision term is:
+
+\begin{equation}
+\mathcal{L}_{depth}
+=
+\sum_{\mathbf{u} \in \Omega}
+\left|
+D_{render}(\mathbf{u}) - D_{prior}(\mathbf{u})
+\right|,
+\end{equation}
+
+where $\Omega$ is the set of pixels with reliable depth values. Depth supervision reduces floating artifacts and stabilizes optimization in low-texture regions.
+
+\subsection{Normal Priors}
+
+Surface normal priors enforce orientation consistency of reconstructed surfaces. Normals can be derived from depth maps or predicted by monocular estimation networks. Let $\mathbf{n}_{render}(\mathbf{u})$ denote the rendered surface normal and $\mathbf{n}_{prior}(\mathbf{u})$ the reference normal. A cosine-similarity loss is commonly used:
+
+\begin{equation}
+\mathcal{L}_{normal}
+=
+\sum_{\mathbf{u}}
+\left(
+1 -
+\mathbf{n}_{render}(\mathbf{u})^\top
+\mathbf{n}_{prior}(\mathbf{u})
+\right).
+\end{equation}
+
+Normal constraints improve local surface smoothness and reduce geometric noise, particularly in planar or weakly textured regions.
+
+\subsection{Mesh-Based Priors}
+
+When an approximate surface mesh $\mathcal{M}$ is available (e.g., reconstructed via TSDF fusion), it can serve as a geometric regularizer. Let $\text{dist}(\boldsymbol{\mu}_i, \mathcal{M})$ denote the shortest distance from the $i$-th Gaussian center to the mesh surface. The regularization term is:
+
+\begin{equation}
+\mathcal{L}_{mesh}
+=
+\sum_{i}
+\text{dist}(\boldsymbol{\mu}_i, \mathcal{M})^2.
+\end{equation}
+
+This prior enforces surface adherence and improves global geometric consistency, and is particularly useful in structured environments where reliable coarse geometry can be extracted.
+
+\subsection{Edge and Planar Priors}
+
+Image edges and planar segment boundaries encode strong structural cues. Planar priors encourage Gaussians within a detected plane to share a common depth surface. Edge-aware priors spatially modulate primitive allocation: densification is boosted near structural boundaries and suppressed in homogeneous interiors. Together, these priors improve reconstruction of sharp transitions and prevent over-densification on large flat surfaces.
 
 \section{Solution Architecture}
 \label{sec:solution_architecture}
 
-Figure~\ref{fig:unified_pipeline} illustrates the overall framework. The diagram uses color coding to distinguish component types: \textit{blue boxes} represent input geometric priors extracted from images, \textit{green boxes} denote loss regularization terms, \textit{purple boxes} indicate processing steps, and \textit{orange} represents the central optimization objective. Edges are derived from detected plane boundaries and positioned as the first prior column, followed by planes, depth, normals, and mesh data in subsequent columns.
+Figure~\ref{fig:unified_pipeline} presents the overall architecture of the proposed framework. The pipeline takes a set of calibrated multi-view images as input and extracts four monocular geometric priors — edges derived from plane boundaries, plane segmentation masks, dense depth maps, and surface normal maps — each of which feeds into a corresponding rendering-space loss term. These four loss terms, together with the standard photometric loss $\mathcal{L}_{rgb}$ and an optional mesh-based term $\mathcal{L}_{mesh}$, are jointly minimized during Gaussian optimization. The diagram uses color coding to distinguish component types: blue boxes represent input geometric priors, green boxes denote loss regularization terms, purple boxes indicate processing steps, and orange represents the central optimization objective.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{pipeline_unified.pdf}
-    \caption{Unified geometry-aware 3D Gaussian Splatting framework. The pipeline integrates four monocular geometric priors (depth, normals, planar segmentation, edges) to regularize Gaussian optimization through five loss terms: $\mathcal{L}_{depth}$, $\mathcal{L}_{normal}$, $\mathcal{L}_{planar}$, and $\mathcal{L}_{mesh}$ (via TSDF fusion). Edge-aware adaptive densification controls Gaussian primitive allocation and scaling based on depth gradients.}
+    \caption{Unified geometry-aware 3D Gaussian Splatting framework. The pipeline integrates five monocular geometric priors (edges from plane boundaries, planes, depth, normals) and TSDF-based mesh data to regularize Gaussian optimization through six loss terms: $\mathcal{L}_{rgb}$, $\mathcal{L}_{edge}$, $\mathcal{L}_{planar}$, $\mathcal{L}_{depth}$, $\mathcal{L}_{normal}$, and $\mathcal{L}_{mesh}$. Each prior flows downward to its corresponding loss term, which then contributes to the unified optimization objective. Solid arrows indicate data flow dependencies.}
     \label{fig:unified_pipeline}
 \end{figure}
 
@@ -76,6 +130,7 @@ The architecture extends the standard Gaussian Splatting pipeline with two compl
 All geometric constraints are applied in rendering space rather than directly constraining primitive parameters. This preserves the flexibility of Gaussian primitives while enforcing global geometric consistency.
 
 \subsubsection{Depth Prior}
+\label{sec:depth_prior}
 
 Depth prior maps $D_p$ are estimated per-view using DUST3R (Dense Unsupervised Surface Transformation via Regression), a fast monocular depth estimator. These priors are aligned with rendered depth $D_r$ to stabilize optimization in textureless regions:
 
@@ -90,6 +145,7 @@ D_r - D_p
 reducing floating artifacts and improving geometric consistency across views.
 
 \subsubsection{Normal Prior}
+\label{sec:normal_prior}
 
 Surface normal prior maps $N_p$ are also estimated using DUST3R per-view. These normals are regularized alongside rendered normals $N_r$:
 
@@ -105,19 +161,8 @@ N_r - N_p
 
 promoting locally coherent surface orientation and reducing normal inconsistencies.
 
-\subsubsection{Depth--Normal Consistency}
-
-Internal consistency is enforced by aligning rendered normals with normals computed from rendered depth:
-
-\begin{equation}
-\mathcal{L}_{dn}
-=
-\left\|
-N_r - N_{depth}
-\right\|_1.
-\end{equation}
-
 \subsubsection{Planar Regularization}
+\label{sec:planar_prior}
 
 Planar segmentation priors are extracted from single images using SAM3 (Segment Anything Model v3), which identifies and delineates planar regions. For each segmented planar region, a plane is fitted to the rendered depth map. Let $D_{plane}$ denote the depth values induced by this fitted plane. The planar consistency loss is:
 
@@ -130,6 +175,8 @@ D_r - D_{plane}
 \end{equation}
 
 Importantly, Gaussian centers are not explicitly projected onto planes; the constraint operates purely at the rendering level, allowing primitives to reorganize naturally during optimization.
+
+Figure~\ref{fig:planar_segmentation} illustrates the planar segmentation applied to a DrJohnson training view. The left subfigure shows the output of SAM3, where each color-coded region corresponds to one detected plane. The right subfigure shows the extracted plane boundaries, which define the spatial extent of the co-planarity constraint. These boundaries are later reused in the edge-aware densification strategy described in Section~\ref{sec:edge_aware}.
 
 \begin{figure}[h]
     \centering
@@ -144,11 +191,12 @@ Importantly, Gaussian centers are not explicitly projected onto planes; the cons
         \includegraphics[width=\textwidth]{comparison_figures/plane_boundaries_pink.png}
         \caption{Plane boundaries extracted from segmentation}
     \end{subfigure}
-    \caption{Planar segmentation on a DrJohnson training view. SAM3 assigns each image region to a distinct plane (left); the resulting segment boundaries (right) define where planar co-planarity constraints are applied during Gaussian optimization.}
+    \caption{Planar segmentation on a DrJohnson training view.}
     \label{fig:planar_segmentation}
 \end{figure}
 
 \subsection{Edge-Aware Adaptive Representation}
+\label{sec:edge_aware}
 
 In addition to geometric priors, we introduce a spatially adaptive densification mechanism. The core intuition is straightforward: structural boundaries between planes require precise, fine-grained representation, while large homogeneous planar interiors can be covered efficiently with fewer, larger primitives.
 
@@ -160,6 +208,8 @@ Structural edges are identified from SAM3 planar segment boundaries, which natur
 \end{itemize}
 
 This allocation strategy concentrates representational capacity exactly where geometric detail is required, while preventing over-densification in uniform regions — the primary mechanism behind the model size reduction achieved by our method.
+
+Figure~\ref{fig:edge_detection} shows the structural edge detection applied to the same DrJohnson training view. The left subfigure overlays the detected plane boundary lines on the original image; the right subfigure shows the resulting structural line segments after post-processing. Gaussians whose 3D centers project close to these lines receive boosted split probability and a tighter scale constraint, while Gaussians in the flat interiors between lines are allowed to grow large and are split less aggressively.
 
 \begin{figure}[h]
     \centering
@@ -174,11 +224,12 @@ This allocation strategy concentrates representational capacity exactly where ge
         \includegraphics[width=\textwidth]{comparison_figures/edge_extracted_lines.png}
         \caption{Extracted structural line segments}
     \end{subfigure}
-    \caption{Structural edge detection on a DrJohnson training view. Boundaries between segmented planes (left) are converted to structural line segments (right), which define the edge proximity field. Gaussians close to these lines are kept small and densified more aggressively; Gaussians in the planar interiors are allowed to grow large and are split less often.}
+    \caption{Structural edge detection on a DrJohnson training view.}
     \label{fig:edge_detection}
 \end{figure}
 
 \subsubsection{Edge-Specific Normal Reinforcement}
+\label{sec:edge_prior}
 
 Optionally, an additional edge-restricted normal alignment term can be activated:
 
@@ -199,10 +250,9 @@ This term is applied only at detected edge pixels and introduced after initial g
 The proposed framework augments standard Gaussian Splatting with:
 
 \begin{itemize}
-    \item Rendering-space geometric regularization,
-    \item Planar consistency enforcement,
+    \item Rendering-space geometric regularization (depth, normals, planarity),
     \item Edge-aware adaptive densification,
-    \item Optional primitive substitution (2D surfel representation).
+    \item Optional mesh-based TSDF regularization.
 \end{itemize}
 
 The design preserves the efficiency and differentiability of the original pipeline while improving geometric consistency, structural sharpness, and representation compactness.

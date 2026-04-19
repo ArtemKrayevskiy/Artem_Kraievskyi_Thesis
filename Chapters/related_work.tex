@@ -23,7 +23,7 @@ Alternatively, SAGS (Structure-Aware Gaussian Splatting) avoids explicit meshing
 
 Current literature largely treats geometric priors in isolation. Methods tend to focus exclusively on one modality—either improved initialization, depth and normal regularization, planar or structural constraints—making it difficult to assess how these strategies interact or which combinations provide the greatest benefit. It remains unclear, for example, whether depth regularization renders normal priors redundant, whether planar constraints complement or interfere with depth supervision, or how edge-aware control affects the efficiency gains from structural priors.
 
-Furthermore, existing works typically evaluate their methods against vanilla 3D Gaussian Splatting or a single baseline, without systematically comparing different combinations of geometric cues. This makes it challenging to identify:
+Existing works also typically evaluate against vanilla 3D Gaussian Splatting or a single baseline, without systematically comparing different combinations of geometric cues. This makes it challenging to identify:
 \begin{itemize}
     \item Which geometric modalities provide the strongest individual contribution to reconstruction quality?
     \item Whether combining multiple priors yields additive improvements or exhibits diminishing returns?
