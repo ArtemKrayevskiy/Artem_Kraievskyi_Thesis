@@ -43,7 +43,7 @@ We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnso
         \includegraphics[width=\textwidth]{comparison_figures/playroom_sample.jpg}
         \caption{Playroom: large uniform walls and ceiling}
     \end{subfigure}
-    \caption{Sample views from the three Deep Blending indoor scenes used in evaluation: DrJohnson (top row), Library, and Playroom (bottom row). Each scene features dominant planar surfaces, low-texture regions, and complex indoor lighting — characteristics that make them well-suited for assessing geometry-aware regularization.}
+    \caption{Sample views from the three Deep Blending scenes: DrJohnson (top row), Library, and Playroom (bottom row).}
     \label{fig:dataset_samples}
 \end{figure}
 
@@ -219,7 +219,7 @@ Table~\ref{tab:ablation_combinations} lists all 32 evaluated combinations. The s
 \begin{table}[t]
 \centering
 \small
-\caption{Complete list of 32 ablation study configurations. Each row represents one training run with specific geometric priors enabled (\cmark) or disabled (\xmark).}
+\caption{All 32 ablation configurations. \cmark/\xmark\ indicate whether each prior is enabled.}
 \label{tab:ablation_combinations}
 \begin{tabular}{l|ccccc}
 \toprule
@@ -271,7 +271,7 @@ The experimental results from the comprehensive 32-configuration ablation study 
 
 \subsection{Overall Performance Trends}
 
-Table~\ref{tab:ablation_results} presents comprehensive quantitative results averaged across all three indoor scenes (DrJohnson, Library, Playroom) from the Deep Blending dataset. For each of the 33 configurations (baseline plus 32 geometric prior combinations), we compute the mean PSNR, SSIM, LPIPS, Gaussian count, and training time across the three scenes. The best result for each metric is highlighted in dark green, second-best in medium green, and third-best in light green, enabling quick identification of top-performing configurations.
+Table~\ref{tab:ablation_results} presents quantitative results averaged across all three scenes for each of the 33 configurations. The top three results per metric are highlighted in descending shades of green.
 
 % Include the generated table
 \input{deepblending_results.tex}
@@ -292,19 +292,11 @@ Simpler configurations often outperform the full configuration with all five pri
 
 \subsection{Individual Prior Contributions}
 
-To quantify the impact of each modality independently, we analyze both quality metrics and representation efficiency. The key finding is that geometric priors not only improve reconstruction quality but also enable more compact scene representations by reducing over-densification in planar regions.
+Isolating each modality reveals that geometric priors not only improve reconstruction quality but also enable more compact representations by reducing over-densification in planar regions.
 
-\begin{itemize}
-    \item \textbf{Depth Prior (D):} Configurations with depth supervision show an average PSNR improvement of approximately +0.8 dB compared to those without depth. This indicates that monocular depth guidance provides substantial benefit in stabilizing optimization, particularly in textureless regions. However, depth alone does not significantly reduce Gaussian count.
-    
-    \item \textbf{Planarity (P):} The planar co-planarity constraint contributes significantly in indoor scenes, with an average improvement of +1.2 dB. Importantly, planarity constraints help reduce representation size by discouraging unnecessary densification on large flat surfaces. Configurations with planarity enabled achieve comparable quality with 5-8\% fewer Gaussians.
-    
-    \item \textbf{Normal Prior (N):} Normal supervision provides a moderate improvement of +0.5 dB on average. However, its contribution becomes less pronounced when depth and planarity constraints are already active, suggesting partial redundancy with stronger geometric cues. Normal priors do not significantly impact compactness.
-    
-    \item \textbf{Edge-Aware Control (E):} Edge-aware densification is the most effective method for achieving compactness. It improves PSNR by approximately +0.6 dB while simultaneously reducing the average Gaussian count by 30-32\% (from ~1,560K to ~1,060K Gaussians). This demonstrates that adaptive primitive allocation based on structural boundaries enhances both quality and efficiency—a critical finding for practical deployment.
-    
-    \item \textbf{Mesh Prior (M):} Mesh-based regularization shows modest improvements in PSNR (+0.3 dB) but significantly increases training time (4× longer due to TSDF fusion). While valuable for applications requiring explicit surface representations, mesh priors do not improve compactness and introduce substantial computational overhead.
-\end{itemize}
+The depth prior delivers an average gain of approximately +0.8 dB PSNR, stabilizing optimization in textureless regions and reducing floating artifacts, though it has little effect on Gaussian count in isolation. The planar co-planarity constraint is the single strongest modality in indoor scenes (+1.2 dB), consistent with the hypothesis that structure-aligned priors are most effective when scene geometry is predominantly planar; planarity also reduces Gaussian count by 5--8\% by discouraging redundant densification on large flat surfaces. Normal supervision yields a moderate +0.5 dB improvement on average, but its contribution diminishes noticeably when depth and planarity are already active, revealing partial redundancy among these three modalities.
+
+Edge-aware adaptive densification stands apart as the only prior that simultaneously improves both quality and compactness: it contributes approximately +0.6 dB PSNR while reducing the average Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K), by concentrating primitives near structural boundaries and suppressing growth in homogeneous interiors. Mesh-based regularization, by contrast, offers only a modest +0.3 dB improvement and has no positive effect on compactness, while increasing training time by roughly 4$\times$ due to TSDF fusion and mesh cleaning overhead; it is therefore justified only when an explicit surface mesh is required downstream.
 
 \subsection{Best Performing Configurations}
 
@@ -387,22 +379,11 @@ Beyond quantitative metrics, we present qualitative visual comparisons demonstra
     \bottomrule
     \end{tabular}
 
-    \caption{Qualitative comparison across four DrJohnson viewpoints (top) and quantitative metrics on the DrJohnson test set (bottom). The red rectangle marks the same region in each column. View~6 (rightmost) is a hallway scene where GeoGaussian produces visible floating artifacts in the highlighted ceiling area; 3D-GS, PlanarGS, and our method all render this region cleanly. Model sizes reflect the PLY point-cloud file at 30{,}000 iterations.}
+    \caption{Qualitative comparison on DrJohnson across four viewpoints (top) with per-method metrics on the DrJohnson test set (bottom). Model sizes are PLY file sizes at 30{,}000 iterations.}
     \label{fig:qualitative_comparison}
 \end{figure}
 
-\textbf{Key Observations:} 
-
-The visual quality across methods appears subjectively similar in standard RGB renderings, despite dramatic differences in model size. Baseline 3D-GS requires 740 MB for the DrJohnson scene. GeoGaussian reduces this to 281 MB (62\% reduction) through geometry-guided initialization. PlanarGS achieves 410 MB (45\% reduction) via planar primitive flattening. Our method reaches 222 MB (70\% reduction) while applying edge-aware adaptive densification on top of the PlanarGS backbone.
-
-This substantial compactness improvement is enabled by:
-\begin{itemize}
-    \item \textbf{Edge-aware adaptive densification:} Concentrating more Gaussians near high-gradient regions while using fewer, larger primitives in planar interiors
-    \item \textbf{Planar constraints:} Regularizing flat surfaces to eliminate unnecessary density variations
-    \item \textbf{Selective prior combinations:} Using only complementary priors without conflicting geometric constraints
-\end{itemize}
-
-These results show that carefully selected geometric regularization achieves compact representations without perceptible loss in rendering quality.
+Visual quality across methods appears subjectively similar in standard RGB renders, despite dramatic differences in model size. Baseline 3D-GS requires 740~MB; GeoGaussian reduces this to 281~MB (62\% smaller) through geometry-guided initialization; PlanarGS reaches 410~MB (45\% smaller) via planar primitive flattening; and our method achieves 222~MB (70\% smaller) by applying edge-aware adaptive densification on top of the PlanarGS backbone. The size reduction stems from concentrating primitives near structural boundaries, regularizing flat surfaces to suppress unnecessary densification, and selecting only complementary priors to avoid conflicting gradients. Taken together, these choices yield a compact representation without a perceptible drop in rendering quality.
 
 \subsection{Structural Quality and Artifact Reduction}
 
@@ -412,20 +393,8 @@ These improvements are particularly evident in regions with weak texture, where 
 
 \subsection{Summary of Findings}
 
-The comprehensive ablation study confirms several key findings that address the core research question: \textit{Can geometric priors enable compact 3D scene representations without sacrificing visual quality?}
+The comprehensive ablation study addresses the core research question — \textit{Can geometric priors enable compact 3D scene representations without sacrificing visual quality?} — and the answer is yes, but only when priors are chosen selectively.
 
-\begin{enumerate}
-    \item \textbf{Compactness without quality loss:} Edge-aware adaptive densification reduces model size by 30-32\% while maintaining competitive visual quality (PSNR drop of only 0.3-0.6 dB). This represents a favorable trade-off for practical applications where storage, bandwidth, and memory constraints are critical.
-    
-    \item \textbf{Geometric priors improve efficiency:} Planarity and depth constraints enable better utilization of Gaussians by discouraging over-densification in uniform regions. Configurations with these priors achieve 5-8\% size reduction while maintaining or improving quality compared to baseline.
-    
-    \item \textbf{Selective priors outperform exhaustive regularization:} The full configuration (all 5 priors) achieves worse quality (27.63 dB) than simpler combinations (27.92 dB), indicating that conflicting geometric constraints can destabilize optimization. Careful selection of complementary priors is essential.
-    
-    \item \textbf{Edge-aware control is the most effective compactness strategy:} Among all tested priors, edge-aware densification provides the best balance between quality and efficiency, consistently reducing Gaussian count by ~500K primitives with minimal quality degradation.
-    
-    \item \textbf{Mesh priors are computationally expensive:} While mesh-based regularization improves downstream mesh quality, it increases training time by 4× with minimal impact on rendering metrics. This overhead is only justified when explicit surface extraction is required.
-    
-    \item \textbf{Normal priors show redundancy:} Normal supervision provides diminishing returns when depth and planarity constraints are active, suggesting that monocular normal estimation is less critical when stronger structural cues are available.
-\end{enumerate}
+Edge-aware adaptive densification is the most practically valuable component: it reduces model size by 30--32\% with a PSNR drop of only 0.3--0.6~dB, a trade-off that is imperceptible under normal viewing conditions and directly relevant for memory-constrained deployment. Planarity and depth constraints further improve Gaussian utilization by 5--8\%, discouraging over-densification on flat surfaces. Crucially, the full configuration with all five priors enabled (27.63~dB) is outperformed by simpler combinations such as \textit{depths\_planarity} (27.92~dB), confirming that conflicting geometric constraints can destabilize optimization — more regularization is not always better.
 
-These results confirm that integrating geometry-aware regularization into Gaussian Splatting improves geometric quality and representation compactness simultaneously. Selective prior combinations achieve better results than exhaustive regularization, and edge-aware densification provides the clearest practical benefit by cutting model size by roughly one-third without a meaningful drop in rendered image quality.
+Normal priors exhibit clear redundancy with depth and planarity in structured indoor environments, providing diminishing returns when stronger structural cues are already active. Mesh-based regularization is the most expensive prior (4$\times$ training time increase) with the smallest rendering quality gain, and should only be included when downstream mesh extraction is explicitly required. Integrating geometry-aware regularization thus improves both quality and compactness simultaneously, but the design choice of which priors to combine is as important as the choice to use priors at all.

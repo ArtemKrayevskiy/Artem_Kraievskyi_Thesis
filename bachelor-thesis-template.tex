@@ -128,13 +128,13 @@ headsepline, % Uncomment to get a line under the header
 \begin{minipage}[t]{0.4\textwidth}
 \begin{flushleft} \large
 \emph{Author:}\\
-\href{http://www.johnsmith.com}{\authorname} % Author name - remove the \href bracket to remove the link
+\authorname
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[t]{0.4\textwidth}
 \begin{flushright} \large
 \emph{Supervisor:} \\
-\href{http://www.jamessmith.com}{\supname} % Supervisor name - remove the \href bracket to remove the link  
+\supname
 \end{flushright}
 \end{minipage}\\[3cm]
  
@@ -188,9 +188,12 @@ headsepline, % Uncomment to get a line under the header
 
 \vspace*{0.2\textheight}
 
-\noindent\enquote{\itshape Thanks to my solid academic training, today I can write hundreds of words on virtually any topic without possessing a shred of information, which is how I got a good job in journalism.}\bigbreak
+\noindent\enquote{\itshape Que sera, sera,\\
+Whatever will be, will be;\\
+The future's not ours to see.\\
+Que sera, sera.}\bigbreak
 
-\hfill Dave Barry
+\hfill Jay Livingston and Ray Evans
 
 %----------------------------------------------------------------------------------------
 %	ABSTRACT PAGE
@@ -238,7 +241,7 @@ Finally, a special thank you to my family for their unwavering encouragement and
 \textbf{AR/VR}  & Augmented Reality / Virtual Reality \\
 \textbf{COLMAP} & Colmap Structure-from-Motion and MVS pipeline \\
 \textbf{CUDA}   & Compute Unified Device Architecture \\
-\textbf{DUST3R} & Dense Unconstrained Stereo 3D Reconstruction \\
+\textbf{DUSt3R} & Dense Unconstrained Stereo 3D Reconstruction \\
 \textbf{GPU}    & Graphics Processing Unit \\
 \textbf{LSD}    & Line Segment Detector \\
 \textbf{LPIPS}  & Learned Perceptual Image Patch Similarity \\
@@ -249,6 +252,7 @@ Finally, a special thank you to my family for their unwavering encouragement and
 \textbf{PSNR}   & Peak Signal-to-Noise Ratio \\
 \textbf{RGB}    & Red, Green, Blue \\
 \textbf{SAM}    & Segment Anything Model \\
+\textbf{SAM~3}  & Segment Anything with Concepts (version 3) \\
 \textbf{SfM}    & Structure-from-Motion \\
 \textbf{SSIM}   & Structural Similarity Index Measure \\
 \textbf{TSDF}   & Truncated Signed Distance Function \\
@@ -311,8 +315,9 @@ $D$                     & Depth map                          & --- \\
 \include{Chapters/related_work} 
 \include{Chapters/theoretical_background}
 \include{Chapters/proposed_solution} 
-\include{Chapters/experiments_and_results} 
-\include{Chapters/conclusions} 
+\include{Chapters/experiments_and_results}
+\include{Chapters/conclusions}
+\include{Chapters/ethical_considerations} 
 
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - APPENDICES
