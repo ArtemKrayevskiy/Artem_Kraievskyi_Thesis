@@ -49,7 +49,7 @@ We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnso
 
 \section{Experimental Setup}
 
-All experiments are conducted within a unified training framework implemented in \texttt{train\_unified.py} to ensure fair comparison between different configurations. The optimization process runs for 30,000 iterations using the Adam optimizer~\cite{kingma2014adam}, with identical hyperparameters across all experiments. All training runs are performed on a single \textbf{NVIDIA RTX 3090} GPU (24 GB VRAM) with \textbf{CUDA 11.8} and 24 GB system RAM.
+All experiments are conducted within a unified training framework implemented in \texttt{train.py}, which extends the PlanarGS codebase~\cite{planargs} with the geometric priors and edge-aware densification described in Chapter~4. The implementation is publicly available at \url{https://github.com/ArtemKrayevskiy/Geometry-regularized-Gaussian-splatting}. The optimization process runs for 30,000 iterations using the Adam optimizer~\cite{kingma2014adam}, with identical hyperparameters across all experiments. All training runs are performed on a single \textbf{NVIDIA RTX 3090} GPU (24 GB VRAM) with \textbf{CUDA 11.8} and 24 GB system RAM.
 
 \subsection{Unified Training Pipeline}
 
