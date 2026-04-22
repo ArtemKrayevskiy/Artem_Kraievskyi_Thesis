@@ -1,53 +1,67 @@
-\chapter{Appendix}
-\begin{table*}[h]
+\chapter{Ablation Study: Full Tables}
+\label{appendix:ablation}
+
+\newcommand{\gx}{\textcolor{gray!60}{\xmark}}
+
+This appendix contains the complete ablation tables referenced in Chapter~5. Table~\ref{tab:ablation_combinations_full} lists all 32 evaluated configurations; Table~\ref{tab:ablation_results_full} reports quantitative results averaged across three Deep Blending scenes (DrJohnson, Library, Playroom).
+
+%------------------------------------------------
+\section*{Table A.1 — All 32 Configurations}
+%------------------------------------------------
+
+\begin{table}[h]
 \centering
-\scriptsize
-\begin{tabular}{ccccc|ccc|ccc|ccc}
+\small
+\caption{All 32 ablation configurations. \cmark\ = prior enabled; {\color{gray!60}\xmark} = prior disabled.}
+\label{tab:ablation_combinations_full}
+\begin{tabular}{l|ccccc}
 \toprule
-N & D & E & M & P &
-PSNR & SSIM & LPIPS &
-PSNR & SSIM & LPIPS &
-\#G & Size & Time \\
+\textbf{Configuration} & \textbf{N} & \textbf{D} & \textbf{P} & \textbf{M} & \textbf{E} \\
 \midrule
-
-% --- AUTO GENERATE STYLE ---
-\xmark & \xmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \xmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \xmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \xmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \cmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \cmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \cmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \xmark & \cmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-
-\xmark & \cmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \xmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \xmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \xmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \cmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \cmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \cmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\xmark & \cmark & \cmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-
-\cmark & \xmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \xmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \xmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \xmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \cmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \cmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \cmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \xmark & \cmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-
-\cmark & \cmark & \xmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \xmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \xmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \xmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \cmark & \xmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \cmark & \xmark & \cmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \cmark & \cmark & \xmark & - & - & - & - & - & - & - & - & - \\
-\cmark & \cmark & \cmark & \cmark & \cmark & - & - & - & - & - & - & - & - & - \\
-
+baseline                              & \gx & \gx & \gx & \gx & \gx \\
+normals                               & \cmark & \gx & \gx & \gx & \gx \\
+depths                                & \gx & \cmark & \gx & \gx & \gx \\
+planarity                             & \gx & \gx & \cmark & \gx & \gx \\
+meshes                                & \gx & \gx & \gx & \cmark & \gx \\
+edges                                 & \gx & \gx & \gx & \gx & \cmark \\
+\midrule
+normals\_depths                        & \cmark & \cmark & \gx & \gx & \gx \\
+normals\_planarity                     & \cmark & \gx & \cmark & \gx & \gx \\
+normals\_meshes                        & \cmark & \gx & \gx & \cmark & \gx \\
+normals\_edges                         & \cmark & \gx & \gx & \gx & \cmark \\
+depths\_planarity                      & \gx & \cmark & \cmark & \gx & \gx \\
+depths\_meshes                         & \gx & \cmark & \gx & \cmark & \gx \\
+depths\_edges                          & \gx & \cmark & \gx & \gx & \cmark \\
+planarity\_meshes                      & \gx & \gx & \cmark & \cmark & \gx \\
+planarity\_edges                       & \gx & \gx & \cmark & \gx & \cmark \\
+meshes\_edges                          & \gx & \gx & \gx & \cmark & \cmark \\
+\midrule
+normals\_depths\_planarity             & \cmark & \cmark & \cmark & \gx & \gx \\
+normals\_depths\_meshes                & \cmark & \cmark & \gx & \cmark & \gx \\
+normals\_depths\_edges                 & \cmark & \cmark & \gx & \gx & \cmark \\
+normals\_planarity\_meshes             & \cmark & \gx & \cmark & \cmark & \gx \\
+normals\_planarity\_edges              & \cmark & \gx & \cmark & \gx & \cmark \\
+normals\_meshes\_edges                 & \cmark & \gx & \gx & \cmark & \cmark \\
+depths\_planarity\_meshes              & \gx & \cmark & \cmark & \cmark & \gx \\
+depths\_planarity\_edges               & \gx & \cmark & \cmark & \gx & \cmark \\
+depths\_meshes\_edges                  & \gx & \cmark & \gx & \cmark & \cmark \\
+planarity\_meshes\_edges               & \gx & \gx & \cmark & \cmark & \cmark \\
+\midrule
+normals\_depths\_planarity\_meshes     & \cmark & \cmark & \cmark & \cmark & \gx \\
+normals\_depths\_planarity\_edges      & \cmark & \cmark & \cmark & \gx & \cmark \\
+normals\_depths\_meshes\_edges         & \cmark & \cmark & \gx & \cmark & \cmark \\
+normals\_planarity\_meshes\_edges      & \cmark & \gx & \cmark & \cmark & \cmark \\
+depths\_planarity\_meshes\_edges       & \gx & \cmark & \cmark & \cmark & \cmark \\
+\midrule
+normals\_depths\_planarity\_meshes\_edges & \cmark & \cmark & \cmark & \cmark & \cmark \\
 \bottomrule
 \end{tabular}
-\caption{Full ablation study over all 32 combinations of geometric priors.}
-\end{table*}
+\end{table}
+
+\clearpage
+
+%------------------------------------------------
+\section*{Table A.2 — Full Quantitative Results}
+%------------------------------------------------
+
+\input{deepblending_results.tex}

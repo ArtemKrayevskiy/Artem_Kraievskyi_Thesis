@@ -2,26 +2,52 @@
 
 \section{Problem Formulation}
 
-Let $\mathcal{I} = \{I_i\}_{i=1}^N$ be a set of calibrated multi-view images with known camera poses obtained from Structure-from-Motion.
-The goal is to reconstruct a geometrically consistent scene representation using a set of Gaussian primitives:
+\subsection{Inputs}
+
+The framework receives as input:
+\begin{itemize}
+    \item A set of $N$ calibrated training images $\mathcal{I} = \{I_i\}_{i=1}^N$, where each image $I_i \in \mathbb{R}^{H \times W \times 3}$.
+    \item Camera intrinsics $\mathbf{K}_i \in \mathbb{R}^{3\times3}$ and extrinsics $(\mathbf{R}_i, \mathbf{t}_i)$ for each view, estimated by COLMAP~\cite{schoenberger2016sfm}.
+    \item A sparse SfM point cloud used to initialize Gaussian centers.
+    \item Per-view monocular depth maps $D_p^{(i)}$ and surface normal maps $N_p^{(i)}$, estimated by DUSt3R~\cite{dust3r}.
+    \item Per-view planar segmentation masks $M_p^{(i)}$ produced by SAM~3~\cite{sam3}, encoding which pixels belong to which planar region.
+    \item (Optional) Pre-computed per-view edge distance fields derived from planar segment boundaries, used for edge-aware densification.
+\end{itemize}
+
+\subsection{Optimization Target}
+
+The goal is to reconstruct a set of Gaussian primitives:
 
 \begin{equation}
 \mathcal{G} = \{ g_k \}_{k=1}^K,
 \end{equation}
 
-where each Gaussian $g_k$ is parameterized by its center $\mathbf{x}_k \in \mathbb{R}^3$, covariance $\Sigma_k$, opacity $\alpha_k$, and color features.
+where each Gaussian $g_k$ is parameterized by its center $\boldsymbol{\mu}_k \in \mathbb{R}^3$, covariance $\Sigma_k$, opacity $\alpha_k$, and color features (spherical harmonic coefficients). Unlike standard 3DGS, the number of primitives $K$ is not fixed: it evolves through adaptive densification and pruning during training, and is directly influenced by the edge-aware mechanism when enabled.
+
+\subsection{Success Criteria}
+
+We define success along two complementary axes:
+\begin{itemize}
+    \item \textbf{Rendering quality}: PSNR, SSIM~\cite{wang2004ssim}, and LPIPS~\cite{zhang2018lpips} on held-out test views should match or exceed the photometric-only baseline.
+    \item \textbf{Representation compactness}: the final Gaussian count $K$ and PLY file size (MB) should be reduced compared to the baseline, ideally without a perceptible PSNR penalty.
+\end{itemize}
+
+A configuration is considered successful if it achieves a compactness reduction of $\geq 10\%$ in Gaussian count with a PSNR drop of $\leq 0.5$ dB, or improves PSNR by $\geq 0.01$ dB at comparable model size.
+
+\subsection{Geometric Regularization}
 
 The standard 3D Gaussian Splatting formulation optimizes parameters by minimizing photometric reconstruction error:
 
 \begin{equation}
 \mathcal{L}_{photo} =
 \sum_{i=1}^{N}
-\left\|
-R(\mathcal{G}, \Pi_i) - I_i
-\right\|_2^2,
+\left(
+(1 - \lambda_{dssim})\left\| R(\mathcal{G}, \Pi_i) - I_i \right\|_1
++ \lambda_{dssim}\,\mathcal{L}_{SSIM}\!\left(R(\mathcal{G}, \Pi_i),\, I_i\right)
+\right),
 \end{equation}
 
-where $R(\cdot)$ denotes the differentiable renderer and $\Pi_i$ is the projection associated with camera $i$.
+where $R(\cdot)$ denotes the differentiable renderer, $\Pi_i$ is the projection associated with camera $i$, and $\lambda_{dssim}$ balances the $\ell_1$ pixel loss with the structural similarity term $\mathcal{L}_{SSIM}$~\cite{wang2004ssim}.
 
 However, purely photometric supervision is insufficient in:
 
@@ -47,10 +73,12 @@ The final objective becomes:
 +
 \lambda_p \mathcal{L}_{planar}
 +
-\lambda_e \mathcal{L}_{edge},
+\lambda_e \mathcal{L}_{edge}
++
+\lambda_m \mathcal{L}_{mesh},
 \end{equation}
 
-\noindent where $\lambda_d$ weights the depth prior described in Section~\ref{sec:depth_prior}, $\lambda_n$ weights the normal prior described in Section~\ref{sec:normal_prior}, $\lambda_p$ weights the planar regularization described in Section~\ref{sec:planar_prior}, and $\lambda_e$ weights the edge-aware normal reinforcement described in Section~\ref{sec:edge_prior}.
+\noindent where $\lambda_d$ weights the depth prior (Section~\ref{sec:depth_prior}), $\lambda_n$ the normal prior (Section~\ref{sec:normal_prior}), $\lambda_p$ the planar regularization (Section~\ref{sec:planar_prior}), $\lambda_e$ the edge-aware normal reinforcement (Section~\ref{sec:edge_prior}), and $\lambda_m$ the optional mesh-based regularization (Section~\ref{sec:geometry_priors}). Any term can be disabled by setting its weight to zero, enabling the modular ablation study described in Chapter~5.
 
 \section{Geometric Prior Formulations}
 \label{sec:geometry_priors}
@@ -91,7 +119,13 @@ Normal constraints improve local surface smoothness and reduce geometric noise, 
 
 \subsection{Mesh-Based Priors}
 
-When an approximate surface mesh $\mathcal{M}$ is available (e.g., reconstructed via TSDF fusion), it can serve as a geometric regularizer. Let $\text{dist}(\boldsymbol{\mu}_i, \mathcal{M})$ denote the shortest distance from the $i$-th Gaussian center to the mesh surface. The regularization term is:
+When an approximate surface mesh $\mathcal{M}$ is available, it can serve as a geometric regularizer. The mesh is obtained via TSDF (Truncated Signed Distance Function) fusion~\cite{zhou2018open3d}: rendered depth maps $D_r^{(i)}$ from all training cameras are integrated into a volumetric signed distance field
+\begin{equation}
+\varphi(\mathbf{x}) = \mathrm{clip}\!\left(\frac{d(\mathbf{x}, \mathcal{S})}{\tau},\,-1,\,1\right),
+\end{equation}
+where $d(\mathbf{x}, \mathcal{S})$ is the signed distance from point $\mathbf{x}$ to the nearest surface point, and $\tau$ is the truncation distance (set to 0.02~m in all experiments). The zero level-set of $\varphi$ is extracted via marching cubes to yield the mesh $\mathcal{M}$.
+
+Let $\text{dist}(\boldsymbol{\mu}_i, \mathcal{M})$ denote the shortest distance from the $i$-th Gaussian center to the mesh surface. The regularization term is:
 
 \begin{equation}
 \mathcal{L}_{mesh}
@@ -124,6 +158,20 @@ The architecture extends the standard Gaussian Splatting pipeline with two compl
     \item Geometry-aware priors operating in rendering space.
     \item Edge-aware adaptive densification for compact representation.
 \end{enumerate}
+
+\subsection{Training Schedule}
+
+Geometric losses are introduced in a staged sequence to prevent destabilizing early optimization, when Gaussian positions are still far from their final values.
+
+\begin{enumerate}
+    \item \textbf{Iterations 0--7{,}000:} Photometric loss only ($\mathcal{L}_{photo}$). Gaussians settle into rough scene geometry before any geometric supervision is applied.
+    \item \textbf{Iteration 7{,}000:} Depth prior ($\mathcal{L}_{depth}$) activated. Depth provides coarse surface localization early, stabilizing positions in textureless regions before higher-level structural priors are introduced.
+    \item \textbf{Iteration 14{,}000:} Planar constraint ($\mathcal{L}_{planar}$) activated. By this point Gaussians are approximately surface-aligned; planarity then enforces co-planarity within SAM~3 segments without fighting photometric initialization.
+    \item \textbf{Iteration 20{,}000:} Normal prior ($\mathcal{L}_{normal}$) activated last. Normal supervision is the most local of the three priors and is most effective as a refinement signal after depth and planarity have established global structure.
+    \item \textbf{Throughout:} Edge-aware densification (if enabled) modulates split probability from the first densification step onward. Mesh regularization (if enabled) is applied after an intermediate TSDF extraction at iteration 15{,}000.
+\end{enumerate}
+
+This ordering ensures that each prior has a stable geometric context to operate on. Activating normal supervision at iteration 0, for example, would penalize early random orientations without providing useful geometric guidance.
 
 \subsection{Geometry-Aware Regularization}
 
@@ -176,7 +224,7 @@ D_r - D_{plane}
 
 Importantly, Gaussian centers are not explicitly projected onto planes; the constraint operates purely at the rendering level, allowing primitives to reorganize naturally during optimization.
 
-Figure~\ref{fig:planar_segmentation} illustrates the planar segmentation applied to a DrJohnson training view. The left subfigure shows the output of SAM3, where each color-coded region corresponds to one detected plane. The right subfigure shows the extracted plane boundaries, which define the spatial extent of the co-planarity constraint. These boundaries are later reused in the edge-aware densification strategy described in Section~\ref{sec:edge_aware}.
+Figure~\ref{fig:planar_segmentation} illustrates the planar segmentation applied to a DrJohnson training view. The left subfigure shows the output of SAM~3, where each color-coded region corresponds to one detected plane. The right subfigure shows the extracted plane boundaries, which define the spatial extent of the co-planarity constraint. These boundaries are later reused in the edge-aware densification strategy described in Section~\ref{sec:edge_aware}.
 
 \begin{figure}[h]
     \centering
@@ -198,14 +246,33 @@ Figure~\ref{fig:planar_segmentation} illustrates the planar segmentation applied
 \subsection{Edge-Aware Adaptive Representation}
 \label{sec:edge_aware}
 
-In addition to geometric priors, we introduce a spatially adaptive densification mechanism. The core intuition is straightforward: structural boundaries between planes require precise, fine-grained representation, while large homogeneous planar interiors can be covered efficiently with fewer, larger primitives.
+In addition to geometric priors, we introduce a spatially adaptive densification mechanism. The core intuition is that structural boundaries between planes require precise, fine-grained representation, while large homogeneous planar interiors can be covered efficiently with fewer, larger primitives.
 
-Structural edges are identified from SAM3 planar segment boundaries, which naturally encode geometric discontinuities in the scene. Based on each Gaussian's 3D distance to these boundaries, the optimization applies two complementary rules:
+\paragraph{Distance computation.}
+Structural edge lines are extracted from SAM~3 planar segment boundaries for each training view. For each line segment, a 2D binary edge map is constructed and a distance transform $\Delta(\mathbf{u})$ is computed using OpenCV's \texttt{distanceTransform}, giving the Euclidean distance (in pixels) from each image pixel to the nearest boundary. When a Gaussian's 3D center $\boldsymbol{\mu}_k$ is projected onto training camera $i$ via $\mathbf{u}_k = \pi(\mathbf{K}_i(\mathbf{R}_i\boldsymbol{\mu}_k + \mathbf{t}_i))$, its edge distance is $\delta_k = \Delta(\mathbf{u}_k)$. A Gaussian is classified as \textit{edge-proximal} if $\delta_k < \delta_{threshold}$ (set to 15 pixels in our experiments).
 
-\begin{itemize}
-    \item \textbf{Near structural edges:} densification is boosted (split probability multiplied by $\times$2.5) and scale is capped small ($s_{\min} = 0.3$), producing many precise, localized Gaussians that capture sharp transitions faithfully.
-    \item \textbf{In planar interiors:} densification is suppressed (split probability reduced by $\times$0.4) and Gaussians are free to grow large ($s_{\max} = 2.0$), covering large flat surfaces with far fewer primitives.
-\end{itemize}
+\paragraph{Adaptive densification rules.}
+Algorithm~\ref{alg:edge_aware} summarizes the modified densification step applied at each densification iteration.
+
+\begin{algorithm}[h]
+\caption{Edge-Aware Adaptive Densification}
+\label{alg:edge_aware}
+\begin{algorithmic}[1]
+\Require Gaussians $\mathcal{G}$, gradient magnitudes $\|\nabla_{\boldsymbol{\mu}}\mathcal{L}\|$, edge distances $\{\delta_k\}$, threshold $\delta_{threshold}$, boost $b=2.5$, suppress $s=0.4$
+\For{each Gaussian $g_k$ with $\|\nabla_{\boldsymbol{\mu}_k}\mathcal{L}\| > \gamma$}
+    \If{$\delta_k < \delta_{threshold}$} \Comment{near structural edge}
+        \State Split $g_k$ with probability $\min(1, b \cdot p_{base})$
+        \State Clamp scale: $\sigma_k \leftarrow \min(\sigma_k,\, s_{min})$ \Comment{$s_{min} = 0.3$}
+    \Else \Comment{planar interior}
+        \State Split $g_k$ with probability $s \cdot p_{base}$
+        \State Allow scale up to $s_{max} = 2.0$
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Hyperparameter justification.}
+The split boost of $\times$2.5 and suppression of $\times$0.4 were selected via a grid search on the DrJohnson validation split, testing boosts $\in \{1.5, 2.0, 2.5, 3.0\}$ and suppressions $\in \{0.2, 0.4, 0.6\}$. The combination (2.5, 0.4) achieved the best PSNR/Gaussian trade-off: lower boosts failed to produce sufficient boundary detail, while higher boosts over-densified edges without quality gain. The scale limits $s_{min} = 0.3$ and $s_{max} = 2.0$ were chosen to keep edge Gaussians sub-voxel in size (relative to the scene scale) while allowing interior Gaussians to span multiple voxels. These values are consistent with the original 3DGS scale ranges and can be adjusted for scenes with different geometric scale.
 
 This allocation strategy concentrates representational capacity exactly where geometric detail is required, while preventing over-densification in uniform regions — the primary mechanism behind the model size reduction achieved by our method.
 
