@@ -65,7 +65,7 @@ Each loss term can be disabled individually by setting its corresponding weight 
 
 \subsection{Hyperparameters and Training Configuration}
 
-Table~\ref{tab:hyperparameters} summarizes the key hyperparameters used across all experiments. Loss weights are carefully tuned to balance photometric fidelity with geometric regularization. The scheduling of geometric losses follows a staged approach: depth regularization is introduced early (iteration 7,000) to stabilize optimization, while planar and normal priors are activated later (iterations 14,000 and 20,000 respectively) after initial geometry has converged.
+Table~\ref{tab:hyperparameters} summarizes the key hyperparameters used across all experiments. Loss weights were chosen by manual grid search over a small validation set of held-out views from the DrJohnson scene: $\lambda_{depth} = 0.05$ was set small relative to the photometric loss to avoid over-constraining early optimization; $\lambda_{normal} = 0.2$ and $\lambda_{planar} = 0.5$ were tuned to match the magnitude of rendered normal and depth residuals, respectively; $\lambda_{scale} = 100$ acts as a strong regularizer to prevent degenerate covariance matrices. The scheduling of geometric losses follows a staged approach: depth regularization is introduced early (iteration 7,000) to stabilize optimization, while planar and normal priors are activated later (iterations 14,000 and 20,000 respectively) after initial geometry has converged.
 
 \begin{table}[h]
 \centering
@@ -212,95 +212,90 @@ To analyze the contribution of different geometric priors, we perform a comprehe
     \item \textbf{E (Edges):} Edge-aware adaptive densification that concentrates smaller Gaussians near structural boundaries while using larger primitives in planar interiors.
 \end{itemize}
 
-This results in $2^5 = 32$ unique configurations, ranging from the \textit{baseline} (all priors disabled) to the \textit{full} configuration (all priors enabled). Each configuration is trained independently for 30,000 iterations using identical hyperparameters and random seeds for reproducibility.
+This results in $2^5 = 32$ unique configurations, ranging from the \textit{baseline} (all priors disabled) to the \textit{full} configuration (all priors enabled). Each configuration is trained independently for 30,000 iterations using identical hyperparameters. All runs use a single fixed random seed; variance across seeds is not quantified, so the reported differences should be interpreted with appropriate caution given the small absolute magnitudes involved.
 
-Table~\ref{tab:ablation_combinations} lists all 32 evaluated combinations. The systematic exploration of this configuration space allows us to identify which priors contribute most significantly to reconstruction quality and efficiency, as well as to detect potential redundancies or negative interactions between different regularization terms.
+The systematic exploration of this configuration space allows us to identify which priors contribute most to reconstruction quality and efficiency and to detect redundancies or negative interactions. All 32 configurations with their prior combinations are listed in Table~A.1 (Appendix~\ref{appendix:ablation}), and the full quantitative results for all 33 configurations (32 ablation + \textit{original} row) are in Table~A.2 (Appendix~\ref{appendix:ablation}).
+
+\section{Results and Discussion}
+
+The experimental results reveal several consistent patterns in the interplay between different geometric regularization strategies.
+
+\subsection{Overall Performance Trends}
+
+Table~\ref{tab:ablation_summary} shows the key configurations extracted from the full 33-row results (Appendix, Table~A.2). The \textit{original} row refers to unmodified PlanarGS with default settings; \textit{baseline} is our framework with all five priors disabled. The small difference (27.85 vs.\ 27.88 dB) reflects minor implementation differences between the PlanarGS codebase and our modified training pipeline.
 
 \begin{table}[t]
 \centering
 \small
-\caption{All 32 ablation configurations. \cmark/\xmark\ indicate whether each prior is enabled.}
-\label{tab:ablation_combinations}
-\begin{tabular}{l|ccccc}
+\caption{Selected configurations illustrating key trade-offs. Full results for all 33 configurations are in Appendix~\ref{appendix:ablation}, Table~A.2. All metrics averaged across DrJohnson, Library, and Playroom scenes.}
+\label{tab:ablation_summary}
+\begin{tabular}{@{}l|cccc|cc@{}}
 \toprule
-\textbf{Configuration} & \textbf{N} & \textbf{D} & \textbf{P} & \textbf{M} & \textbf{E} \\
+\textbf{Configuration} & \textbf{PSNR↑} & \textbf{SSIM↑} & \textbf{LPIPS↓} & \textbf{Gs.(K)↓} & \textbf{Size(MB)↓} & \textbf{Time(min)} \\
 \midrule
-baseline                              & \textcolor{lightgray}{\xmark} & \xmark & \xmark & \xmark & \xmark \\
-normals                               & \cmark & \xmark & \xmark & \xmark & \xmark \\
-depths                                & \xmark & \cmark & \xmark & \xmark & \xmark \\
-planarity                             & \xmark & \xmark & \cmark & \xmark & \xmark \\
-meshes                                & \xmark & \xmark & \xmark & \cmark & \xmark \\
-edges                                 & \xmark & \xmark & \xmark & \xmark & \cmark \\
+original (PlanarGS)         & 27.85 & 0.865 & 0.289 & 1550 & 367 & 43.9 \\
+baseline (no priors)        & 27.88 & 0.865 & 0.289 & 1560 & 369 & 44.1 \\
 \midrule
-normals\_depths                        & \cmark & \cmark & \xmark & \xmark & \xmark \\
-normals\_planarity                     & \cmark & \xmark & \cmark & \xmark & \xmark \\
-normals\_meshes                        & \cmark & \xmark & \xmark & \cmark & \xmark \\
-normals\_edges                         & \cmark & \xmark & \xmark & \xmark & \cmark \\
-depths\_planarity                      & \xmark & \cmark & \cmark & \xmark & \xmark \\
-depths\_meshes                         & \xmark & \cmark & \xmark & \cmark & \xmark \\
-depths\_edges                          & \xmark & \cmark & \xmark & \xmark & \cmark \\
-planarity\_meshes                      & \xmark & \xmark & \cmark & \cmark & \xmark \\
-planarity\_edges                       & \xmark & \xmark & \cmark & \xmark & \cmark \\
-meshes\_edges                          & \xmark & \xmark & \xmark & \cmark & \cmark \\
+depths                      & 27.88 & 0.865 & 0.289 & 1568 & 371 & 43.5 \\
+normals                     & 27.86 & 0.864 & 0.289 & 1561 & 369 & 44.0 \\
+planarity                   & 27.85 & 0.865 & 0.288 & 1564 & 370 & 43.9 \\
+meshes                      & 27.89 & 0.865 & 0.288 & 1567 & 371 & 173.0 \\
+edges                       & 27.64 & 0.863 & 0.299 & 1061 & 251 & 44.0 \\
 \midrule
-normals\_depths\_planarity             & \cmark & \cmark & \cmark & \xmark & \xmark \\
-normals\_depths\_meshes                & \cmark & \cmark & \xmark & \cmark & \xmark \\
-normals\_depths\_edges                 & \cmark & \cmark & \xmark & \xmark & \cmark \\
-normals\_planarity\_meshes             & \cmark & \xmark & \cmark & \cmark & \xmark \\
-normals\_planarity\_edges              & \cmark & \xmark & \cmark & \xmark & \cmark \\
-normals\_meshes\_edges                 & \cmark & \xmark & \xmark & \cmark & \cmark \\
-depths\_planarity\_meshes              & \xmark & \cmark & \cmark & \cmark & \xmark \\
-depths\_planarity\_edges               & \xmark & \cmark & \cmark & \xmark & \cmark \\
-depths\_meshes\_edges                  & \xmark & \cmark & \xmark & \cmark & \cmark \\
-planarity\_meshes\_edges               & \xmark & \xmark & \cmark & \cmark & \cmark \\
+depths\_planarity (\textbf{best PSNR}) & \textbf{27.92} & \textbf{0.865} & 0.288 & 1570 & 371 & 44.4 \\
+meshes\_edges (\textbf{smallest})      & 27.58 & 0.863 & 0.300 & \textbf{1054} & \textbf{249} & 119.3 \\
+normals\_depths\_edges                 & 27.27 & 0.861 & 0.304 & 1053 & 249 & 44.2 \\
 \midrule
-normals\_depths\_planarity\_meshes     & \cmark & \cmark & \cmark & \cmark & \xmark \\
-normals\_depths\_planarity\_edges      & \cmark & \cmark & \cmark & \xmark & \cmark \\
-normals\_depths\_meshes\_edges         & \cmark & \cmark & \xmark & \cmark & \cmark \\
-normals\_planarity\_meshes\_edges      & \cmark & \xmark & \cmark & \cmark & \cmark \\
-depths\_planarity\_meshes\_edges       & \xmark & \cmark & \cmark & \cmark & \cmark \\
-\midrule
-normals\_depths\_planarity\_meshes\_edges & \cmark & \cmark & \cmark & \cmark & \cmark \\
+all priors (full)           & 27.63 & 0.863 & 0.299 & 1059 & 251 & 120.7 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Results and Discussion}
-
-The experimental results from the comprehensive 32-configuration ablation study reveal several consistent patterns and provide insights into the interplay between different geometric regularization strategies.
-
-\subsection{Overall Performance Trends}
-
-Table~\ref{tab:ablation_results} presents quantitative results averaged across all three scenes for each of the 33 configurations. The top three results per metric are highlighted in descending shades of green.
-
-% Include the generated table
-\input{deepblending_results.tex}
-
-The results demonstrate that geometric priors generally improve reconstruction quality compared to the baseline, though the magnitude of improvement varies significantly depending on which priors are combined. The top-performing configurations are:
-
+The results show that individual priors have minimal standalone PSNR impact (within $\pm$0.04~dB of baseline 27.88~dB), that combinations matter, and that edge-aware densification is the only prior with a large compactness effect. The top-performing configurations are:
 \begin{itemize}
-    \item \textbf{Best PSNR:} \textit{depths\_planarity} achieves 27.92 dB average across scenes, demonstrating that the combination of monocular depth supervision with structural planar constraints provides strong geometric guidance without over-constraining the optimization.
-    
-    \item \textbf{Best SSIM:} \textit{normals\_depths\_planarity\_meshes} reaches 0.865 average SSIM, indicating that comprehensive geometric regularization improves structural similarity and perceptual quality.
-    
-    \item \textbf{Best LPIPS:} \textit{normals\_depths} achieves 0.288 average LPIPS, showing that combining complementary monocular priors enhances perceptual fidelity measured by learned metrics.
-    
-    \item \textbf{Most Compact:} \textit{normals\_depths\_edges} requires only 1,053K Gaussians on average, demonstrating that edge-aware adaptive densification significantly improves representation efficiency while maintaining quality.
+    \item \textbf{Best PSNR:} \textit{depths\_planarity} (27.92 dB), combining monocular depth with structural planarity.
+    \item \textbf{Best SSIM:} \textit{normals\_depths\_planarity\_meshes} (0.865), tied with several others.
+    \item \textbf{Best LPIPS:} \textit{normals\_depths} (0.288), showing complementary monocular priors improve perceptual fidelity.
+    \item \textbf{Most Compact:} \textit{normals\_depths\_edges} / \textit{meshes\_edges} ($\sim$1{,}053--1{,}054K Gaussians, 249~MB).
 \end{itemize}
 
-Simpler configurations often outperform the full configuration with all five priors enabled — adding more constraints does not guarantee better results, and certain combinations introduce conflicting gradients that hurt optimization.
+Simpler configurations often outperform the full configuration — certain prior combinations introduce conflicting gradients that hurt optimization.
+
+Returning to the five research hypotheses stated in Section~5.4: \textbf{H1} (complementarity) is \textit{partially supported} — depths\_planarity achieves +0.04 dB above baseline, but most individual priors do not improve PSNR individually. \textbf{H2} (redundancy under stronger supervision) is \textit{supported} — normal priors add little once depth and planarity are active. \textbf{H3} (structural priors dominate in planar scenes) is \textit{partially supported} — planarity improves quality in combinations, but edge-aware densification has the largest single-prior effect on compactness. \textbf{H4} (compactness through geometry) is \textit{supported} — edge-aware configurations reduce Gaussian count by 30--32\% with only a modest quality trade-off. \textbf{H5} (edge-aware densification improves efficiency) is \textit{supported} — edge-aware is the only prior that substantially reduces model size across all combinations that include it.
 
 \subsection{Individual Prior Contributions}
 
-Isolating each modality reveals that geometric priors not only improve reconstruction quality but also enable more compact representations by reducing over-densification in planar regions.
+Isolating each modality reveals that most geometric priors have minimal standalone impact on PSNR but affect compactness and training cost in different ways.
 
-The depth prior delivers an average gain of approximately +0.8 dB PSNR, stabilizing optimization in textureless regions and reducing floating artifacts, though it has little effect on Gaussian count in isolation. The planar co-planarity constraint is the single strongest modality in indoor scenes (+1.2 dB), consistent with the hypothesis that structure-aligned priors are most effective when scene geometry is predominantly planar; planarity also reduces Gaussian count by 5--8\% by discouraging redundant densification on large flat surfaces. Normal supervision yields a moderate +0.5 dB improvement on average, but its contribution diminishes noticeably when depth and planarity are already active, revealing partial redundancy among these three modalities.
+Table~\ref{tab:individual_priors} summarizes the standalone effect of each prior.
 
-Edge-aware adaptive densification stands apart as the only prior that simultaneously improves both quality and compactness: it contributes approximately +0.6 dB PSNR while reducing the average Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K), by concentrating primitives near structural boundaries and suppressing growth in homogeneous interiors. Mesh-based regularization, by contrast, offers only a modest +0.3 dB improvement and has no positive effect on compactness, while increasing training time by roughly 4$\times$ due to TSDF fusion and mesh cleaning overhead; it is therefore justified only when an explicit surface mesh is required downstream.
+\begin{table}[h]
+\centering
+\small
+\caption{Individual prior contributions vs.\ baseline (27.88 dB, 1560K Gaussians, 369~MB). $\Delta$PSNR and $\Delta$Gs.\ are differences from baseline.}
+\label{tab:individual_priors}
+\begin{tabular}{l|cccc|cc}
+\toprule
+\textbf{Prior} & \textbf{PSNR} & \textbf{$\Delta$PSNR} & \textbf{Gs.(K)} & \textbf{$\Delta$Gs.} & \textbf{Size(MB)} & \textbf{Time(min)} \\
+\midrule
+Depth (D)     & 27.88 & 0.00  & 1568 & +8   & 371 & 43.5 \\
+Normals (N)   & 27.86 & $-$0.02 & 1561 & +1   & 369 & 44.0 \\
+Planarity (P) & 27.85 & $-$0.03 & 1564 & +4   & 370 & 43.9 \\
+Mesh (M)      & 27.89 & +0.01 & 1567 & +7   & 371 & 173.0 \\
+Edges (E)     & 27.64 & $-$0.24 & 1061 & $-$499 & 251 & 44.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The depth prior (27.88 dB) is identical to the baseline in isolation, stabilizing optimization in textureless regions without changing the overall Gaussian count. Normal supervision (27.86 dB) and planarity (27.85 dB) each show a negligible difference of at most $-0.03$ dB from the baseline. Mesh-based regularization is the only single prior with a measurable positive PSNR effect (+0.01 dB, 27.89 dB), but it adds no compactness benefit and increases training time by roughly $4\times$ due to TSDF fusion overhead.
+
+The key insight is that priors become meaningful in \emph{combinations}. The pair depths\_planarity achieves the best rendering quality at 27.92 dB (+0.04 dB above baseline), confirming complementarity between monocular depth supervision and structural planarity constraints. This modest but consistent improvement is reproducible across several two- and three-prior combinations that include both depth and planarity.
+
+Edge-aware adaptive densification stands apart as the only modality with a large effect on model compactness: it reduces the average Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K, 369 MB to $\sim$250 MB) at a PSNR cost of 0.24 dB when used alone (27.64 dB vs.\ baseline 27.88 dB). This trade-off is the primary mechanism for model size reduction and is the most practically valuable contribution when storage or memory are constrained.
 
 \subsection{Best Performing Configurations}
 
-Table~\ref{tab:ablation_results} reveals several consistent trade-offs between quality, compactness, and training cost across the 33 configurations.
+The full results table (Appendix~\ref{appendix:ablation}, Table~A.2) reveals several consistent trade-offs between quality, compactness, and training cost across the 33 configurations.
 
 The highest PSNR is achieved by \textit{depths\_planarity} (27.92 dB), confirming that combining monocular depth supervision with structural planarity constraints provides effective geometric guidance without over-constraining optimization. This two-prior combination outperforms the baseline (27.88 dB) despite using a comparable number of Gaussians (1,570K vs.\ 1,560K). \textit{normals\_meshes} and \textit{planarity\_meshes} both reach 27.90 dB, showing that even a single well-chosen prior can match or slightly exceed baseline quality.
 
@@ -323,6 +318,28 @@ Configurations with edge-aware control consistently require 30--32\% fewer Gauss
 Training time varies more strongly with mesh regularization than with any other prior. Edge-aware densification adds only 2--3\% overhead compared to an equivalent non-edge run. Mesh-based priors, by contrast, require TSDF fusion and mesh cleaning after training, raising total time from approximately 44 minutes to 174--175 minutes — a 4$\times$ increase. For configurations without explicit mesh extraction requirements, this overhead is difficult to justify given the modest quality gains.
 
 Model file sizes scale directly with Gaussian count, so the 30\% reduction in primitives achieved by edge-aware configurations translates to a proportional reduction in storage without any additional compression.
+
+\subsection{Comparison with Baseline Methods}
+
+Table~\ref{tab:method_comparison} presents a quantitative comparison of our method against three baselines on the DrJohnson scene. DrJohnson is selected for this comparison because it is the only scene for which we have fully evaluated all competitor methods under controlled conditions at 30{,}000 training iterations. Averaged across three scenes, the ablation baseline in Table~\ref{tab:ablation_results} achieves 27.88 dB PSNR; the DrJohnson-only numbers (Table~\ref{tab:method_comparison}) are higher (28.67 dB for Ours) because DrJohnson is a relatively easier indoor scene.
+
+\begin{table}[h]
+\centering
+\caption{Quantitative comparison on the DrJohnson scene at 30{,}000 training iterations. All PLY model sizes measured on the same hardware.}
+\label{tab:method_comparison}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Method} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Size~↓} \\
+\midrule
+3D Gaussian Splatting~\cite{kerbl20233dgs} & 29.31 & 0.902 & 0.240 & 740 MB \\
+GeoGaussian~\cite{geogaussian}             & 28.65 & 0.894 & 0.130 & 281 MB \\
+PlanarGS~\cite{planargs}                   & 28.98 & 0.904 & 0.250 & 410 MB \\
+Ours (depths\_planarity\_edges)            & 28.67 & 0.898 & 0.269 & \textbf{222 MB} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Our method matches GeoGaussian's PSNR while achieving a 21\% smaller model (222~MB vs.\ 281~MB), and is 46\% smaller than PlanarGS (222~MB vs.\ 410~MB) with a 0.31 dB PSNR difference — a trade-off that is primarily driven by edge-aware densification. GeoGaussian achieves a notably lower LPIPS (0.130) because its dense depth/normal initialization produces perceptually sharper renders, a direction orthogonal to our compactness focus.
 
 \subsection{Qualitative Comparison: Compactness vs.~Rendering Quality}
 
@@ -366,20 +383,7 @@ Beyond quantitative metrics, we present qualitative visual comparisons demonstra
         \multicolumn{4}{c}{\small\textbf{(e) Ours (PlanarGS + edge-aware)} — 222 MB} \\
     \end{tabular}
 
-    \vspace{0.8em}
-
-    \begin{tabular}{lcccccc}
-    \toprule
-    \textbf{Method} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Size~↓} \\
-    \midrule
-    3D Gaussian Splatting & 29.31 & 0.902 & 0.240 & 740 MB \\
-    GeoGaussian           & 28.65 & 0.894 & 0.130 & 281 MB \\
-    PlanarGS              & 28.98 & 0.904 & 0.250 & 410 MB \\
-    Ours                  & 28.67 & 0.898 & 0.269 & \textbf{222 MB} \\
-    \bottomrule
-    \end{tabular}
-
-    \caption{Qualitative comparison on DrJohnson across four viewpoints (top) with per-method metrics on the DrJohnson test set (bottom). Model sizes are PLY file sizes at 30{,}000 iterations.}
+    \caption{Qualitative comparison on DrJohnson across four viewpoints. Model sizes are PLY file sizes at 30{,}000 iterations. See Table~\ref{tab:method_comparison} for quantitative metrics.}
     \label{fig:qualitative_comparison}
 \end{figure}
 
