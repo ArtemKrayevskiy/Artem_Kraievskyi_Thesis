@@ -10,11 +10,40 @@ Through a comprehensive ablation study across all $2^5 = 32$ possible combinatio
 
 The comprehensive experimental evaluation revealed several important findings about the contribution of individual modalities and their interactions.
 
-Among individual priors, planar co-planarity constraints deliver the strongest contribution, improving PSNR by approximately +1.2 dB on average in the indoor scenes tested — a result consistent with the thesis hypothesis that structural priors aligned with dominant scene geometry are the most effective. Depth priors follow as the second most impactful modality (+0.8 dB), providing stability in textureless regions by reducing floating artifacts and improving depth consistency across viewpoints. Normal priors offer more moderate gains (+0.5 dB) and exhibit partial redundancy when depth and planarity constraints are already active, suggesting that all three modalities encode partially overlapping geometric information.
+Among individual priors, depth, normals, planarity, and mesh-based regularization all maintain rendering quality comparable to the baseline (within $\pm$0.04 dB of 27.88 dB PSNR). None of these priors alone produces a large quality gain, but their combination matters: depths\_planarity achieves 27.92 dB (+0.04 dB above baseline), confirming that depth supervision and structural planarity constraints are complementary. Normal priors exhibit partial redundancy when depth and planarity are already active, providing diminishing returns in structured indoor environments.
 
-Edge-aware adaptive densification stands out as the only modality that simultaneously improves both quality and efficiency: it yields a +0.6 dB PSNR gain while reducing the Gaussian count by 30--32\%, demonstrating that spatially varying primitive allocation is a more principled strategy than uniform densification. Mesh-based TSDF regularization provides only modest visual quality improvements (+0.3 dB), but benefits downstream surface extraction quality and is therefore most valuable in applications requiring explicit meshes — at the cost of a roughly 4$\times$ increase in training time (from $\sim$44 to $\sim$175 minutes).
+Edge-aware adaptive densification is the most practically impactful component: it reduces the Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K, 369~MB to $\sim$250~MB) at a PSNR cost of 0.24 dB when used alone. Crucially, this trade-off is reproducible across all edge-aware configurations — every configuration that includes edge-aware control achieves compactness improvements of similar magnitude, making it a reliable tool for memory-constrained deployment. Mesh-based TSDF regularization provides only marginal rendering quality gains (+0.01 dB standalone) while increasing training time by roughly $4\times$; it should be included only when downstream mesh extraction is explicitly required.
 
-A broader insight from the ablation study is that geometric priors are not uniformly additive. Combining depth, planarity, and edge-aware control yields strong results, but enabling all five priors simultaneously does not consistently outperform selective combinations, suggesting that certain priors introduce conflicting gradients or over-constrain the optimization. These interactions underscore the importance of systematic ablation over exhaustive regularization.
+A broader insight from the ablation study is that geometric priors are not uniformly additive. Enabling all five priors simultaneously produces only 27.63 dB, well below simpler combinations such as depths\_planarity (27.92 dB), suggesting that certain priors introduce conflicting gradients or over-constrain the optimization. These interactions underscore the importance of systematic ablation over exhaustive regularization.
+
+\section{Practical Recommendations}
+
+The experimental results yield concrete guidance for practitioners choosing geometric priors for their specific use case.
+
+\textbf{For maximum rendering quality} (e.g., pre-rendered indoor visualization, architectural walkthroughs): use \textit{depths\_planarity}. This two-prior combination achieves the best PSNR (27.92 dB) and SSIM (0.865) at near-baseline model size (371~MB), with a training time overhead of only $<$1\%. No edge-aware densification or mesh regularization is needed.
+
+\textbf{For memory-constrained deployment} (e.g., mobile AR navigation, embedded 3D viewers, VR headsets with limited VRAM): use \textit{meshes\_edges} or \textit{depths\_edges}. These configurations reduce model size by 32\% (249--252~MB vs.\ 369~MB baseline) with a PSNR drop of 0.3--0.6~dB — a trade-off that is imperceptible at normal viewing distances and enables deployment on devices that cannot load a 370~MB PLY file into GPU memory.
+
+\textbf{For downstream mesh extraction} (e.g., robotics mapping, collision geometry for physics engines): add the mesh prior (\textit{depths\_planarity\_meshes}). The 4$\times$ training time increase is the cost for obtaining a clean TSDF mesh alongside the Gaussian representation. Quality (27.81 dB) remains slightly below the non-mesh variant.
+
+\textbf{For rapid prototyping or iterative experimentation}: use \textit{depths\_planarity} (44.4~min training). Avoid mesh priors (174--183~min) during exploratory phases.
+
+\textbf{Trade-off guide:}
+\begin{itemize}
+    \item Adding only depth or normals: $\sim$0 PSNR gain, $\sim$0 size reduction — not worth the complexity alone.
+    \item Adding planarity: +0.04~dB PSNR with depth, no size reduction — recommended for quality-focused deployments.
+    \item Adding edges: $-$0.24~dB PSNR, $-$32\% Gaussians, $-$32\% storage — the primary compactness lever.
+    \item Adding mesh: $\sim$+0.01~dB PSNR standalone, $4\times$ training time — only for mesh-required tasks.
+    \item All priors together: lower quality than selective combinations — avoid unless explicitly needed.
+\end{itemize}
+
+\section{Novelty and Positioning}
+
+The contribution of this work is distinct from PlanarGS, GeoGaussian, and related methods in two specific ways.
+
+\textbf{Edge-aware adaptive densification during training.} PlanarGS reduces model size by flattening Gaussian covariances within planar regions but does not modify the densification strategy. GeoGaussian improves geometry through dense initialization but does not control how primitives accumulate during optimization. Our edge-aware mechanism is the first to modulate split probability and scale constraints based on spatial proximity to structural boundaries \emph{within the standard 3DGS densification loop}, achieving 32\% fewer primitives without post-hoc compression.
+
+\textbf{Systematic multi-prior ablation.} Prior works evaluate their proposed prior against a single vanilla 3DGS baseline. This work is the first to evaluate all $2^5 = 32$ subsets of five geometric priors on the same scenes under identical training conditions, producing evidence-based rankings of prior combinations rather than isolated comparisons. This ablation framework is itself a methodological contribution: it provides a reusable template for evaluating geometric constraints in future 3DGS work.
 
 \section{Limitations}
 
