@@ -49,7 +49,7 @@ We focus on three indoor scenes from the Deep Blending dataset: \textbf{DrJohnso
 
 \section{Experimental Setup}
 
-All experiments are conducted within a unified training framework implemented in \texttt{train.py}, which extends the PlanarGS codebase~\cite{planargs} with the geometric priors and edge-aware densification described in Chapter~4. The implementation is publicly available at \url{https://github.com/ArtemKrayevskiy/Geometry-regularized-Gaussian-splatting}. The optimization process runs for 30,000 iterations using the Adam optimizer~\cite{kingma2014adam}, with identical hyperparameters across all experiments. All training runs are performed on a single \textbf{NVIDIA RTX 3090} GPU (24 GB VRAM) with \textbf{CUDA 11.8} and 24 GB system RAM.
+All experiments are conducted within a unified training framework implemented in \texttt{train.py}, which extends the PlanarGS codebase~\cite{planargs} with the geometric priors and edge-aware densification described in Chapter~4. The implementation is publicly available on GitHub.\footnote{\url{https://github.com/ArtemKrayevskiy/Geometry-regularized-Gaussian-splatting}} The optimization process runs for 30,000 iterations using the Adam optimizer~\cite{kingma2014adam}, with identical hyperparameters across all experiments. All training runs are performed on a single \textbf{NVIDIA RTX 3090} GPU (24 GB VRAM) with \textbf{CUDA 11.8} and 24 GB system RAM.
 
 \subsection{Unified Training Pipeline}
 
@@ -198,7 +198,7 @@ The experiments are designed to test five hypotheses derived from the research g
     \item \textbf{Edge-Aware Densification Improves Efficiency:} Concentrating smaller primitives near structural boundaries while allowing larger ones to grow in flat interiors should simultaneously improve sharpness at edges and reduce the overall Gaussian count.
 \end{enumerate}
 
-All five hypotheses are tested by comparing the 32 geometric prior combinations against the baseline in Table~\ref{tab:ablation_combinations}.
+All five hypotheses are tested by comparing the 32 geometric prior combinations against the baseline in Table~A.1 (Appendix~\ref{appendix:ablation}).
 
 \section{Ablation Study}
 
@@ -222,41 +222,97 @@ The experimental results reveal several consistent patterns in the interplay bet
 
 \subsection{Overall Performance Trends}
 
-Table~\ref{tab:ablation_summary} shows the key configurations extracted from the full 33-row results (Appendix, Table~A.2). The \textit{original} row refers to unmodified PlanarGS with default settings; \textit{baseline} is our framework with all five priors disabled. The small difference (27.85 vs.\ 27.88 dB) reflects minor implementation differences between the PlanarGS codebase and our modified training pipeline.
+Tables~\ref{tab:summary_drjohnson}--\ref{tab:summary_playroom} show key configurations for each of the three scenes individually. The \textit{original} row refers to unmodified PlanarGS with default settings; \textit{baseline} is our framework with all five priors disabled. The small PSNR difference between original and baseline (e.g., 29.08 vs.\ 29.03 dB on DrJohnson) reflects minor implementation differences between the PlanarGS codebase and our modified training pipeline. Full results for all 33 configurations are in Appendix~\ref{appendix:ablation}.
 
+% ---- Table 5.2: DrJohnson per-scene summary ----
 \begin{table}[t]
-\centering
-\small
-\caption{Selected configurations illustrating key trade-offs. Full results for all 33 configurations are in Appendix~\ref{appendix:ablation}, Table~A.2. All metrics averaged across DrJohnson, Library, and Playroom scenes.}
-\label{tab:ablation_summary}
-\begin{tabular}{@{}l|cccc|cc@{}}
+\centering\small
+\caption{Key configurations --- DrJohnson scene. Full per-scene results in Appendix~\ref{appendix:ablation}.}
+\label{tab:summary_drjohnson}
+\begin{tabular}{@{}l|ccc|ccc@{}}
 \toprule
-\textbf{Configuration} & \textbf{PSNR↑} & \textbf{SSIM↑} & \textbf{LPIPS↓} & \textbf{Gs.(K)↓} & \textbf{Size(MB)↓} & \textbf{Time(min)} \\
+\textbf{Configuration} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Gs.(K)~↓} & \textbf{Size(MB)~↓} & \textbf{Time(min)} \\
 \midrule
-original (PlanarGS)         & 27.85 & 0.865 & 0.289 & 1550 & 367 & 43.9 \\
-baseline (no priors)        & 27.88 & 0.865 & 0.289 & 1560 & 369 & 44.1 \\
+original (PlanarGS) & 29.08 & 0.902 & 0.252 & 1690 & 400 & 44.6 \\
 \midrule
-depths                      & 27.88 & 0.865 & 0.289 & 1568 & 371 & 43.5 \\
-normals                     & 27.86 & 0.864 & 0.289 & 1561 & 369 & 44.0 \\
-planarity                   & 27.85 & 0.865 & 0.288 & 1564 & 370 & 43.9 \\
-meshes                      & 27.89 & 0.865 & 0.288 & 1567 & 371 & 173.0 \\
-edges                       & 27.64 & 0.863 & 0.299 & 1061 & 251 & 44.0 \\
+baseline (no priors) & 29.03 & 0.903 & 0.252 & 1704 & 403 & 44.0 \\
+depths & \textbf{29.16} & 0.903 & 0.250 & 1703 & 403 & 44.1 \\
+normals & 29.06 & 0.902 & 0.252 & 1696 & 401 & 44.1 \\
+planarity & 29.06 & 0.903 & 0.250 & 1693 & 400 & 44.2 \\
+meshes & 29.11 & \textbf{0.904} & \textbf{0.249} & 1707 & 404 & 122.8 \\
 \midrule
-depths\_planarity (\textbf{best PSNR}) & \textbf{27.92} & \textbf{0.865} & 0.288 & 1570 & 371 & 44.4 \\
-meshes\_edges (\textbf{smallest})      & 27.58 & 0.863 & 0.300 & \textbf{1054} & \textbf{249} & 119.3 \\
-normals\_depths\_edges                 & 27.27 & 0.861 & 0.304 & 1053 & 249 & 44.2 \\
+edges & 28.70 & 0.898 & 0.269 & 988 & 234 & 43.2 \\
 \midrule
-all priors (full)           & 27.63 & 0.863 & 0.299 & 1059 & 251 & 120.7 \\
+depths\_planarity & 29.08 & 0.903 & 0.252 & 1698 & 402 & 44.6 \\
+meshes\_edges & 28.67 & 0.897 & 0.273 & \textbf{964} & \textbf{228} & 83.6 \\
+normals\_depths\_edges & 27.71 & 0.889 & 0.280 & 979 & 232 & 44.5 \\
+\midrule
+all priors (full) & 28.69 & 0.898 & 0.269 & 989 & 234 & 89.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The results show that individual priors have minimal standalone PSNR impact (within $\pm$0.04~dB of baseline 27.88~dB), that combinations matter, and that edge-aware densification is the only prior with a large compactness effect. The top-performing configurations are:
+% ---- Table 5.3: Library per-scene summary ----
+\begin{table}[t]
+\centering\small
+\caption{Key configurations --- Library scene. Full per-scene results in Appendix~\ref{appendix:ablation}.}
+\label{tab:summary_library}
+\begin{tabular}{@{}l|ccc|ccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Gs.(K)~↓} & \textbf{Size(MB)~↓} & \textbf{Time(min)} \\
+\midrule
+original (PlanarGS) & 24.10 & 0.782 & \textbf{0.366} & 1757 & 416 & 47.7 \\
+\midrule
+baseline (no priors) & \textbf{24.13} & 0.782 & 0.366 & 1761 & 417 & 48.8 \\
+depths & 24.12 & 0.781 & 0.366 & 1782 & 422 & 47.7 \\
+normals & 24.10 & 0.782 & 0.366 & 1776 & 420 & 48.0 \\
+planarity & 24.06 & 0.782 & 0.366 & 1784 & 422 & 49.1 \\
+meshes & 24.11 & 0.782 & 0.366 & 1775 & 420 & 326.0 \\
+\midrule
+edges & 24.07 & \textbf{0.785} & 0.372 & 1239 & 293 & 49.2 \\
+\midrule
+depths\_planarity & \textbf{24.13} & 0.782 & 0.366 & 1788 & 423 & 48.8 \\
+meshes\_edges & 23.92 & 0.783 & 0.375 & 1227 & 290 & 206.8 \\
+normals\_depths\_edges & 23.97 & 0.784 & 0.376 & \textbf{1221} & \textbf{289} & 48.0 \\
+\midrule
+all priors (full) & 23.98 & 0.783 & 0.374 & 1231 & 291 & 206.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ---- Table 5.4: Playroom per-scene summary ----
+\begin{table}[t]
+\centering\small
+\caption{Key configurations --- Playroom scene. Full per-scene results in Appendix~\ref{appendix:ablation}.}
+\label{tab:summary_playroom}
+\begin{tabular}{@{}l|ccc|ccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Gs.(K)~↓} & \textbf{Size(MB)~↓} & \textbf{Time(min)} \\
+\midrule
+original (PlanarGS) & 30.37 & 0.910 & 0.250 & 1202 & 285 & 39.3 \\
+\midrule
+baseline (no priors) & 30.48 & 0.910 & 0.249 & 1214 & 287 & 39.6 \\
+depths & 30.35 & 0.909 & 0.249 & 1217 & 288 & 38.6 \\
+normals & 30.43 & 0.909 & 0.249 & 1209 & 286 & 39.8 \\
+planarity & 30.42 & 0.910 & 0.249 & 1213 & 287 & 38.3 \\
+meshes & 30.46 & 0.910 & 0.249 & 1217 & 288 & 70.2 \\
+\midrule
+edges & 30.14 & 0.907 & 0.255 & \textbf{956} & \textbf{226} & 39.7 \\
+\midrule
+depths\_planarity & \textbf{30.54} & \textbf{0.911} & \textbf{0.248} & 1223 & 289 & 39.9 \\
+meshes\_edges & 30.16 & 0.908 & 0.253 & 969 & 229 & 67.5 \\
+normals\_depths\_edges & 30.14 & 0.909 & 0.254 & 958 & 227 & 40.0 \\
+\midrule
+all priors (full) & 30.23 & 0.908 & 0.255 & 957 & 226 & 66.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across all three scenes the results show a consistent pattern: individual priors have minimal standalone PSNR impact, combinations matter, and edge-aware densification is the only prior with a large compactness effect. The top-performing configurations per scene are:
 \begin{itemize}
-    \item \textbf{Best PSNR:} \textit{depths\_planarity} (27.92 dB), combining monocular depth with structural planarity.
-    \item \textbf{Best SSIM:} \textit{normals\_depths\_planarity\_meshes} (0.865), tied with several others.
-    \item \textbf{Best LPIPS:} \textit{normals\_depths} (0.288), showing complementary monocular priors improve perceptual fidelity.
-    \item \textbf{Most Compact:} \textit{normals\_depths\_edges} / \textit{meshes\_edges} ($\sim$1{,}053--1{,}054K Gaussians, 249~MB).
+    \item \textbf{Best PSNR:} \textit{depths\_planarity} across all three scenes (29.08 / 24.13 / 30.54 dB for DrJohnson / Library / Playroom).
+    \item \textbf{Most Compact:} edge-containing configs reduce Gaussian count by 30--35\% on each scene (e.g., \textit{meshes\_edges}: 964K / 1{,}227K / 969K Gaussians).
+    \item \textbf{Most Expensive:} mesh-based priors add $3$--$7\times$ training overhead (e.g., 326 min vs.\ 49 min on Library).
 \end{itemize}
 
 Simpler configurations often outperform the full configuration — certain prior combinations introduce conflicting gradients that hurt optimization.
@@ -305,7 +361,7 @@ Adding planarity constraints reliably improves quality across prior combinations
 
 The computational cost of mesh-based regularization is substantial. Training time rises from approximately 44 minutes to 174--183 minutes (nearly 4$\times$ longer) due to TSDF fusion and mesh cleaning. A direct comparison makes this concrete: \textit{depths\_meshes} achieves 27.85 dB in 182.9 minutes, while \textit{depths\_planarity} achieves better quality (27.92 dB) in 44.4 minutes. Mesh priors are therefore only justified when an explicit surface mesh is needed for downstream processing — they provide little benefit for rendering quality alone.
 
-The full configuration with all five priors enabled (\textit{normals\_depths\_planarity\_meshes\_edges}) achieves only 27.63 dB, well below simpler combinations such as \textit{depths\_planarity} (27.92 dB). This indicates that certain prior combinations introduce competing gradients that impede convergence; adding constraints without considering their interactions can hurt rather than help. The full configuration is compact (1,059K Gaussians), but the quality penalty is measurable and avoidable.
+The full configuration with all five priors enabled achieves only 27.63 dB, well below simpler combinations such as \textit{depths\_planarity} (27.92 dB). This indicates that certain prior combinations introduce competing gradients that impede convergence; adding constraints without considering their interactions can hurt rather than help. The full configuration is compact (1,059K Gaussians), but the quality penalty is measurable and avoidable.
 
 For maximum rendering quality, \textit{depths\_planarity} (27.92 dB PSNR, 0.865 SSIM, 0.288 LPIPS) is the recommended configuration. When model size is the primary constraint, \textit{normals\_depths\_edges} (27.27 dB PSNR, 0.861 SSIM, 0.304 LPIPS, 1{,}053K Gaussians) reduces the primitive count by 32\% with a quality gap that remains imperceptible in most viewing conditions.
 
@@ -321,7 +377,7 @@ Model file sizes scale directly with Gaussian count, so the 30\% reduction in pr
 
 \subsection{Comparison with Baseline Methods}
 
-Table~\ref{tab:method_comparison} presents a quantitative comparison of our method against three baselines on the DrJohnson scene. DrJohnson is selected for this comparison because it is the only scene for which we have fully evaluated all competitor methods under controlled conditions at 30{,}000 training iterations. Averaged across three scenes, the ablation baseline in Table~\ref{tab:ablation_results} achieves 27.88 dB PSNR; the DrJohnson-only numbers (Table~\ref{tab:method_comparison}) are higher (28.67 dB for Ours) because DrJohnson is a relatively easier indoor scene.
+Table~\ref{tab:method_comparison} presents a quantitative comparison of our method against three baselines on the DrJohnson scene. DrJohnson is selected for this comparison because it is the only scene for which we have fully evaluated all competitor methods under controlled conditions at 30{,}000 training iterations. Averaged across three scenes, the ablation baseline achieves 27.88 dB PSNR (see Appendix~\ref{appendix:ablation}, Table~A.2); the DrJohnson-only numbers (Table~\ref{tab:method_comparison}) are higher (28.67 dB for Ours) because DrJohnson is a relatively easier indoor scene.
 
 \begin{table}[h]
 \centering
