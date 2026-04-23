@@ -61,7 +61,172 @@ normals\_depths\_planarity\_meshes\_edges & \cmark & \cmark & \cmark & \cmark & 
 \clearpage
 
 %------------------------------------------------
-\section*{Table A.2 — Full Quantitative Results}
+\section*{Table A.2 — Full Quantitative Results (Averaged)}
 %------------------------------------------------
 
 \input{deepblending_results.tex}
+
+\clearpage
+
+%------------------------------------------------
+\section*{Tables A.3--A.5 — Per-Scene Full Results}
+%------------------------------------------------
+
+These tables report all 33 configurations for each individual scene. Values are not averaged; they reflect the raw per-scene measurements.
+
+% ---- DrJohnson full table ----
+\begin{table*}[h]
+\centering\small
+\caption{All 33 configurations --- DrJohnson scene.}
+\label{tab:full_drjohnson}
+\begin{tabular}{@{}l|ccc|ccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Gs.(K)~↓} & \textbf{Size(MB)~↓} & \textbf{Time(min)} \\
+\midrule
+original & 29.08 & 0.902 & 0.252 & 1690 & 400 & 44.6 \\
+baseline & 29.03 & 0.903 & 0.252 & 1704 & 403 & 44.0 \\
+\midrule
+normals & 29.06 & 0.902 & 0.252 & 1696 & 401 & 44.1 \\
+depths & 29.16 & 0.903 & 0.250 & 1703 & 403 & 44.1 \\
+planarity & 29.06 & 0.903 & 0.250 & 1693 & 400 & 44.2 \\
+meshes & 29.11 & 0.904 & 0.249 & 1707 & 404 & 122.8 \\
+edges & 28.70 & 0.898 & 0.269 & 988 & 234 & 43.2 \\
+\midrule
+normals\_depths & 29.11 & 0.904 & 0.248 & 1716 & 406 & 44.1 \\
+normals\_planarity & 29.08 & 0.903 & 0.252 & 1702 & 403 & 44.1 \\
+normals\_meshes & 29.14 & 0.904 & 0.250 & 1698 & 402 & 121.5 \\
+normals\_edges & 28.14 & 0.893 & 0.278 & 977 & 231 & 44.4 \\
+depths\_planarity & 29.08 & 0.903 & 0.252 & 1698 & 402 & 44.6 \\
+depths\_meshes & 29.05 & 0.903 & 0.251 & 1703 & 403 & 124.5 \\
+depths\_edges & 28.68 & 0.898 & 0.269 & 992 & 235 & 42.7 \\
+planarity\_meshes & 29.12 & 0.904 & 0.249 & 1696 & 401 & 123.1 \\
+planarity\_edges & 28.61 & 0.897 & 0.270 & 980 & 232 & 42.8 \\
+meshes\_edges & 28.67 & 0.897 & 0.273 & 964 & 228 & 83.6 \\
+\midrule
+normals\_depths\_planarity & 29.13 & 0.903 & 0.251 & 1704 & 403 & 43.8 \\
+normals\_depths\_meshes & 29.05 & 0.904 & 0.249 & 1702 & 403 & 121.8 \\
+normals\_depths\_edges & 27.71 & 0.889 & 0.280 & 979 & 232 & 44.5 \\
+normals\_planarity\_meshes & 29.16 & 0.904 & 0.250 & 1708 & 404 & 124.8 \\
+normals\_planarity\_edges & 28.66 & 0.897 & 0.271 & 997 & 236 & 43.1 \\
+normals\_meshes\_edges & 28.57 & 0.897 & 0.271 & 974 & 230 & 87.7 \\
+depths\_planarity\_meshes & 29.01 & 0.904 & 0.250 & 1708 & 404 & 125.2 \\
+depths\_planarity\_edges & 28.60 & 0.897 & 0.270 & 1001 & 237 & 43.4 \\
+depths\_meshes\_edges & 28.67 & 0.897 & 0.271 & 981 & 232 & 81.7 \\
+planarity\_meshes\_edges & 28.41 & 0.896 & 0.272 & 988 & 234 & 87.6 \\
+\midrule
+normals\_depths\_planarity\_meshes & 29.13 & 0.904 & 0.250 & 1707 & 404 & 123.3 \\
+normals\_depths\_planarity\_edges & 28.77 & 0.898 & 0.267 & 996 & 236 & 43.8 \\
+normals\_depths\_meshes\_edges & 28.69 & 0.898 & 0.268 & 964 & 228 & 89.3 \\
+normals\_planarity\_meshes\_edges & 28.68 & 0.898 & 0.268 & 1005 & 238 & 86.4 \\
+depths\_planarity\_meshes\_edges & 28.63 & 0.898 & 0.270 & 978 & 231 & 85.1 \\
+\midrule
+normals\_depths\_planarity\_meshes\_edges & 28.69 & 0.898 & 0.269 & 989 & 234 & 89.2 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\clearpage
+
+% ---- Library full table ----
+\begin{table*}[h]
+\centering\small
+\caption{All 33 configurations --- Library scene.}
+\label{tab:full_library}
+\begin{tabular}{@{}l|ccc|ccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Gs.(K)~↓} & \textbf{Size(MB)~↓} & \textbf{Time(min)} \\
+\midrule
+original & 24.10 & 0.782 & 0.366 & 1757 & 416 & 47.7 \\
+baseline & 24.13 & 0.782 & 0.366 & 1761 & 417 & 48.8 \\
+\midrule
+normals & 24.10 & 0.782 & 0.366 & 1776 & 420 & 48.0 \\
+depths & 24.12 & 0.781 & 0.366 & 1782 & 422 & 47.7 \\
+planarity & 24.06 & 0.782 & 0.366 & 1784 & 422 & 49.1 \\
+meshes & 24.11 & 0.782 & 0.366 & 1775 & 420 & 326.0 \\
+edges & 24.07 & 0.785 & 0.372 & 1239 & 293 & 49.2 \\
+\midrule
+normals\_depths & 24.13 & 0.782 & 0.366 & 1784 & 422 & 48.3 \\
+normals\_planarity & 24.12 & 0.782 & 0.366 & 1772 & 419 & 49.8 \\
+normals\_meshes & 24.10 & 0.781 & 0.366 & 1766 & 418 & 331.6 \\
+normals\_edges & 23.90 & 0.783 & 0.375 & 1240 & 293 & 47.8 \\
+depths\_planarity & 24.13 & 0.782 & 0.366 & 1788 & 423 & 48.8 \\
+depths\_meshes & 24.13 & 0.782 & 0.366 & 1773 & 419 & 354.4 \\
+depths\_edges & 23.92 & 0.784 & 0.375 & 1232 & 291 & 47.4 \\
+planarity\_meshes & 24.08 & 0.781 & 0.366 & 1772 & 419 & 323.6 \\
+planarity\_edges & 24.02 & 0.784 & 0.374 & 1243 & 294 & 48.7 \\
+meshes\_edges & 23.92 & 0.783 & 0.375 & 1227 & 290 & 206.8 \\
+\midrule
+normals\_depths\_planarity & 24.10 & 0.782 & 0.366 & 1767 & 418 & 48.2 \\
+normals\_depths\_meshes & 24.13 & 0.781 & 0.366 & 1766 & 418 & 331.1 \\
+normals\_depths\_edges & 23.97 & 0.784 & 0.376 & 1221 & 289 & 48.0 \\
+normals\_planarity\_meshes & 24.07 & 0.781 & 0.366 & 1782 & 421 & 339.4 \\
+normals\_planarity\_edges & 23.95 & 0.783 & 0.373 & 1246 & 295 & 48.4 \\
+normals\_meshes\_edges & 24.05 & 0.785 & 0.374 & 1235 & 292 & 200.7 \\
+depths\_planarity\_meshes & 24.13 & 0.782 & 0.366 & 1778 & 421 & 328.7 \\
+depths\_planarity\_edges & 24.00 & 0.784 & 0.374 & 1231 & 291 & 47.9 \\
+depths\_meshes\_edges & 23.91 & 0.783 & 0.375 & 1236 & 292 & 216.2 \\
+planarity\_meshes\_edges & 23.95 & 0.783 & 0.375 & 1226 & 290 & 199.2 \\
+\midrule
+normals\_depths\_planarity\_meshes & 24.12 & 0.782 & 0.366 & 1759 & 416 & 328.3 \\
+normals\_depths\_planarity\_edges & 23.92 & 0.784 & 0.373 & 1239 & 293 & 47.8 \\
+normals\_depths\_meshes\_edges & 23.93 & 0.785 & 0.373 & 1243 & 294 & 199.5 \\
+normals\_planarity\_meshes\_edges & 23.93 & 0.783 & 0.375 & 1234 & 292 & 226.3 \\
+depths\_planarity\_meshes\_edges & 23.94 & 0.783 & 0.374 & 1234 & 292 & 209.3 \\
+\midrule
+normals\_depths\_planarity\_meshes\_edges & 23.98 & 0.783 & 0.374 & 1231 & 291 & 206.2 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\clearpage
+
+% ---- Playroom full table ----
+\begin{table*}[h]
+\centering\small
+\caption{All 33 configurations --- Playroom scene.}
+\label{tab:full_playroom}
+\begin{tabular}{@{}l|ccc|ccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{PSNR~↑} & \textbf{SSIM~↑} & \textbf{LPIPS~↓} & \textbf{Gs.(K)~↓} & \textbf{Size(MB)~↓} & \textbf{Time(min)} \\
+\midrule
+original & 30.37 & 0.910 & 0.250 & 1202 & 285 & 39.3 \\
+baseline & 30.48 & 0.910 & 0.249 & 1214 & 287 & 39.6 \\
+\midrule
+normals & 30.43 & 0.909 & 0.249 & 1209 & 286 & 39.8 \\
+depths & 30.35 & 0.909 & 0.249 & 1217 & 288 & 38.6 \\
+planarity & 30.42 & 0.910 & 0.249 & 1213 & 287 & 38.3 \\
+meshes & 30.46 & 0.910 & 0.249 & 1217 & 288 & 70.2 \\
+edges & 30.14 & 0.907 & 0.255 & 956 & 226 & 39.7 \\
+\midrule
+normals\_depths & 30.41 & 0.910 & 0.249 & 1217 & 288 & 39.9 \\
+normals\_planarity & 30.39 & 0.910 & 0.249 & 1213 & 287 & 40.1 \\
+normals\_meshes & 30.45 & 0.910 & 0.249 & 1213 & 287 & 71.3 \\
+normals\_edges & 30.18 & 0.908 & 0.255 & 958 & 227 & 40.0 \\
+depths\_planarity & 30.54 & 0.911 & 0.248 & 1223 & 289 & 39.9 \\
+depths\_meshes & 30.37 & 0.910 & 0.250 & 1213 & 287 & 69.8 \\
+depths\_edges & 30.11 & 0.908 & 0.254 & 966 & 229 & 38.5 \\
+planarity\_meshes & 30.51 & 0.910 & 0.249 & 1218 & 288 & 68.6 \\
+planarity\_edges & 30.08 & 0.907 & 0.255 & 961 & 227 & 38.3 \\
+meshes\_edges & 30.16 & 0.908 & 0.253 & 969 & 229 & 67.5 \\
+\midrule
+normals\_depths\_planarity & 30.45 & 0.910 & 0.249 & 1211 & 287 & 39.7 \\
+normals\_depths\_meshes & 30.42 & 0.910 & 0.249 & 1212 & 287 & 70.8 \\
+normals\_depths\_edges & 30.14 & 0.909 & 0.254 & 958 & 227 & 40.0 \\
+normals\_planarity\_meshes & 30.39 & 0.909 & 0.249 & 1216 & 288 & 71.2 \\
+normals\_planarity\_edges & 30.12 & 0.907 & 0.255 & 955 & 226 & 39.8 \\
+normals\_meshes\_edges & 30.23 & 0.909 & 0.254 & 965 & 228 & 66.5 \\
+depths\_planarity\_meshes & 30.27 & 0.910 & 0.250 & 1209 & 286 & 70.4 \\
+depths\_planarity\_edges & 30.23 & 0.909 & 0.254 & 961 & 227 & 40.1 \\
+depths\_meshes\_edges & 30.14 & 0.908 & 0.255 & 965 & 228 & 67.0 \\
+planarity\_meshes\_edges & 30.14 & 0.908 & 0.256 & 959 & 227 & 67.0 \\
+\midrule
+normals\_depths\_planarity\_meshes & 30.43 & 0.910 & 0.249 & 1211 & 286 & 70.7 \\
+normals\_depths\_planarity\_edges & 30.15 & 0.908 & 0.254 & 961 & 227 & 39.6 \\
+normals\_depths\_meshes\_edges & 30.24 & 0.908 & 0.254 & 958 & 227 & 67.2 \\
+normals\_planarity\_meshes\_edges & 30.12 & 0.908 & 0.255 & 965 & 228 & 66.6 \\
+depths\_planarity\_meshes\_edges & 30.10 & 0.908 & 0.256 & 954 & 226 & 67.0 \\
+\midrule
+normals\_depths\_planarity\_meshes\_edges & 30.23 & 0.908 & 0.255 & 957 & 226 & 66.6 \\
+\bottomrule
+\end{tabular}
+\end{table*}
