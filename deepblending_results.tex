@@ -1,45 +1,46 @@
 \begin{table*}[t]
 \centering
-\small
-\caption{Quantitative results averaged across three indoor scenes (DrJohnson, Library, Playroom). For each metric, the best result is highlighted in dark green, second-best in medium green, third-best in light green.}
+\footnotesize
+\caption{Quantitative results averaged across three indoor scenes (DrJohnson, Library, Playroom) for all 32 ablation configurations. Per column: dark green = best, medium green = second-best, light green = third-best. Bold = best; underline = second-best (B\&W printing backup).}
 \label{tab:ablation_results}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}l|cccccc@{}}
 \toprule
 \textbf{Configuration} & \textbf{PSNR↑} & \textbf{SSIM↑} & \textbf{LPIPS↓} & \textbf{Gs.(K)↓} & \textbf{Size(MB)↓} & \textbf{Time(min)} \\
 \midrule
-baseline & 27.88 & 0.865 & 0.289 & 1560 & 369 & 44.1 \\
-depths & 27.88 & 0.865 & 0.289 & 1568 & 371 & 43.5 \\
-depths\_edges & 27.57 & 0.863 & 0.300 & 1064 & 252 & 42.9 \\
-depths\_meshes & 27.85 & 0.865 & 0.289 & 1564 & 370 & 182.9 \\
-depths\_meshes\_edges & 27.57 & 0.863 & 0.300 & 1061 & \cellcolor{green!20}251 & 121.6 \\
-depths\_planarity & \cellcolor{green!70}27.92 & \cellcolor{green!40}0.865 & 0.288 & 1570 & 371 & 44.4 \\
-depths\_planarity\_edges & 27.61 & 0.863 & 0.299 & 1065 & 252 & 43.8 \\
-depths\_planarity\_meshes & 27.81 & 0.865 & 0.289 & 1566 & 370 & 174.8 \\
-depths\_planarity\_meshes\_edges & 27.55 & 0.863 & 0.300 & 1056 & \cellcolor{green!40}250 & 120.5 \\
-edges & 27.64 & 0.863 & 0.299 & 1061 & \cellcolor{green!20}251 & 44.0 \\
-meshes & 27.89 & 0.865 & \cellcolor{green!20}0.288 & 1567 & 371 & 173.0 \\
-meshes\_edges & 27.58 & 0.863 & 0.300 & \cellcolor{green!40}1054 & \cellcolor{green!70}249 & 119.3 \\
-normals & 27.86 & 0.864 & 0.289 & 1561 & 369 & 44.0 \\
-normals\_depths & 27.88 & \cellcolor{green!20}0.865 & \cellcolor{green!70}0.288 & 1573 & 372 & 44.1 \\
-normals\_depths\_edges & 27.27 & 0.861 & 0.304 & \cellcolor{green!70}1053 & \cellcolor{green!70}249 & 44.2 \\
-normals\_depths\_meshes & 27.87 & 0.865 & 0.288 & 1561 & 369 & 174.5 \\
-normals\_depths\_meshes\_edges & 27.62 & 0.864 & 0.299 & \cellcolor{green!20}1056 & \cellcolor{green!40}250 & 118.7 \\
-normals\_depths\_planarity & 27.89 & 0.865 & 0.288 & 1561 & 369 & 43.9 \\
-normals\_depths\_planarity\_edges & 27.61 & 0.864 & 0.298 & 1066 & 252 & 43.7 \\
-normals\_depths\_planarity\_meshes & 27.89 & \cellcolor{green!70}0.865 & 0.288 & 1560 & 369 & 174.1 \\
-normals\_depths\_planarity\_meshes\_edges & 27.63 & 0.863 & 0.299 & 1059 & \cellcolor{green!20}251 & 120.7 \\
-normals\_edges & 27.41 & 0.861 & 0.303 & 1059 & \cellcolor{green!40}250 & 44.1 \\
-normals\_meshes & \cellcolor{green!20}27.90 & 0.865 & 0.288 & 1559 & 369 & 174.8 \\
-normals\_meshes\_edges & 27.62 & 0.863 & 0.300 & 1058 & \cellcolor{green!40}250 & 118.3 \\
-normals\_planarity & 27.87 & 0.865 & 0.289 & 1563 & 370 & 44.7 \\
-normals\_planarity\_edges & 27.58 & 0.862 & 0.300 & 1067 & 252 & 43.7 \\
-normals\_planarity\_meshes & 27.87 & 0.865 & 0.289 & 1569 & 371 & 178.5 \\
-normals\_planarity\_meshes\_edges & 27.58 & 0.863 & 0.299 & 1069 & 253 & 126.4 \\
-original & 27.85 & 0.865 & 0.289 & 1550 & 367 & 43.9 \\
-planarity & 27.85 & 0.865 & 0.288 & 1564 & 370 & 43.9 \\
-planarity\_edges & 27.57 & 0.863 & 0.299 & 1062 & \cellcolor{green!20}251 & 43.3 \\
-planarity\_meshes & \cellcolor{green!40}27.90 & 0.865 & \cellcolor{green!40}0.288 & 1563 & 370 & 171.8 \\
-planarity\_meshes\_edges & 27.50 & 0.862 & 0.301 & 1058 & \cellcolor{green!40}250 & 117.9 \\
+baseline & 27.88 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!40}0.289 & 1560 & \cellcolor{green!20}369 & 44.1 \\
+depths & 27.88 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!40}0.289 & 1568 & 371 & \cellcolor{green!20}\underline{43.5} \\
+depths\_edges & 27.57 & \cellcolor{green!20}0.863 & 0.300 & 1064 & \cellcolor{green!20}252 & \cellcolor{green!70}\textbf{42.9} \\
+depths\_meshes & 27.85 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!40}0.289 & 1564 & 370 & 182.9 \\
+depths\_meshes\_edges & 27.57 & \cellcolor{green!20}0.863 & 0.300 & \cellcolor{green!20}1056 & \cellcolor{green!40}\underline{250} & 121.6 \\
+depths\_planarity & \cellcolor{green!70}\textbf{27.92} & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1570 & 371 & 44.4 \\
+depths\_planarity\_edges & 27.61 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1065 & \cellcolor{green!20}252 & 43.8 \\
+depths\_planarity\_meshes & 27.81 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!40}0.289 & 1566 & 370 & 174.8 \\
+depths\_planarity\_meshes\_edges & 27.55 & \cellcolor{green!20}0.863 & 0.300 & \cellcolor{green!20}1056 & \cellcolor{green!40}\underline{250} & 120.5 \\
+edges & 27.64 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1061 & \cellcolor{green!20}251 & 44.0 \\
+meshes & \cellcolor{green!20}27.89 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1567 & 371 & 173.0 \\
+meshes\_edges & 27.58 & \cellcolor{green!20}0.863 & 0.300 & \cellcolor{green!40}\underline{1054} & \cellcolor{green!70}\textbf{249} & 119.3 \\
+normals & 27.86 & 0.864 & \cellcolor{green!40}0.289 & 1561 & \cellcolor{green!20}369 & 44.0 \\
+normals\_depths & 27.88 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1573 & 372 & 44.1 \\
+normals\_depths\_edges & 27.27 & 0.861 & 0.304 & \cellcolor{green!70}\textbf{1053} & \cellcolor{green!70}\textbf{249} & 44.2 \\
+normals\_depths\_meshes & 27.87 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1561 & \cellcolor{green!20}369 & 174.5 \\
+normals\_depths\_meshes\_edges & 27.62 & 0.864 & \cellcolor{green!20}0.299 & \cellcolor{green!20}1056 & \cellcolor{green!40}\underline{250} & 118.7 \\
+normals\_depths\_planarity & \cellcolor{green!20}27.89 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1561 & \cellcolor{green!20}369 & 43.9 \\
+normals\_depths\_planarity\_edges & 27.61 & 0.864 & \cellcolor{green!20}0.298 & 1066 & \cellcolor{green!20}252 & 43.7 \\
+normals\_depths\_planarity\_meshes & \cellcolor{green!20}27.89 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1560 & \cellcolor{green!20}369 & 174.1 \\
+normals\_depths\_planarity\_meshes\_edges & 27.63 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1059 & \cellcolor{green!20}251 & 120.7 \\
+normals\_edges & 27.41 & 0.861 & 0.303 & 1059 & \cellcolor{green!40}\underline{250} & 44.1 \\
+normals\_meshes & \cellcolor{green!40}\underline{27.90} & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1559 & \cellcolor{green!20}369 & 174.8 \\
+normals\_meshes\_edges & 27.62 & \cellcolor{green!20}0.863 & 0.300 & 1058 & \cellcolor{green!40}\underline{250} & 118.3 \\
+normals\_planarity & 27.87 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!40}0.289 & 1563 & 370 & 44.7 \\
+normals\_planarity\_edges & 27.58 & 0.862 & 0.300 & 1067 & \cellcolor{green!20}252 & 43.7 \\
+normals\_planarity\_meshes & 27.87 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!40}0.289 & 1569 & 371 & 178.5 \\
+normals\_planarity\_meshes\_edges & 27.58 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1069 & \cellcolor{green!20}253 & 126.4 \\
+planarity & 27.85 & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1564 & 370 & 43.9 \\
+planarity\_edges & 27.57 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1062 & \cellcolor{green!20}251 & \cellcolor{green!40}\underline{43.3} \\
+planarity\_meshes & \cellcolor{green!40}\underline{27.90} & \cellcolor{green!70}\textbf{0.865} & \cellcolor{green!70}\textbf{0.288} & 1563 & 370 & 171.8 \\
+planarity\_meshes\_edges & 27.50 & 0.862 & 0.301 & 1058 & \cellcolor{green!40}\underline{250} & 117.9 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}

@@ -119,7 +119,7 @@ Normal constraints improve local surface smoothness and reduce geometric noise, 
 
 \subsection{Mesh-Based Priors}
 
-When an approximate surface mesh $\mathcal{M}$ is available, it can serve as a geometric regularizer. The mesh is obtained via TSDF (Truncated Signed Distance Function) fusion~\cite{zhou2018open3d}: rendered depth maps $D_r^{(i)}$ from all training cameras are integrated into a volumetric signed distance field
+When an approximate surface mesh $\mathcal{M}$ is available, it can serve as a geometric regularizer. The mesh is obtained via TSDF (Truncated Signed Distance Function) fusion~\cite{zhou2018open3d}: rendered depth maps $D_r^{(i)}$ from all training cameras are integrated into a volumetric signed distance field. This field assigns to each 3D point a signed distance to the nearest reconstructed surface, clipped to the truncation range $[-1, 1]$; the mesh regularization loss then penalizes Gaussian centers that drift away from its zero level-set:
 \begin{equation}
 \varphi(\mathbf{x}) = \mathrm{clip}\!\left(\frac{d(\mathbf{x}, \mathcal{S})}{\tau},\,-1,\,1\right),
 \end{equation}
@@ -207,7 +207,7 @@ N_r - N_p
 \left(1 - N_r \cdot N_p \right),
 \end{equation}
 
-promoting locally coherent surface orientation and reducing normal inconsistencies.
+The loss combines two complementary terms: the $\ell_1$ term penalizes absolute component-wise differences between unit normal vectors and provides dense gradient coverage even when the angular error is small; the cosine term $(1 - N_r \cdot N_p)$ is scale-invariant and focuses purely on angular alignment, providing a strong signal when surface orientation is severely misaligned. Using both together follows the design in DN-Splatter~\cite{dn_splatter} and avoids the ambiguity of the $\ell_1$ term alone, which treats component magnitudes rather than angular deviation. This combination promotes locally coherent surface orientation and reduces normal inconsistencies.
 
 \subsubsection{Planar Regularization}
 \label{sec:planar_prior}
@@ -259,12 +259,13 @@ Algorithm~\ref{alg:edge_aware} summarizes the modified densification step applie
 \label{alg:edge_aware}
 \begin{algorithmic}[1]
 \Require Gaussians $\mathcal{G}$, gradient magnitudes $\|\nabla_{\boldsymbol{\mu}}\mathcal{L}\|$, edge distances $\{\delta_k\}$, threshold $\delta_{threshold}$, boost $b=2.5$, suppress $s=0.4$
+\State \Comment{$p_{base}=1$ for all $g_k$ with gradient above $\gamma$ in standard 3DGS (deterministic split)}
 \For{each Gaussian $g_k$ with $\|\nabla_{\boldsymbol{\mu}_k}\mathcal{L}\| > \gamma$}
     \If{$\delta_k < \delta_{threshold}$} \Comment{near structural edge}
-        \State Split $g_k$ with probability $\min(1, b \cdot p_{base})$
+        \State Split $g_k$ with probability $\min(1, b \cdot p_{base})$ \Comment{boost: $b \cdot 1 = 2.5$, clamped to 1}
         \State Clamp scale: $\sigma_k \leftarrow \min(\sigma_k,\, s_{min})$ \Comment{$s_{min} = 0.3$}
     \Else \Comment{planar interior}
-        \State Split $g_k$ with probability $s \cdot p_{base}$
+        \State Split $g_k$ with probability $s \cdot p_{base}$ \Comment{suppress: $0.4 \times 1 = 0.4$}
         \State Allow scale up to $s_{max} = 2.0$
     \EndIf
 \EndFor

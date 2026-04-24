@@ -158,12 +158,30 @@ Compared to neural radiance fields, 3D Gaussian Splatting:
 
 DUSt3R~\cite{dust3r} addresses a fundamental bottleneck in multi-view reconstruction: the requirement for known camera calibration before any 3D geometry can be inferred. Rather than treating camera parameters as a prerequisite, DUSt3R reformulates pairwise reconstruction as a regression task that directly predicts \emph{pointmaps} — dense per-pixel 3D coordinates expressed in the reference frame of one image — from a pair of images using a Transformer encoder-decoder architecture. This eliminates the need for explicit camera calibration or feature matching, making the pipeline robust in scenarios where traditional SfM fails due to insufficient texture or repetitive patterns.
 
+The architecture uses a shared ViT encoder to extract features from both images, followed by two cross-attention decoder heads — one per image — each predicting a pointmap $\mathbf{X}_{i \to 1} \in \mathbb{R}^{H \times W \times 3}$ expressed in the coordinate frame of image~1. A confidence map $\mathbf{C}$ is predicted alongside each pointmap to weight the global alignment step. DUSt3R was trained on a large-scale mixture of synthetic and real datasets (over 8 million image pairs) enabling strong generalization to unseen indoor scenes. Its main limitation relevant to this thesis is that predictions are monocular and do not exploit multi-view consistency within a single forward pass; scale ambiguity is only resolved during the downstream global alignment, which introduces noise when only a subset of views is processed.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{DUSt3R.png}
+    \caption{DUSt3R architecture overview. Image reproduced from Wang et al.~\cite{dust3r}.}
+    \label{fig:dust3r_arch}
+\end{figure}
+
 From a pair of images, DUSt3R produces dense depth maps, pixel-wise correspondences, and relative camera poses within a single forward pass. When more than two images are available, a global alignment procedure aggregates the pairwise pointmaps into a unified 3D reference frame. In this thesis, DUSt3R serves as the source of per-view monocular depth and surface normal priors: given a training image, its predicted pointmap is converted to a depth map and a surface normal map, both of which supervise Gaussian optimization through $\mathcal{L}_{depth}$ and $\mathcal{L}_{normal}$ (Section~\ref{sec:depth_prior} and Section~\ref{sec:normal_prior}).
 
 \subsection{SAM 3}
 \label{sec:sam3}
 
 SAM 3~\cite{sam3} extends the Segment Anything paradigm by enabling segmentation via \emph{concept prompts} — short natural language descriptions, image examples, or combinations thereof — rather than requiring manual point or bounding box inputs. The architecture pairs an image-level detector with a memory-based video tracker sharing a unified backbone, and introduces a presence head that decouples recognition from localization to improve detection accuracy across diverse visual concepts. The model was trained on a large-scale dataset containing four million unique concept labels, giving it broad generalization across scene types and object categories.
+
+Architecturally, SAM 3 builds on a hierarchical image encoder (ViT-H backbone) shared with a lightweight concept decoder and a memory attention module for temporal consistency across video frames. The presence head outputs a per-concept score that gates the segmentation mask, reducing false positives in cluttered scenes. Relevant limitations for this work are that SAM 3's planar segmentation is imperfect in scenes with curved surfaces or ambiguous lighting, and that segmentation quality degrades for very large uniform regions where concept boundaries are weak.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{SAM3.png}
+    \caption{SAM 3 architecture overview. Image reproduced from Zou et al.~\cite{sam3}.}
+    \label{fig:sam3_arch}
+\end{figure}
 
 In the context of this thesis, SAM 3 is applied to individual training images to segment dominant planar surfaces — walls, floors, ceilings, and furniture faces — without requiring any manual annotation. Each detected segment defines a planar region over which a co-planarity depth constraint is enforced (Section~\ref{sec:planar_prior}). The boundaries between adjacent segments are additionally extracted as structural edge lines and reused to drive edge-aware adaptive densification, directing Gaussian splitting toward boundary regions while suppressing over-densification in homogeneous planar interiors (Section~\ref{sec:edge_aware}).
 
