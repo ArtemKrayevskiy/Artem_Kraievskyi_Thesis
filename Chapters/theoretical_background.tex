@@ -167,7 +167,7 @@ The architecture uses a shared ViT encoder to extract features from both images,
     \label{fig:dust3r_arch}
 \end{figure}
 
-From a pair of images, DUSt3R produces dense depth maps, pixel-wise correspondences, and relative camera poses within a single forward pass. When more than two images are available, a global alignment procedure aggregates the pairwise pointmaps into a unified 3D reference frame. In this thesis, DUSt3R serves as the source of per-view monocular depth and surface normal priors: given a training image, its predicted pointmap is converted to a depth map and a surface normal map, both of which supervise Gaussian optimization through $\mathcal{L}_{depth}$ and $\mathcal{L}_{normal}$ (depth and normal prior formulations in Section~\ref{sec:geometry_priors}).
+From a pair of images, DUSt3R produces dense depth maps, pixel-wise correspondences, and relative camera poses within a single forward pass. When more than two images are available, a global alignment procedure aggregates the pairwise pointmaps into a unified 3D reference frame. In this thesis, DUSt3R serves as the source of per-view monocular depth and surface normal priors: given a training image, its predicted pointmap is converted to a depth map and a surface normal map, both of which supervise Gaussian optimization through $\mathcal{L}_{depth}$ and $\mathcal{L}_{normal}$ (depth and normal prior formulations in Sec.~\ref{sec:geometry_priors}).
 
 \subsection{SAM 3}
 \label{sec:sam3}
@@ -183,7 +183,7 @@ Architecturally, SAM 3 builds on a hierarchical image encoder (ViT-H backbone) s
     \label{fig:sam3_arch}
 \end{figure}
 
-In the context of this thesis, SAM 3 is applied to individual training images to segment dominant planar surfaces — walls, floors, ceilings, and furniture faces — without requiring any manual annotation. Each detected segment defines a planar region over which a co-planarity depth constraint is enforced (Section~\ref{sec:planar_prior}). The boundaries between adjacent segments are additionally extracted as structural edge lines and reused to drive edge-aware adaptive densification, directing Gaussian splitting toward boundary regions while suppressing over-densification in homogeneous planar interiors (Section~\ref{sec:edge_aware}).
+In the context of this thesis, SAM 3 is applied to individual training images to segment dominant planar surfaces — walls, floors, ceilings, and furniture faces — without requiring any manual annotation. Each detected segment defines a planar region over which a co-planarity depth constraint is enforced (Sec.~\ref{sec:planar_prior}). The boundaries between adjacent segments are additionally extracted as structural edge lines and reused to drive edge-aware adaptive densification, directing Gaussian splitting toward boundary regions while suppressing over-densification in homogeneous planar interiors (Sec.~\ref{sec:edge_aware}).
 
 
 
