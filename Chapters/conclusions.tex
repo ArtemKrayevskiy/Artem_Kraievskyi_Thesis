@@ -10,7 +10,7 @@ Through a comprehensive ablation study across all $2^5 = 32$ possible combinatio
 
 The comprehensive experimental evaluation revealed several important findings about the contribution of individual modalities and their interactions.
 
-Among individual priors, depth, normals, planarity, and mesh-based regularization all maintain rendering quality comparable to the baseline (within the noise floor of single-seed experiments). In the measured averaged results, depths\_planarity consistently shows the highest PSNR — but the margin (0.04~dB in averages) is below the reproducibility threshold of single-seed training and should be interpreted as a trend rather than a confirmed gain. Normal priors exhibit partial redundancy when depth and planarity are already active, providing diminishing returns in structured indoor environments.
+Among individual priors, depth, normals, planarity, and mesh-based regularization all maintain rendering quality comparable to the baseline (within the noise floor of single-seed experiments). In the measured averaged results, depths\_planarity was observed to measure the highest PSNR — but the margin (0.04~dB in averages) is below the reproducibility threshold of single-seed training and should be interpreted as a trend rather than a confirmed gain. Normal priors exhibit partial redundancy when depth and planarity are already active, providing diminishing returns in structured indoor environments.
 
 Edge-aware adaptive densification is the most practically impactful component: it reduces the Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K, 369~MB to $\sim$250~MB) at a PSNR cost of 0.24 dB when used alone. Crucially, this trade-off is reproducible across all edge-aware configurations — every configuration that includes edge-aware control achieves compactness improvements of similar magnitude, making it a reliable tool for memory-constrained deployment. Mesh-based TSDF regularization provides only marginal rendering quality gains (+0.01 dB standalone) while increasing training time by roughly $4\times$; it should be included only when downstream mesh extraction is explicitly required.
 
@@ -20,7 +20,7 @@ A broader insight from the ablation study is that geometric priors are not unifo
 
 The experimental results yield concrete guidance for practitioners choosing geometric priors for their specific use case.
 
-\textbf{For maximum rendering quality} (e.g., pre-rendered indoor visualization, architectural walkthroughs): use \textit{depths\_planarity}. This two-prior combination consistently measures the highest PSNR in all three scenes (within noise of baseline) and SSIM of 0.865 at near-baseline model size (371~MB), with a training time overhead of only $<$1\%. No edge-aware densification or mesh regularization is needed.
+\textbf{For maximum rendering quality} (e.g., pre-rendered indoor visualization, architectural walkthroughs): use \textit{depths\_planarity}. This two-prior combination was observed to measure the highest PSNR across all three scenes in this experiment (within noise of baseline) and SSIM of 0.865 at near-baseline model size (371~MB), with a training time overhead of only $<$1\%. No edge-aware densification or mesh regularization is needed.
 
 \textbf{For memory-constrained deployment} (e.g., mobile AR navigation, embedded 3D viewers, VR headsets with limited VRAM): use \textit{meshes\_edges} or \textit{depths\_edges}. These configurations reduce model size by 32\% (249--252~MB vs.\ 369~MB baseline) with a PSNR drop of 0.3--0.6~dB — a trade-off that is imperceptible at normal viewing distances and enables deployment on devices that cannot load a 370~MB PLY file into GPU memory.
 
@@ -68,5 +68,7 @@ The following directions are worth pursuing in future work. Replacing monocular 
 \section{Closing Remarks}
 
 This thesis demonstrated that edge-aware adaptive densification integrated into 3D Gaussian Splatting achieves 32\% model compactness improvement for indoor scenes with imperceptible quality loss. The systematic 32-configuration ablation study provided practical insights into geometric prior interactions, revealing that selective combinations avoid the conflicting gradients that hurt quality in the full configuration.
+
+A striking finding was that enabling all five geometric priors simultaneously produced \emph{lower} measured quality than simpler two-prior combinations such as \textit{depths\_planarity} — challenging the common assumption that more regularization is always better and underscoring that prior selection matters as much as prior design.
 
 The proposed unified framework bridges the gap between fast neural rendering and geometrically consistent 3D reconstruction, offering a flexible and modular approach for practitioners. By systematically quantifying the contributions and interactions of different geometric priors, this work provides a foundation for informed regularization design in future 3D reconstruction systems.

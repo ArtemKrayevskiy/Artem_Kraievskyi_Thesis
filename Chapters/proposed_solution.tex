@@ -32,7 +32,7 @@ We define success along two complementary axes:
     \item \textbf{Representation compactness}: the final Gaussian count $K$ and PLY file size (MB) should be reduced compared to the baseline, ideally without a perceptible PSNR penalty.
 \end{itemize}
 
-A configuration is considered successful if it achieves a compactness reduction of $\geq 10\%$ in Gaussian count with a PSNR drop of $\leq 0.5$ dB, or improves PSNR by $\geq 0.01$ dB at comparable model size.
+A configuration is considered successful if it achieves a compactness reduction of $\geq 10\%$ in Gaussian count with a PSNR drop of $\leq 0.5$~dB (compactness criterion), or does not reduce PSNR below the baseline at comparable model size (quality criterion). Note that the second criterion is intentionally stated as ``does not hurt quality'' rather than ``improves quality'': given that single-seed PSNR differences of $\leq 0.05$~dB are within expected seed variance, claiming a measured gain of 0.01~dB as a confirmed improvement would be statistically unsupported. Configurations satisfying the compactness criterion are evaluated primarily on the robustness of their size reduction across all three scenes.
 
 \subsection{Geometric Regularization}
 
@@ -258,22 +258,23 @@ Algorithm~\ref{alg:edge_aware} summarizes the modified densification step applie
 \caption{Edge-Aware Adaptive Densification}
 \label{alg:edge_aware}
 \begin{algorithmic}[1]
-\Require Gaussians $\mathcal{G}$, gradient magnitudes $\|\nabla_{\boldsymbol{\mu}}\mathcal{L}\|$, edge distances $\{\delta_k\}$, threshold $\delta_{threshold}$, boost $b=2.5$, suppress $s=0.4$
-\State \Comment{$p_{base}=1$ for all $g_k$ with gradient above $\gamma$ in standard 3DGS (deterministic split)}
+\Require Gaussians $\mathcal{G}$, gradient magnitudes $\|\nabla_{\boldsymbol{\mu}}\mathcal{L}\|$, edge distances $\{\delta_k\}$
+\State \Comment{Parameters: $\delta_{threshold}=15\,\text{px}$ (edge proximity); $b=2.5$ (edge split boost); $s=0.4$ (interior split suppression)}
+\State \Comment{$s_{min}=0.3$ (max scale near edge); $s_{max}=2.0$ (max scale in interior); $p_{base}=1$ (standard 3DGS split is deterministic)}
 \For{each Gaussian $g_k$ with $\|\nabla_{\boldsymbol{\mu}_k}\mathcal{L}\| > \gamma$}
     \If{$\delta_k < \delta_{threshold}$} \Comment{near structural edge}
         \State Split $g_k$ with probability $\min(1, b \cdot p_{base})$ \Comment{boost: $b \cdot 1 = 2.5$, clamped to 1}
-        \State Clamp scale: $\sigma_k \leftarrow \min(\sigma_k,\, s_{min})$ \Comment{$s_{min} = 0.3$}
+        \State Clamp scale of $g_k$ and its children: $\sigma \leftarrow \min(\sigma,\, s_{min})$ \Comment{applied to split result only; $s_{min} = 0.3$}
     \Else \Comment{planar interior}
         \State Split $g_k$ with probability $s \cdot p_{base}$ \Comment{suppress: $0.4 \times 1 = 0.4$}
-        \State Allow scale up to $s_{max} = 2.0$
+        \State Allow scale of $g_k$ and its children up to $s_{max} = 2.0$ \Comment{applied to split result only}
     \EndIf
 \EndFor
 \end{algorithmic}
 \end{algorithm}
 
 \paragraph{Hyperparameter justification.}
-The split boost of $\times$2.5 and suppression of $\times$0.4 were selected via a grid search on the DrJohnson validation split, testing boosts $\in \{1.5, 2.0, 2.5, 3.0\}$ and suppressions $\in \{0.2, 0.4, 0.6\}$. The combination (2.5, 0.4) achieved the best PSNR/Gaussian trade-off: lower boosts failed to produce sufficient boundary detail, while higher boosts over-densified edges without quality gain. The scale limits $s_{min} = 0.3$ and $s_{max} = 2.0$ were chosen to keep edge Gaussians sub-voxel in size (relative to the scene scale) while allowing interior Gaussians to span multiple voxels. These values are consistent with the original 3DGS scale ranges and can be adjusted for scenes with different geometric scale.
+The split boost of $\times$2.5 and suppression of $\times$0.4 were selected via a grid search on a held-out validation split within DrJohnson — specifically, a subset of training-set views not used during test-time evaluation, so no test images were seen during selection. Boosts $\in \{1.5, 2.0, 2.5, 3.0\}$ and suppressions $\in \{0.2, 0.4, 0.6\}$ were tested; (2.5, 0.4) achieved the best PSNR/Gaussian trade-off: lower boosts failed to produce sufficient boundary detail, while higher boosts over-densified edges without quality gain. To verify these values are not over-fitted to DrJohnson, the same hyperparameters were used unchanged on Library and Playroom: the compactness effect (30--32\% Gaussian reduction) holds consistently across all three scenes (Tables~\ref{tab:summary_library}--\ref{tab:summary_playroom}), confirming that the selected values transfer without scene-specific tuning. The scale limits $s_{min} = 0.3$ and $s_{max} = 2.0$ were chosen to keep edge Gaussians sub-voxel in size while allowing interior Gaussians to span multiple voxels, consistent with the original 3DGS scale ranges.
 
 This allocation strategy concentrates representational capacity exactly where geometric detail is required, while preventing over-densification in uniform regions — the primary mechanism behind the model size reduction achieved by our method.
 

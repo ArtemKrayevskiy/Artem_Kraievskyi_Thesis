@@ -130,13 +130,13 @@ headsepline, % Uncomment to get a line under the header
 \begin{minipage}[t]{0.4\textwidth}
 \begin{flushleft} \large
 \emph{Author:}\\
-\authorname
+\href{mailto:artemkrayevskiy@gmail.com}{\authorname}
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[t]{0.4\textwidth}
 \begin{flushright} \large
 \emph{Supervisor:} \\
-\supname
+\href{mailto:marian.petruk@gmail.com}{\supname}
 \end{flushright}
 \end{minipage}\\[3cm]
  
@@ -210,7 +210,7 @@ We propose a unified geometry-regularized 3DGS framework that integrates five mo
 
 To answer this, we conduct a systematic ablation study across all $2^5 = 32$ prior combinations on three indoor scenes from the Deep Blending dataset. Individual geometric priors (depth, normals, planarity, mesh) each maintain rendering quality within the noise floor of the baseline. Edge-aware adaptive densification is the primary contribution: it reduces the Gaussian primitive count by 32\% (from 1{,}560K to 1{,}060K, 369~MB to 250~MB) with a PSNR reduction of only 0.3~dB — a trade-off imperceptible under normal viewing conditions. The resulting method is 46\% smaller than PlanarGS (222~MB vs.\ 410~MB on DrJohnson) while producing surface normals of comparable geometric quality.
 
-These results demonstrate that geometry-regularized 3DGS can be deployed in memory-constrained environments without meaningful loss of visual quality, enabling viable use on mobile devices and in AR/VR systems. The systematic 32-configuration ablation framework provides a reusable methodology for evaluating geometric constraints in future 3DGS work, replacing ad hoc design decisions with evidence-based configuration choices.
+These results demonstrate that geometry-regularized 3DGS can be deployed in memory-constrained environments without meaningful loss of visual quality, enabling viable use on mobile devices and in AR/VR systems. The systematic 32-configuration ablation framework provides a reusable methodology for evaluating geometric constraints in future 3DGS work, replacing ad hoc design decisions with evidence-based configuration choices. All experiments are conducted on three indoor scenes from the Deep Blending dataset; generalization to outdoor or unstructured environments is left for future work.
 \end{abstract}
 
 
@@ -296,6 +296,15 @@ $\lambda_m$             & Weight for mesh regularization loss & --- \\
 
 $\gamma$                & Gradient-magnitude threshold for Gaussian splitting & --- \\
 $\delta_{threshold}$    & Edge distance threshold for adaptive densification  & --- \\
+$b$                     & Edge split boost factor ($b=2.5$)  & --- \\
+$s$                     & Interior split suppression factor ($s=0.4$) & --- \\
+$s_{min}$, $s_{max}$   & Scale clamp bounds for split children & --- \\
+
+\addlinespace
+
+$C(\mathbf{u})$         & Rendered color at pixel $\mathbf{u}$ & --- \\
+$T_i(\mathbf{u})$       & Accumulated transmittance for Gaussian $i$ & $[0,1]$ \\
+$\phi(\mathbf{x})$      & TSDF value at 3D point $\mathbf{x}$ & $[-1,1]$ \\
 
 \addlinespace
 
