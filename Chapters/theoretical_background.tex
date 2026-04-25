@@ -167,7 +167,7 @@ The architecture uses a shared ViT encoder to extract features from both images,
     \label{fig:dust3r_arch}
 \end{figure}
 
-From a pair of images, DUSt3R produces dense depth maps, pixel-wise correspondences, and relative camera poses within a single forward pass. When more than two images are available, a global alignment procedure aggregates the pairwise pointmaps into a unified 3D reference frame. In this thesis, DUSt3R serves as the source of per-view monocular depth and surface normal priors: given a training image, its predicted pointmap is converted to a depth map and a surface normal map, both of which supervise Gaussian optimization through $\mathcal{L}_{depth}$ and $\mathcal{L}_{normal}$ (Section~\ref{sec:depth_prior} and Section~\ref{sec:normal_prior}).
+From a pair of images, DUSt3R produces dense depth maps, pixel-wise correspondences, and relative camera poses within a single forward pass. When more than two images are available, a global alignment procedure aggregates the pairwise pointmaps into a unified 3D reference frame. In this thesis, DUSt3R serves as the source of per-view monocular depth and surface normal priors: given a training image, its predicted pointmap is converted to a depth map and a surface normal map, both of which supervise Gaussian optimization through $\mathcal{L}_{depth}$ and $\mathcal{L}_{normal}$ (depth and normal prior formulations in Section~\ref{sec:geometry_priors}).
 
 \subsection{SAM 3}
 \label{sec:sam3}
