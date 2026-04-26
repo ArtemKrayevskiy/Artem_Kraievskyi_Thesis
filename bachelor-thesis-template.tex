@@ -208,7 +208,7 @@ Que sera, sera.}\bigbreak
 
 We propose a unified geometry-regularized 3DGS framework that integrates five modular geometric priors: depth consistency (DUSt3R), surface normal supervision (DUSt3R), planar co-planarity constraints (SAM~3), edge-aware adaptive densification, and mesh-based TSDF regularization. The central research question is which geometric constraints — individually and in combination — most effectively reduce model size without sacrificing rendering quality.
 
-To answer this, we conduct a systematic ablation study across all $2^5 = 32$ prior combinations on three indoor scenes from the Deep Blending dataset. Individual geometric priors (depth, normals, planarity, mesh) each maintain rendering quality within the noise floor of the baseline. Edge-aware adaptive densification is the primary contribution: it reduces the Gaussian primitive count by 32\% (from 1{,}560K to 1{,}060K, 369~MB to 250~MB) with a PSNR reduction of only 0.3~dB — a trade-off imperceptible under normal viewing conditions. The resulting method is 46\% smaller than PlanarGS (222~MB vs.\ 410~MB on DrJohnson) while producing surface normals of comparable geometric quality.
+To answer this, we conduct a systematic ablation study across all $2^5 = 32$ prior combinations on three indoor scenes from the Deep Blending dataset. Individual geometric priors (depth, normals, planarity, mesh) each maintain rendering quality within the noise floor of the baseline. Edge-aware adaptive densification is the primary contribution: it reduces the Gaussian primitive count by 32\% (from 1{,}560K to 1{,}060K, 369~MB to 250~MB) with a PSNR reduction of 0.24--0.31~dB depending on configuration (0.31~dB for the recommended \textit{depths\_planarity\_edges} combination) — a trade-off imperceptible under normal viewing conditions. The resulting method is 46\% smaller than PlanarGS (222~MB vs.\ 410~MB on DrJohnson) while producing surface normals of comparable geometric quality.
 
 These results demonstrate that geometry-regularized 3DGS can be deployed in memory-constrained environments without meaningful loss of visual quality, enabling viable use on mobile devices and in AR/VR systems. The systematic 32-configuration ablation framework provides a reusable methodology for evaluating geometric constraints in future 3DGS work, replacing ad hoc design decisions with evidence-based configuration choices. All experiments are conducted on three indoor scenes from the Deep Blending dataset; generalization to outdoor or unstructured environments is left for future work.
 \end{abstract}
@@ -262,6 +262,7 @@ Finally, a special thank you to my family for their unwavering encouragement and
 \textbf{SAM}    & Segment Anything Model \\
 \textbf{SAM~3}  & Segment Anything with Concepts (version 3) \\
 \textbf{SfM}    & Structure-from-Motion \\
+\textbf{SH}     & Spherical Harmonics \\
 \textbf{SSIM}   & Structural Similarity Index Measure \\
 \textbf{TSDF}   & Truncated Signed Distance Function \\
 \textbf{VIO}    & Visual-Inertial Odometry \\
@@ -276,7 +277,7 @@ Finally, a special thank you to my family for their unwavering encouragement and
 \begin{symbols}{lll}
 
 $\mathcal{G}$           & Set of Gaussian primitives        & --- \\
-$K$                     & Total number of Gaussian primitives & --- \\
+$N_G$                   & Total number of Gaussian primitives (subscript G to distinguish from training images $N$) & --- \\
 $N$                     & Number of training images          & --- \\
 $\boldsymbol{\mu}_k$    & 3D center of the $k$-th Gaussian  & $\mathbb{R}^3$ \\
 $\boldsymbol{\Sigma}_k$ & Covariance matrix of the $k$-th Gaussian & $\mathbb{R}^{3\times3}$ \\
@@ -308,7 +309,7 @@ $\phi(\mathbf{x})$      & TSDF value at 3D point $\mathbf{x}$ & $[-1,1]$ \\
 
 \addlinespace
 
-$\mathbf{K}$            & Camera intrinsic matrix            & $\mathbb{R}^{3\times3}$ \\
+$\mathbf{K}$            & Camera intrinsic matrix (bold; distinct from scalar $N_G$) & $\mathbb{R}^{3\times3}$ \\
 $\mathbf{R}$            & Rotation matrix                    & $\mathbb{R}^{3\times3}$ \\
 $\mathbf{t}$            & Translation vector                 & $\mathbb{R}^3$ \\
 $\mathbf{u}$            & 2D image pixel coordinate          & $\mathbb{R}^2$ \\
