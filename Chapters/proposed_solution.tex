@@ -136,9 +136,13 @@ Let $\text{dist}(\boldsymbol{\mu}_i, \mathcal{M})$ denote the shortest distance 
 
 This prior enforces surface adherence and improves global geometric consistency, and is particularly useful in structured environments where reliable coarse geometry can be extracted.
 
-\subsection{Edge and Planar Priors}
+\subsection{Planar Priors}
 
-Image edges and planar segment boundaries encode strong structural cues. Planar priors encourage Gaussians within a detected plane to share a common depth surface. Edge-aware priors spatially modulate primitive allocation: densification is boosted near structural boundaries and suppressed in homogeneous interiors. Together, these priors improve reconstruction of sharp transitions and prevent over-densification on large flat surfaces.
+Planar priors encourage Gaussians within a detected planar region to share a common depth surface, enforcing co-planarity across large flat structures such as walls, floors, and ceilings. Planar regions are identified by segmentation (e.g., SAM~3~\cite{sam3}); for each segment, a plane is fitted to the rendered depth map and a consistency loss penalizes depth deviations from that plane. This prior improves surface flatness in structured indoor environments and reduces redundant Gaussians on uniform surfaces.
+
+\subsection{Edge-Aware Densification}
+
+Edge-aware priors spatially modulate primitive allocation rather than contributing a loss term: densification is boosted near structural boundaries detected from plane segment boundaries, and suppressed in homogeneous planar interiors. This prior improves reconstruction of sharp transitions, prevents over-densification on large flat surfaces, and is the primary mechanism for model compactness in this work.
 
 \section{Solution Architecture}
 \label{sec:solution_architecture}

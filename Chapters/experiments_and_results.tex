@@ -91,10 +91,10 @@ Depth prior start iteration & 7,000 \\
 Planar loss start iteration & 14,000 \\
 Normal prior start iteration & 20,000 \\
 \midrule
-Edge split boost factor & 2.5 \\
-Center split reduction factor & 0.4 \\
-Edge scale minimum ($s_{min}$) & 0.3 \\
-Center scale maximum ($s_{max}$) & 2.0 \\
+Edge split boost factor ($b$ in Alg.~\ref{alg:edge_aware}) & 2.5 \\
+Center split reduction factor ($s$ in Alg.~\ref{alg:edge_aware}) & 0.4 \\
+Edge scale minimum ($s_{min}$ in Alg.~\ref{alg:edge_aware}) & 0.3 \\
+Center scale maximum ($s_{max}$ in Alg.~\ref{alg:edge_aware}) & 2.0 \\
 \midrule
 TSDF voxel size & 0.02 m \\
 TSDF max depth & 100.0 m \\
@@ -114,7 +114,6 @@ To ensure reproducibility and systematic evaluation, all 32 configurations are t
     \item Renders test views using \texttt{render.py}
     \item Computes metrics (PSNR, SSIM, LPIPS) using \texttt{metrics.py}
     \item Extracts statistics: training time, Gaussian count, and model file size
-    \item Uploads results to a centralized repository for analysis
     \item Cleans up intermediate files to conserve disk space
 \end{enumerate}
 
@@ -249,6 +248,7 @@ meshes                & \cellcolor{green!40}27.89 & \cellcolor{green!70}0.865 & 
 edges                 & 27.64 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1061 & \cellcolor{green!40}251 & \cellcolor{green!20}44.0 \\
 \midrule
 depths\_planarity      & \cellcolor{green!70}27.92 & \cellcolor{green!70}0.865 & \cellcolor{green!70}0.288 & 1570 & 371 & 44.4 \\
+depths\_planarity\_edges & 27.61 & \cellcolor{green!20}0.863 & \cellcolor{green!20}0.299 & 1065 & 252 & 43.8 \\
 meshes\_edges          & 27.58 & \cellcolor{green!20}0.863 & 0.300 & \cellcolor{green!40}1054 & \cellcolor{green!70}249 & 119.3 \\
 normals\_depths\_edges & 27.27 & 0.861 & 0.304 & \cellcolor{green!70}1053 & \cellcolor{green!70}249 & 44.2 \\
 \midrule
@@ -261,7 +261,7 @@ all priors (full)     & 27.63 & \cellcolor{green!20}0.863 & \cellcolor{green!20}
 The averaged results (Table~\ref{tab:summary_avg}) show three clear patterns: (1) individual priors have negligible standalone PSNR impact (all within 0.04~dB of baseline, within noise); (2) edge-aware densification is the only prior with a large, reliable compactness effect ($-$499K Gaussians, $-$32\%); (3) the full five-prior configuration measures \emph{lower} than simple combinations, suggesting over-constraint.
 
 \paragraph{Per-scene breakdown.}
-Tables~\ref{tab:summary_drjohnson}--\ref{tab:summary_playroom} show the same 10 configurations for each scene individually. The scene-level numbers confirm that the averaged trends hold across all three scenes — edge-containing configs reduce Gaussian count by 30--35\% on every scene, and mesh-based priors always multiply training time by $3$--$7\times$. One noteworthy per-scene detail: on DrJohnson alone, \textit{depths} (29.16~dB) scores slightly higher than \textit{depths\_\allowbreak planarity} (29.08~dB), while on Playroom \textit{depths\_\allowbreak planarity} has its strongest gain (+0.06~dB). The averaged table reflects the balance across all three scenes.
+Tables~\ref{tab:summary_drjohnson}--\ref{tab:summary_playroom} show the same 11 configurations for each scene individually. The scene-level numbers confirm that the averaged trends hold across all three scenes — edge-containing configs reduce Gaussian count by 30--35\% on every scene, and mesh-based priors always multiply training time by $3$--$7\times$. One noteworthy per-scene detail: on DrJohnson alone, \textit{depths} (29.16~dB) scores slightly higher than \textit{depths\_\allowbreak planarity} (29.08~dB), while on Playroom \textit{depths\_\allowbreak planarity} has its strongest gain (+0.06~dB). The averaged table reflects the balance across all three scenes.
 
 % ---- Table 5.3: DrJohnson per-scene summary ----
 \begin{table}[t]
@@ -282,6 +282,7 @@ meshes & 29.11 & \cellcolor{green!70}0.904 & \cellcolor{green!70}0.249 & 1707 & 
 edges & 28.70 & 0.898 & 0.269 & 988 & \cellcolor{green!20}234 & \cellcolor{green!70}43.2 \\
 \midrule
 depths\_planarity & \cellcolor{green!20}29.08 & \cellcolor{green!40}0.903 & \cellcolor{green!20}0.252 & 1698 & 402 & 44.6 \\
+depths\_planarity\_edges & 28.60 & 0.897 & 0.270 & 1001 & 237 & 43.4 \\
 meshes\_edges & 28.67 & 0.897 & 0.273 & \cellcolor{green!70}964 & \cellcolor{green!70}228 & 83.6 \\
 normals\_depths\_edges & 27.71 & 0.889 & 0.280 & \cellcolor{green!40}979 & \cellcolor{green!40}232 & 44.5 \\
 \midrule
@@ -310,6 +311,7 @@ meshes & \cellcolor{green!20}24.11 & \cellcolor{green!20}0.782 & \cellcolor{gree
 edges & 24.07 & \cellcolor{green!70}0.785 & 0.372 & 1239 & 293 & 49.2 \\
 \midrule
 depths\_planarity & \cellcolor{green!70}24.13 & \cellcolor{green!20}0.782 & \cellcolor{green!70}0.366 & 1788 & 423 & \cellcolor{green!20}48.8 \\
+depths\_planarity\_edges & 24.00 & \cellcolor{green!40}0.784 & 0.374 & 1231 & \cellcolor{green!20}291 & 47.9 \\
 meshes\_edges & 23.92 & 0.783 & 0.375 & \cellcolor{green!40}1227 & \cellcolor{green!40}290 & 206.8 \\
 normals\_depths\_edges & 23.97 & \cellcolor{green!40}0.784 & 0.376 & \cellcolor{green!70}1221 & \cellcolor{green!70}289 & \cellcolor{green!40}48.0 \\
 \midrule
@@ -338,6 +340,7 @@ meshes & \cellcolor{green!20}30.46 & \cellcolor{green!40}0.910 & \cellcolor{gree
 edges & 30.14 & 0.907 & 0.255 & \cellcolor{green!70}956 & \cellcolor{green!70}226 & 39.7 \\
 \midrule
 depths\_planarity & \cellcolor{green!70}30.54 & \cellcolor{green!70}0.911 & \cellcolor{green!70}0.248 & 1223 & 289 & 39.9 \\
+depths\_planarity\_edges & 30.23 & \cellcolor{green!20}0.909 & 0.254 & 961 & \cellcolor{green!40}227 & 40.1 \\
 meshes\_edges & 30.16 & 0.908 & \cellcolor{green!20}0.253 & 969 & \cellcolor{green!20}229 & 67.5 \\
 normals\_depths\_edges & 30.14 & \cellcolor{green!20}0.909 & 0.254 & \cellcolor{green!20}958 & \cellcolor{green!40}227 & 40.0 \\
 \midrule
@@ -349,7 +352,7 @@ all priors (full) & 30.23 & 0.908 & 0.255 & \cellcolor{green!40}957 & \cellcolor
 
 In Table~\ref{tab:summary_avg}, simpler configurations measure higher averaged PSNR than the full five-prior configuration (27.92~dB for \textit{depths\_\allowbreak planarity} vs.\ 27.63~dB for all priors). The per-scene tables confirm this on every individual scene. A likely explanation is that activating all priors simultaneously creates conflicting gradient signals: depth supervision pulls Gaussian positions toward the monocular depth estimate, planarity enforces co-planarity within segments, and normal priors independently constrain surface orientation — when all five terms are jointly active, the optimization faces competing objectives that may not correspond to a single consistent geometry, slowing convergence. This hypothesis would require multi-run experiments or per-term loss curve analysis to confirm.
 
-Returning to the five research hypotheses stated in Sec.~5.4: \textbf{H1} (complementarity) is \textit{tentatively supported} — \textit{depths\_\allowbreak planarity} measures the highest averaged PSNR in Table~\ref{tab:summary_avg} (27.92~dB), though the 0.04~dB margin over baseline is within single-seed noise; the robust compactness signal confirms complementarity exists in the efficiency dimension. \textbf{H2} (redundancy under stronger supervision) is \textit{supported} — normals add negligible improvement once depth and planarity are active (Table~\ref{tab:summary_avg}, rows 3 vs.\ averaged results for \textit{normals\_\allowbreak depths\_\allowbreak planarity} in Appendix). \textbf{H3} (structural priors dominate) is \textit{partially supported} — planarity contributes in combinations, but the edge prior has by far the largest single-component effect. \textbf{H4} (compactness through geometry) is \textit{supported} — Table~\ref{tab:summary_avg} shows edge-aware configs at $\sim$1{,}054K Gaussians vs.\ 1{,}560K for baseline, a 32\% reduction consistent across Tables~\ref{tab:summary_drjohnson}--\ref{tab:summary_playroom}. \textbf{H5} (edge-aware improves efficiency) is \textit{supported} — every edge-containing row in Table~\ref{tab:summary_avg} reduces size to $\leq$251~MB, while every non-edge row stays $\geq$369~MB.
+Returning to the five research hypotheses stated in Sec.~5.4: \textbf{H1} (complementarity) is \textit{tentatively supported} — \textit{depths\_\allowbreak planarity} measures the highest averaged PSNR in Table~\ref{tab:summary_avg} (27.92~dB), though the 0.04~dB margin over baseline is within single-seed noise; the robust compactness signal confirms complementarity exists in the efficiency dimension. \textbf{H2} (redundancy under stronger supervision) is \textit{supported} — normals add negligible improvement once depth and planarity are active (Table~\ref{tab:summary_avg}, rows 3 vs.\ averaged results for \textit{normals\_\allowbreak depths\_\allowbreak planarity} in Appendix). \textbf{H3} (structural priors dominate) is \textit{partially supported} — planarity contributes in combinations, but the edge prior has by far the largest single-component effect. \textbf{H4} (compactness through geometry) is \textit{supported} — Table~\ref{tab:summary_avg} shows edge-aware configs at $\sim$1{,}054K Gaussians vs.\ 1{,}560K for baseline, a 32\% reduction consistent across Tables~\ref{tab:summary_drjohnson}--\ref{tab:summary_playroom}. \textbf{H5} (edge-aware improves efficiency) is \textit{supported} — every edge-containing row in Table~\ref{tab:summary_avg} reduces size to $\leq$252~MB, while every non-edge row stays $\geq$369~MB.
 
 \subsection{Individual Prior Contributions}
 
@@ -393,7 +396,7 @@ The computational cost of mesh-based regularization is substantial. Training tim
 
 In Table~\ref{tab:summary_avg}, the full configuration (all five priors) measures 27.63~dB averaged PSNR — below simpler combinations like \textit{depths\_\allowbreak planarity} (27.92~dB). The per-scene tables (Tables~\ref{tab:summary_drjohnson}--\ref{tab:summary_playroom}) confirm this on every individual scene. As discussed above, a plausible explanation is conflicting gradient signals from simultaneously active priors. The full configuration is compact (1,059K Gaussians in Table~\ref{tab:summary_avg}), but the averaged quality trade-off is measurable.
 
-For quality-focused deployment, \textit{depths\_\allowbreak planarity} (Table~\ref{tab:summary_avg}: 27.92~dB PSNR, 0.288 LPIPS, 371~MB) is the recommended configuration — it matches baseline quality at comparable model size. For memory-constrained deployment, \textit{normals\_\allowbreak depths\_\allowbreak edges} (Table~\ref{tab:summary_avg}: 1{,}053K Gaussians, 249~MB) reduces the primitive count by 32\% with an averaged PSNR cost of 0.61~dB, a trade-off that remains imperceptible under normal viewing conditions.
+For quality-focused deployment, \textit{depths\_\allowbreak planarity} (Table~\ref{tab:summary_avg}: 27.92~dB PSNR, 0.288 LPIPS, 371~MB) is the recommended configuration — it matches baseline quality at comparable model size. For memory-constrained deployment, \textit{depths\_\allowbreak planarity\_\allowbreak edges} (Table~\ref{tab:summary_avg}: 1{,}065K Gaussians, 252~MB averaged; 237~MB on DrJohnson) is the recommended configuration — it reduces the primitive count by 32\% with an averaged PSNR cost of only 0.31~dB, achieving better quality than \textit{normals\_\allowbreak depths\_\allowbreak edges} (27.61 vs.\ 27.27~dB) at nearly identical compactness. This is also the configuration used in the SOTA comparison in Table~\ref{tab:method_comparison}.
 
 \subsection{Efficiency Analysis}
 

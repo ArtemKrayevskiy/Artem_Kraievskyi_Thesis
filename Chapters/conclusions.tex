@@ -10,9 +10,11 @@ Through a comprehensive ablation study across all $2^5 = 32$ possible combinatio
 
 The comprehensive experimental evaluation revealed several important findings about the contribution of individual modalities and their interactions.
 
-Among individual priors, depth, normals, planarity, and mesh-based regularization all maintain rendering quality comparable to the baseline (within the noise floor of single-seed experiments). In the measured averaged results, depths\_\allowbreak planarity was observed to measure the highest PSNR — but the margin (0.04~dB in averages) is below the reproducibility threshold of single-seed training and should be interpreted as a trend rather than a confirmed gain. Normal priors exhibit partial redundancy when depth and planarity are already active, providing diminishing returns in structured indoor environments.
+The \textbf{primary finding} is compactness: edge-aware adaptive densification reproducibly reduces the Gaussian count by 30--32\% across all three evaluated scenes (1{,}560K $\to$ 1{,}060K, 369~MB $\to$ 250~MB) with a PSNR cost of 0.24~dB standalone and 0.31~dB for the recommended \textit{depths\_\allowbreak planarity\_\allowbreak edges} combination. This result holds consistently across all three scenes and substantially exceeds measurement noise, making it the robust contribution of this work.
 
-Edge-aware adaptive densification is the most practically impactful component: it reduces the Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K, 369~MB to $\sim$250~MB) at a PSNR cost of 0.24 dB when used alone. Crucially, this trade-off is reproducible across all edge-aware configurations — every configuration that includes edge-aware control achieves compactness improvements of similar magnitude, making it a reliable tool for memory-constrained deployment. Mesh-based TSDF regularization provides only marginal rendering quality gains (+0.01 dB standalone) while increasing training time by roughly $4\times$; it should be included only when downstream mesh extraction is explicitly required.
+The \textbf{secondary finding} concerns quality interactions: among individual priors, depth, normals, planarity, and mesh-based regularization all maintain rendering quality comparable to the baseline (within single-seed noise). In the measured averaged results, \textit{depths\_\allowbreak planarity} was observed to measure the highest PSNR — but the 0.04~dB margin is below the reproducibility threshold and should be interpreted as indicative, not definitive. Normal priors exhibit partial redundancy when depth and planarity are already active, providing diminishing returns in structured indoor environments.
+
+Edge-aware adaptive densification is the most practically impactful component: it reduces the Gaussian count by 30--32\% (from $\sim$1{,}560K to $\sim$1{,}060K, 369~MB to $\sim$250~MB) at a PSNR cost of 0.24~dB when used alone and 0.31~dB for the recommended \textit{depths\_\allowbreak planarity\_\allowbreak edges} combination. Crucially, this trade-off is reproducible across all edge-aware configurations — every configuration that includes edge-aware control achieves compactness improvements of similar magnitude, making it a reliable tool for memory-constrained deployment. Mesh-based TSDF regularization provides only marginal rendering quality gains (+0.01 dB standalone) while increasing training time by roughly $4\times$; it should be included only when downstream mesh extraction is explicitly required.
 
 A broader insight from the ablation study is that geometric priors are not uniformly additive. Enabling all five priors simultaneously produces only 27.63 dB, well below simpler combinations such as depths\_\allowbreak planarity (27.92 dB), suggesting that certain priors introduce conflicting gradients or over-constrain the optimization. These interactions underscore the importance of systematic ablation over exhaustive regularization.
 
@@ -22,7 +24,7 @@ The experimental results yield concrete guidance for practitioners choosing geom
 
 \textbf{For maximum rendering quality} (e.g., pre-rendered indoor visualization, architectural walkthroughs): use \textit{depths\_\allowbreak planarity}. This two-prior combination was observed to measure the highest PSNR across all three scenes in this experiment (within noise of baseline) and SSIM of 0.865 at near-baseline model size (371~MB), with a training time overhead of only $<$1\%. No edge-aware densification or mesh regularization is needed.
 
-\textbf{For memory-constrained deployment} (e.g., mobile AR navigation, embedded 3D viewers, VR headsets with limited VRAM): use \textit{meshes\_\allowbreak edges} or \textit{depths\_\allowbreak edges}. These configurations reduce model size by 32\% (249--252~MB vs.\ 369~MB baseline) with a PSNR drop of 0.3--0.6~dB — a trade-off that is imperceptible at normal viewing distances and enables deployment on devices that cannot load a 370~MB PLY file into GPU memory.
+\textbf{For memory-constrained deployment} (e.g., mobile AR navigation, embedded 3D viewers, VR headsets with limited VRAM): use \textit{depths\_\allowbreak planarity\_\allowbreak edges}. This configuration reduces model size by 32\% (252~MB averaged, 222~MB on DrJohnson, vs.\ 369~MB baseline) with a PSNR drop of only 0.31~dB — the best quality-compactness trade-off among edge-containing configurations, and the method reported in the SOTA comparison (Table~5.7).
 
 \textbf{For downstream mesh extraction} (e.g., robotics mapping, collision geometry for physics engines): add the mesh prior (\textit{depths\_\allowbreak planarity\_\allowbreak meshes}). The 4$\times$ training time increase is the cost for obtaining a clean TSDF mesh alongside the Gaussian representation. Quality (27.81 dB) remains slightly below the non-mesh variant.
 
@@ -32,10 +34,25 @@ The experimental results yield concrete guidance for practitioners choosing geom
 \begin{itemize}
     \item Adding only depth or normals: $\sim$0 PSNR gain, $\sim$0 size reduction — not worth the complexity alone.
     \item Adding planarity: +0.04~dB PSNR with depth, no size reduction — recommended for quality-focused deployments.
-    \item Adding edges: $-$0.24~dB PSNR, $-$32\% Gaussians, $-$32\% storage — the primary compactness lever.
+    \item Adding edges (alone): $-$0.24~dB PSNR, $-$32\% Gaussians — the primary compactness lever.
+    \item Adding depth+planarity+edges (\textit{recommended compact config}): $-$0.31~dB PSNR, $-$32\% Gaussians, $-$32\% storage.
     \item Adding mesh: $\sim$+0.01~dB PSNR standalone, $4\times$ training time — only for mesh-required tasks.
     \item All priors together: lower quality than selective combinations — avoid unless explicitly needed.
 \end{itemize}
+
+\section{Implementation Scope}
+
+The following components were implemented from scratch as original engineering contributions of this thesis:
+
+\begin{itemize}
+    \item \textbf{Edge-aware densification logic} — custom split probability boost/suppression rules and scale clamping for split children, integrated directly into the PlanarGS densification loop (\texttt{gaussians.py}, \texttt{train.py}).
+    \item \textbf{Edge distance fields} — per-image Euclidean distance transforms computed from LSD-detected structural boundaries, precomputed once and cached for all training iterations.
+    \item \textbf{Five-modality unified pipeline} — integration of depth (DUSt3R), normal (DUSt3R), planarity (SAM~3), mesh (TSDF/Open3D), and edge-aware densification into a single modular training loop with a staged activation schedule and independent command-line flags.
+    \item \textbf{Automated ablation framework} — \texttt{train\_all\_combinations.py}, which orchestrates all 96 training runs (32 configurations $\times$ 3 scenes) sequentially, collects metrics, and assembles results for analysis.
+    \item \textbf{TSDF mesh pipeline} — integration of rendered depth maps into a volumetric signed distance field using Open3D, with marching cubes extraction and mesh-based regularization loss.
+\end{itemize}
+
+The DUSt3R and SAM~3 models were used as pre-trained inference engines without retraining; the PlanarGS codebase served as the base framework. All other components listed above were written independently.
 
 \section{Novelty and Positioning}
 
@@ -55,7 +72,7 @@ Despite the promising results, several limitations remain.
 
 \textbf{Edge detection limitations:} Edge-aware control relies on line segment detection (LSD), which may miss curved boundaries or fail in low-texture regions. More robust structural boundary detection could further improve adaptive densification.
 
-\textbf{Limited scene diversity:} The evaluation focuses on indoor scenes with dominant planar structures. The generalization of these findings to outdoor, unstructured, or highly detailed scenes remains to be validated.
+\textbf{Limited scene diversity:} The evaluation is restricted to three scenes from a single dataset (Deep Blending). Standard benchmarks used in the field — including ScanNet, ScanNet++, Tanks and Temples, and Replica — are not covered. No claim of generalization beyond these three scenes can be made; performance on outdoor, unstructured, or textureless environments may differ substantially. This is a significant experimental limitation that should be addressed before broader conclusions can be drawn.
 
 \textbf{Computational overhead:} Computing monocular priors, distance fields, and TSDF fusion adds preprocessing and post-processing costs that may be prohibitive for large-scale datasets.
 
@@ -67,7 +84,7 @@ The following directions are worth pursuing in future work. Replacing monocular 
 
 \section{Closing Remarks}
 
-This thesis demonstrated that edge-aware adaptive densification integrated into 3D Gaussian Splatting achieves 32\% model compactness improvement for indoor scenes with imperceptible quality loss. The systematic 32-configuration ablation study provided practical insights into geometric prior interactions, revealing that selective combinations avoid the conflicting gradients that hurt quality in the full configuration.
+This thesis demonstrated that edge-aware adaptive densification integrated into 3D Gaussian Splatting achieves 32\% model compactness improvement for indoor scenes with imperceptible quality loss. The recommended \textit{depths\_\allowbreak planarity\_\allowbreak edges} configuration is 46\% smaller than PlanarGS (222~MB vs.\ 410~MB on DrJohnson) while maintaining competitive rendering quality. The systematic 32-configuration ablation study provided practical insights into geometric prior interactions, revealing that selective combinations avoid the conflicting gradients that hurt quality in the full configuration.
 
 A striking finding was that enabling all five geometric priors simultaneously produced \emph{lower} measured quality than simpler two-prior combinations such as \textit{depths\_\allowbreak planarity} — challenging the common assumption that more regularization is always better and underscoring that prior selection matters as much as prior design.
 
