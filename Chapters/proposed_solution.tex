@@ -32,7 +32,7 @@ We define success along two complementary axes:
     \item \textbf{Representation compactness}: the final Gaussian count $K$ and PLY file size (MB) should be reduced compared to the baseline, ideally without a perceptible PSNR penalty.
 \end{itemize}
 
-A configuration is considered successful if it achieves a compactness reduction of $\geq 10\%$ in Gaussian count with a PSNR drop of $\leq 0.5$~dB (compactness criterion), or does not reduce PSNR below the baseline at comparable model size (quality criterion). Note that the second criterion is intentionally stated as ``does not hurt quality'' rather than ``improves quality'': given that single-seed PSNR differences of $\leq 0.05$~dB are within expected seed variance, claiming a measured gain of 0.01~dB as a confirmed improvement would be statistically unsupported. Configurations satisfying the compactness criterion are evaluated primarily on the robustness of their size reduction across all three scenes.
+A configuration is considered successful if it achieves a compactness reduction of more than 10\% in Gaussian count with a PSNR drop of 0.5~dB or less (compactness criterion), or does not reduce PSNR below the baseline at comparable model size (quality criterion). Note that the second criterion is intentionally stated as ``does not hurt quality'' rather than ``improves quality'': given that single-seed PSNR differences of $\leq 0.05$~dB are within expected seed variance, claiming a measured gain of 0.01~dB as a confirmed improvement would be statistically unsupported. Configurations satisfying the compactness criterion are evaluated primarily on the robustness of their size reduction across all three scenes.
 
 \subsection{Geometric Regularization}
 
