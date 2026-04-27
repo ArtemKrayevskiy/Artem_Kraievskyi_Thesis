@@ -36,11 +36,11 @@ COLMAP is a widely used SfM and Multi-View Stereo pipeline that implements an in
 In neural and Gaussian-based scene representations, including 3D Gaussian Splatting and its geometry-aware extensions, COLMAP serves as the standard tool for camera pose initialization. While COLMAP provides highly accurate pose estimates, the resulting point cloud remains sparse and does not explicitly encode surface continuity or structural priors such as planar geometry. These limitations motivate the integration of additional geometric constraints in downstream representations, including planar primitives, depth supervision, and multi-view stereo cues, as explored in PlanarGS and related methods.
 
 
-\section{3D Gaussian Splatting}
+\section{Vanilla 3D Gaussian Splatting}
 
 \subsection{Overview}
 
-3D Gaussian Splatting (3DGS) is a point-based neural rendering method that represents a scene as a set of anisotropic 3D Gaussian primitives. Instead of using implicit neural fields, the scene geometry and appearance are explicitly modeled using a collection of volumetric Gaussians that are optimized directly through differentiable rendering.
+Vanilla 3D Gaussian Splatting (3DGS) is a point-based neural rendering method that represents a scene as a set of anisotropic 3D Gaussian primitives. Instead of using implicit neural fields, the scene geometry and appearance are explicitly modeled using a collection of volumetric Gaussians that are optimized directly through differentiable rendering.
 
 The key idea is to approximate the scene with a set of Gaussian functions that are projected onto the image plane and composited using alpha blending.
 
