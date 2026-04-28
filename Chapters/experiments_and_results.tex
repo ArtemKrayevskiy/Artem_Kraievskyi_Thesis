@@ -414,7 +414,7 @@ Table~\ref{tab:method_comparison} presents a quantitative comparison of our meth
 
 \begin{table}[h]
 \centering
-\caption{Quantitative comparison on the DrJohnson scene at 30{,}000 training iterations. All PLY model sizes measured on the same hardware.}
+\caption{Quantitative comparison on the DrJohnson scene at 30{,}000 training iterations (representative scene; competitor checkpoints for Library and Playroom were not available under identical conditions — see text). All PLY model sizes measured on the same hardware.}
 \label{tab:method_comparison}
 \begin{tabular}{lcccc}
 \toprule
@@ -429,6 +429,8 @@ Ours (depths\_planarity\_edges)            & 28.67 & 0.898 & 0.269 & \textbf{222
 \end{table}
 
 Our method matches GeoGaussian's PSNR while achieving a 21\% smaller model (222~MB vs.\ 281~MB), and is 46\% smaller than PlanarGS (222~MB vs.\ 410~MB) with a 0.31 dB PSNR difference — a trade-off that is primarily driven by edge-aware densification. GeoGaussian achieves a notably lower LPIPS (0.130) because its dense depth/normal initialization produces perceptually sharper renders, a direction orthogonal to our compactness focus.
+
+\paragraph{Relationship to post-hoc compression methods.} Post-hoc compression approaches — Compact3DGS~\cite{compact3dgs} (25$\times$ reduction), LightGaussian~\cite{lightgaussian} (15$\times$), and Self-Organizing Gaussian Grids~\cite{selforganizinggs} (17--42$\times$) — achieve substantially larger size reductions than our 32\% by applying quantization, pruning, or grid encoding to a fully-trained model. Our approach is fundamentally different and \emph{orthogonal}: rather than compressing a trained model, edge-aware adaptive densification reduces the primitive count \emph{during training} through geometry-driven allocation, without quantization or masking. The two strategies can be combined: applying post-hoc compression to our already-compact model would yield additional savings multiplicatively. The primary benefit of our approach is that it simultaneously improves geometric quality (through planarity and depth constraints) while reducing model size — a coupling that post-hoc compression cannot provide.
 
 \subsection{Qualitative Comparison: Compactness vs.~Rendering Quality}
 
@@ -482,7 +484,7 @@ Visual quality across methods appears subjectively similar in standard RGB rende
 
 Qualitative analysis reveals that configurations incorporating planarity and edge-aware constraints produce visibly cleaner reconstructions near planar boundaries. Standard Gaussian Splatting methods tend to produce floating artifacts and inconsistent depth discontinuities at object edges, whereas geometry-aware regularization enforces coherent surfaces and sharp transitions.
 
-These improvements are particularly evident in regions with weak texture, where photometric supervision alone is insufficient to constrain geometry. Configurations with planarity and edge-aware priors produce visibly sharper planar boundaries and fewer floating artifacts compared to the baseline.
+These improvements are particularly evident in regions with weak texture, where photometric supervision alone is insufficient to constrain geometry. Configurations with planarity and edge-aware priors produce visibly sharper planar boundaries and fewer floating artifacts compared to the baseline. Figure~\ref{fig:normal_comparison_intro} illustrates this concretely: surface normal maps from our \textit{depths\_\allowbreak planarity\_\allowbreak edges} configuration show sharper planar boundaries and more coherent orientation estimates than the 3DGS baseline, while achieving a 46\% smaller model size than PlanarGS (222~MB vs.\ 410~MB on DrJohnson). This cross-method normal quality comparison constitutes the primary qualitative evidence for structural improvement beyond the PSNR/SSIM metrics reported in Tables~\ref{tab:summary_avg}--\ref{tab:summary_playroom}.
 
 \subsection{Summary of Findings}
 
